@@ -1,0 +1,32 @@
+#!/bin/bash
+set -e
+
+# Install tofu if not already installed
+if ! command -v tofu &> /dev/null; then
+    echo "Installing OpenTofu..."
+
+    # Install tooling
+    apt-get update
+    apt-get install -y apt-transport-https ca-certificates curl gnupg
+
+    # Set up the OpenTofu repository
+    install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://get.opentofu.org/opentofu.gpg | tee /etc/apt/keyrings/opentofu.gpg > /dev/null
+    curl -fsSL https://packages.opentofu.org/opentofu/tofu/gpgkey | gpg --no-tty --batch --dearmor -o /etc/apt/keyrings/opentofu-repo.gpg > /dev/null
+    chmod a+r /etc/apt/keyrings/opentofu.gpg /etc/apt/keyrings/opentofu-repo.gpg
+
+    echo \
+      "deb [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main
+deb-src [signed-by=/etc/apt/keyrings/opentofu.gpg,/etc/apt/keyrings/opentofu-repo.gpg] https://packages.opentofu.org/opentofu/tofu/any/ any main" | \
+      tee /etc/apt/sources.list.d/opentofu.list > /dev/null
+    chmod a+r /etc/apt/sources.list.d/opentofu.list
+
+    # Install OpenTofu
+    apt-get update
+    apt-get install -y tofu
+
+    # Clean up
+    rm -rf /var/lib/apt/lists/*
+    hash -r
+fi
+tofu version

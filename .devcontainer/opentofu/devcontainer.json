@@ -3,7 +3,7 @@
     "dockerComposeFile": [
         "./docker-compose.yml"
     ],
-    "service": "app",
+    "service": "devcontainer",
     "workspaceFolder": "/workspace",
     "remoteUser": "vscode",
     "containerUser": "vscode",
@@ -11,7 +11,6 @@
     // Features - https://containers.dev/implementors/features.
     //
     "features": {
-        "ghcr.io/devcontainers/features/python:1": {},
         "ghcr.io/devcontainers/features/azure-cli:1": {}
     },
     //
@@ -20,13 +19,10 @@
     "containerEnv": {
         "TF_LOG_PATH": "./terraform.log"
     },
-    // "onCreateCommand": {},
-    // "updateContentCommand": {},
-    // "postCreateCommand": {},
-    "postStartCommand": {
-		// "zsh": "../.dotfiles/python/install.sh"
-    },
+    // "postCreateCommand": "",
+    // "postStartCommand": {},
     // "postAttachCommand": {},
+    // "updateContentCommand": {},
     // "waitFor": "", // default updateContentCommand
     "customizations": {
         "vscode": {
@@ -83,72 +79,24 @@
                 "tasks": {
                     // https://code.visualstudio.com/docs/editor/tasks#vscode
                     "version": "2.0.0",
-                    "options": {
-                        "env": {
-                            "PYTEST_ADDOPTS": "--tb=native"
-                        }
-                    },
+                    "options": {},
                     "tasks": [
-                        //
-                        // all Task groups
-                        //
-                        {
-                            "label": "build & test",
-                            "dependsOn": [
-                                "build",
-                                "test"
-                            ],
-                            "dependsOrder": "sequence",
-                            "runOptions": {
-                                "runOn": "folderOpen"
-                            },
-                            "problemMatcher": []
-                        },
-                        //
-                        // build
-                        //
-                        {
-                            "label": "build",
-                            "dependsOn": [
-                            ],
-                            "group": {
-                                "kind": "build",
-                                "isDefault": true
-                            },
-                            "problemMatcher": []
-                        },
-                        //
-                        // test
-                        //
-                        {
-                            "label": "test",
-                            "dependsOn": [
-                                "trufflehog"
-                            ],      
-                            "group": {
-                                "kind": "test",
-                                "isDefault": true
-                            },
-                            "problemMatcher": []
-                        },
-                        {
-                            "label": "trufflehog",
-                            "type": "shell",
-                            "command": "${workspaceFolder}/.devcontainer/.dotfiles/git/scripts/trufflehog.sh",
-                            "args": [
-                                "file://${workspaceFolder}/../",
-                                "{workspaceFolder}/.devcontainer/.dotfiles/git/trufflehog.toml"
-                            ],
-                            "presentation": {
-                                "panel": "dedicated",
-                                "clear": true
-                            },
-                            "problemMatcher": []
-                        },
                         {
                             "label": "opentofu init",
                             "type": "shell",
-                            "command": "${workspaceFolder}/.devcontainer/.dotfiles/python/scripts/opentofu/opentofu_init.sh",
+                            "command": "${workspaceFolder}/.github/scripts/opentofu-init.sh",
+                            "args": [],
+                            "group": "build",
+                            "presentation": {
+                                "reveal": "always",
+                                "panel": "shared"
+                            },
+                            "problemMatcher": []
+                        },
+                        {
+                            "label": "opentofu lint",
+                            "type": "shell",
+                            "command": "${workspaceFolder}/.github/scripts/opentofu-lint.sh",
                             "args": [],
                             "group": "build",
                             "presentation": {
@@ -160,21 +108,12 @@
                         {
                             "label": "opentofu plan",
                             "type": "shell",
-                            "command": "${workspaceFolder}/.devcontainer/.dotfiles/python/scripts/opentofu/opentofu_plan.sh",
+                            "command": "${workspaceFolder}/.github/scripts/opentofu-plan.sh",
                             "args": [],
                             "group": "build",
-                            "presentation": {
-                                "reveal": "always",
-                                "panel": "shared"
-                            },
-                            "problemMatcher": []
-                        },
-                        {
-                            "label": "opentofu validate",
-                            "type": "shell",
-                            "command": "${workspaceFolder}/.devcontainer/.dotfiles/python/scripts/opentofu/opentofu_validate.sh",
-                            "args": [],
-                            "group": "build",
+                            "dependsOn": [
+                                "opentofu init"
+                            ],
                             "presentation": {
                                 "reveal": "always",
                                 "panel": "shared"
@@ -184,7 +123,7 @@
                         {
                             "label": "opentofu apply",
                             "type": "shell",
-                            "command": "${workspaceFolder}/.devcontainer/.dotfiles/python/scripts/opentofu/opentofu_apply.sh",
+                            "command": "${workspaceFolder}/.github/scripts/opentofu-apply.sh",
                             "args": [],
                             "group": "build",
                             "presentation": {

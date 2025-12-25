@@ -1,9 +1,9 @@
 services:
-  app:
+  devcontainer:
     platform: linux/amd64
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../../
+      dockerfile: .devcontainer/opentofu/Dockerfile
       args:
         VARIANT: base:ubuntu-24.04
     volumes:
