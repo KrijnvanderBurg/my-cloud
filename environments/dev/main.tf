@@ -11,7 +11,7 @@ data "azurerm_management_group" "tenant_root" {
 module "drive_management_group" {
   source = "../../modules/management-group"
 
-  name                       = "mg-drive-dev-glb-01"
+  name                       = "mg-drive-${var.environment}-glb-01"
   display_name               = "drive"
   parent_management_group_id = data.azurerm_management_group.tenant_root.id
 }
@@ -20,7 +20,7 @@ module "drive_management_group" {
 module "sandbox_management_group" {
   source = "../../modules/management-group"
 
-  name                       = "mg-sandbox-dev-glb-01"
+  name                       = "mg-sandbox-${var.environment}-glb-01"
   display_name               = "sandbox"
   parent_management_group_id = data.azurerm_management_group.tenant_root.id
 }
@@ -29,7 +29,7 @@ module "sandbox_management_group" {
 module "management_management_group" {
   source = "../../modules/management-group"
 
-  name                       = "mg-management-dev-glb-01"
+  name                       = "mg-management-${var.environment}-glb-01"
   display_name               = "management"
   parent_management_group_id = data.azurerm_management_group.tenant_root.id
 }
@@ -66,7 +66,7 @@ resource "azurerm_management_group_policy_assignment" "drive_deny_delete" {
 # Subscription Associations
 # =============================================================================
 #
-# IMPORTANT: The management subscription (sub-management-dev-gwc-01) is the ONLY
+# IMPORTANT: The management subscription (sub-management-${var.environment}-gwc-01) is the ONLY
 # subscription created manually outside of Terraform. This is required because it
 # contains the tfstate storage account used by this Terraform configuration.
 # All other subscriptions MUST be created and associated via Terraform.
@@ -82,7 +82,7 @@ module "management_subscription_association" {
 # =============================================================================
 module "sandbox_subscription" {
   source              = "../../modules/subscription"
-  name                = "sub-drive-dev-gwc-01"
+  name                = "sub-drive-${var.environment}-gwc-01"
   billing_scope_id    = "/providers/Microsoft.Billing/billingAccounts/ffbe90e4-4c92-51f3-62db-7a172bf13a15:6bd78d7c-050e-43d3-b328-5b78d77bd526_2019-05-31/billingProfiles/DYXR-KFLN-BG7-PGB/invoiceSections/VD3P-IQFM-PJA-PGB"
   management_group_id = module.sandbox_management_group.id
   tags                = var.tags
