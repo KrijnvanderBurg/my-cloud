@@ -11,4 +11,4 @@ runs:
     - name: Lint OpenTofu configuration
       shell: bash
       run: |
-        bash ${{ github.action_path }}/../../scripts/opentofu-lint.sh "${{ inputs.target_path }}"
+        bash ${{ github.workspace }}/.github/scripts/opentofu-lint.sh "${{ inputs.target_path }}"

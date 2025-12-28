@@ -11,4 +11,4 @@ runs:
     - name: Initialize OpenTofu
       shell: bash
       run: |
-        bash ${{ github.action_path }}/../../scripts/opentofu-init.sh "${{ inputs.target_path }}"
+        bash ${{ github.workspace }}/.github/scripts/opentofu-init.sh "${{ inputs.target_path }}"

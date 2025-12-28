@@ -19,4 +19,4 @@ runs:
     - name: Apply OpenTofu changes
       shell: bash
       run: |
-        bash ${{ github.action_path }}/../../scripts/opentofu-apply.sh "${{ inputs.target_path }}" "${{ inputs.var_file }}" "${{ inputs.auto_approve }}"
+        bash ${{ github.workspace }}/.github/scripts/opentofu-apply.sh "${{ inputs.target_path }}" "${{ inputs.var_file }}" "${{ inputs.auto_approve }}"

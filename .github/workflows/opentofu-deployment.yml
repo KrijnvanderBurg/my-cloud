@@ -78,8 +78,17 @@ jobs:
           target_path: ./environments/dev
 
       - name: Plan changes
+        id: plan
         uses: ./.github/actions/opentofu-plan
         with:
+          target_path: ./environments/dev
+
+      - name: Post Plan to PR
+        if: github.event_name == 'pull_request'
+        uses: ./.github/actions/opentofu-pr-comment
+        with:
+          plan_file: ${{ steps.plan.outputs.plan_file }}
+          environment: dev
           target_path: ./environments/dev
 
   apply:
