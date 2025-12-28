@@ -11,17 +11,16 @@
     // Features - https://containers.dev/implementors/features.
     //
     "features": {
-        "ghcr.io/devcontainers/features/azure-cli:1": {}
+        "ghcr.io/devcontainers/features/azure-cli:1": {},
+        "ghcr.io/devcontainers/features/python:1": {
+            "installTools": true
+        }
     },
     //
     // ContainerEnv
     //
-    "containerEnv": {
-        "TF_LOG_PATH": "./terraform.log"
-    },
-    "postCreateCommand": {
-        "install pre-commit": "pip install --user pre-commit && pre-commit install"
-    },
+    "containerEnv": {},
+    "postCreateCommand": "pipx install pre-commit && pre-commit install",
     // "postStartCommand": {},
     // "postAttachCommand": {},
     // "updateContentCommand": {},
