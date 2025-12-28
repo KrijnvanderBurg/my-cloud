@@ -14,15 +14,6 @@ on:
       - 'environments/**'
       - 'modules/**'
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy'
-        required: true
-        default: 'dev'
-        type: choice
-        options:
-          - dev
-          - prod
 
 permissions:
   contents: read
@@ -56,12 +47,12 @@ jobs:
       - name: Initialize OpenTofu
         uses: ./.github/actions/opentofu-init
         with:
-          target_path: ./environments/${{ inputs.environment }}
+          target_path: ./environments/dev
 
       - name: Lint configuration
         uses: ./.github/actions/opentofu-lint
         with:
-          target_path: ./environments/${{ inputs.environment }}
+          target_path: ./environments/dev
 
   plan:
     name: Plan
@@ -84,12 +75,12 @@ jobs:
       - name: Initialize OpenTofu
         uses: ./.github/actions/opentofu-init
         with:
-          target_path: ./environments/${{ inputs.environment }}
+          target_path: ./environments/dev
 
       - name: Plan changes
         uses: ./.github/actions/opentofu-plan
         with:
-          target_path: ./environments/${{ inputs.environment }}
+          target_path: ./environments/dev
 
   apply:
     name: Apply
@@ -114,10 +105,10 @@ jobs:
       - name: Initialize OpenTofu
         uses: ./.github/actions/opentofu-init
         with:
-          target_path: ./environments/${{ inputs.environment }}
+          target_path: ./environments/dev
 
       - name: Apply changes
         uses: ./.github/actions/opentofu-apply
         with:
-          target_path: ./environments/${{ inputs.environment }}
+          target_path: ./environments/dev
           auto_approve: 'true'
