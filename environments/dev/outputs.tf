@@ -36,5 +36,4 @@ output "environment_info" {
     location    = var.location
     tenant_id   = var.tenant_id
   }
-  sensitive = true
 }
