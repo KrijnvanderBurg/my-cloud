@@ -76,3 +76,23 @@ module "management_subscription_association" {
   management_group_id = module.management_management_group.id
   subscription_id     = var.management_subscription_id
 }
+
+# =============================================================================
+# Subscriptions
+# =============================================================================
+# Create new subscriptions using the subscription module. Each subscription
+# is automatically associated with its designated management group.
+#
+# Example: Create a sandbox subscription for development/testing
+# module "sandbox_subscription" {
+#   source = "../../modules/subscription"
+#
+#   name             = "sub-sandbox-dev-gwc-01"
+#   workload         = "DevTest"
+#   billing_scope_id = "<your-billing-scope-id>"
+#
+#   # Associate with sandbox management group
+#   management_group_id = module.sandbox_management_group.id
+#
+#   tags = var.tags
+# }
