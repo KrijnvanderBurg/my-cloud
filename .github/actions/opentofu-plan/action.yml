@@ -11,8 +11,11 @@ inputs:
     default: ''
 outputs:
   plan_file:
-    description: 'Path to the plan output file'
+    description: 'Path to the plan text output file'
     value: ${{ steps.plan.outputs.plan_file }}
+  plan_binary_file:
+    description: 'Path to the binary plan file for apply'
+    value: ${{ steps.plan.outputs.plan_binary_file }}
 runs:
   using: 'composite'
   steps:

@@ -1,15 +1,18 @@
 #!/bin/bash
-target_path="${1:-$PWD/infrastructure}" && echo "Planning OpenTofu changes in: $target_path"
-var_file="${2:-}" && [[ -n "$var_file" ]] && echo "Using variables file: $var_file"
+target_path="${1:?Target path is required}"
+var_file="${2:-}"
 
 source "$(dirname "$0")/opentofu-install.sh"
 
 cd "$target_path" || exit 1
 
-plan_file="/tmp/opentofu-plan-output.txt"
-tofu plan -no-color ${var_file:+-var-file="$var_file"} 2>&1 | tee "$plan_file"
+plan_binary_file="$target_path/tfplan"
+plan_text_file="$target_path/tfplan.txt"
+
+tofu plan -no-color -out="$plan_binary_file" ${var_file:+-var-file="$var_file"} 2>&1 | tee "$plan_text_file"
 exitcode=${PIPESTATUS[0]}
 
-[[ -n "$GITHUB_OUTPUT" ]] && echo "plan_file=$plan_file" >> "$GITHUB_OUTPUT"
+echo "plan_file=$plan_text_file" >> "$GITHUB_OUTPUT"
+echo "plan_binary_file=$plan_binary_file" >> "$GITHUB_OUTPUT"
 
 exit $exitcode

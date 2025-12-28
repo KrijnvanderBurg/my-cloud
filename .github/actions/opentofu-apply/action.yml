@@ -5,18 +5,13 @@ inputs:
     description: 'Path to OpenTofu configuration directory'
     required: false
     default: './infrastructure'
-  var_file:
-    description: 'Path to variables file'
-    required: false
-    default: ''
-  auto_approve:
-    description: 'Skip interactive approval of plan'
-    required: false
-    default: 'false'
+  plan_file:
+    description: 'Path to the binary plan file to apply'
+    required: true
 runs:
   using: 'composite'
   steps:
     - name: Apply OpenTofu changes
       shell: bash
       run: |
-        bash ${{ github.workspace }}/.github/scripts/opentofu-apply.sh "${{ inputs.target_path }}" "${{ inputs.var_file }}" "${{ inputs.auto_approve }}"
+        bash ${{ github.workspace }}/.github/scripts/opentofu-apply.sh "${{ inputs.target_path }}" "${{ inputs.plan_file }}"

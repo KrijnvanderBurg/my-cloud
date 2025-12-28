@@ -75,6 +75,13 @@ jobs:
         with:
           target_path: ./environments/dev
 
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-dev
+          path: ./environments/dev/tfplan
+          retention-days: 5
+
       - name: Post Plan to PR
         if: github.event_name == 'pull_request'
         uses: ./.github/actions/opentofu-pr-comment
@@ -107,8 +114,14 @@ jobs:
         with:
           target_path: ./environments/dev
 
+      - name: Download Plan Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan-dev
+          path: ./environments/dev
+
       - name: Apply changes
         uses: ./.github/actions/opentofu-apply
         with:
           target_path: ./environments/dev
-          auto_approve: 'true'
+          plan_file: ./environments/dev/tfplan
