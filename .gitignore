@@ -1,15 +1,21 @@
-# Terraform
-.terraform/
-.terraform.lock.hcl
+# Terraform / OpenTofu
+**/.terraform/*
 *.tfstate
 *.tfstate.*
-*.tfvars
-!terraform.tfvars.example
 crash.log
+crash.*.log
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Sensitive variable files
+*.auto.tfvars
+secret.tfvars
+
+# Keep terraform.tfvars (non-sensitive) and examples
+!terraform.tfvars
+!*.tfvars.example
 
 # Environment files
 .env

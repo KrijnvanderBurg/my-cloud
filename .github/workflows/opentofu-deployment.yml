@@ -5,18 +5,20 @@ on:
     branches:
       - main
     paths:
-      - 'infrastructure/**'
+      - 'environments/**'
+      - 'modules/**'
   pull_request:
     branches:
       - main
     paths:
-      - 'infrastructure/**'
+      - 'environments/**'
+      - 'modules/**'
   workflow_dispatch:
     inputs:
       target_path:
         description: 'Path to OpenTofu configuration'
         required: false
-        default: './infrastructure'
+        default: './environments/dev'
       var_file:
         description: 'Path to variables file'
         required: false
@@ -25,6 +27,13 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  id-token: write
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_USE_OIDC: true
 
 jobs:
   lint:
@@ -34,13 +43,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Install OpenTofu
         uses: ./.github/actions/opentofu-install
+
+      - name: Initialize OpenTofu
+        uses: ./.github/actions/opentofu-init
+        with:
+          target_path: ${{ github.event.inputs.target_path || './environments/dev' }}
 
       - name: Lint configuration
         uses: ./.github/actions/opentofu-lint
         with:
-          target_path: ${{ github.event.inputs.target_path || './infrastructure' }}
+          target_path: ${{ github.event.inputs.target_path || './environments/dev' }}
 
   plan:
     name: Plan
@@ -50,18 +71,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Install OpenTofu
         uses: ./.github/actions/opentofu-install
 
       - name: Initialize OpenTofu
         uses: ./.github/actions/opentofu-init
         with:
-          target_path: ${{ github.event.inputs.target_path || './infrastructure' }}
+          target_path: ${{ github.event.inputs.target_path || './environments/dev' }}
 
       - name: Plan changes
         uses: ./.github/actions/opentofu-plan
         with:
-          target_path: ${{ github.event.inputs.target_path || './infrastructure' }}
+          target_path: ${{ github.event.inputs.target_path || './environments/dev' }}
           var_file: ${{ github.event.inputs.var_file }}
 
   apply:
@@ -74,17 +102,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Install OpenTofu
         uses: ./.github/actions/opentofu-install
 
       - name: Initialize OpenTofu
         uses: ./.github/actions/opentofu-init
         with:
-          target_path: ${{ github.event.inputs.target_path || './infrastructure' }}
+          target_path: ${{ github.event.inputs.target_path || './environments/dev' }}
 
       - name: Apply changes
         uses: ./.github/actions/opentofu-apply
         with:
-          target_path: ${{ github.event.inputs.target_path || './infrastructure' }}
+          target_path: ${{ github.event.inputs.target_path || './environments/dev' }}
           var_file: ${{ github.event.inputs.var_file }}
           auto_approve: 'true'
