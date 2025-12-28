@@ -1,18 +1,44 @@
-name: 'OpenTofu Plan'
-description: 'Generate and show OpenTofu execution plan'
+name: OpenTofu Plan
+description: Generate and show OpenTofu execution plan
+
 inputs:
-  target_path:
-    description: 'Path to OpenTofu configuration directory'
-    required: false
-    default: './infrastructure'
+  working_directory:
+    description: Absolute or relative path to the OpenTofu configuration directory
+    required: true
   var_file:
-    description: 'Path to variables file'
+    description: Path to terraform.tfvars or custom variables file (optional)
     required: false
-    default: ''
+    default:
+  plan_binary_file:
+    description: Absolute path for the output binary plan file (used by apply)
+    required: true
+  plan_text_file:
+    description: Absolute path for the output human-readable plan file
+    required: true
+
+outputs:
+  plan_text_file:
+    description: Absolute path to the generated human-readable plan file
+    value: ${{ steps.plan.outputs.plan_text_file }}
+  plan_binary_file:
+    description: Absolute path to the generated binary plan file for apply
+    value: ${{ steps.plan.outputs.plan_binary_file }}
+  has_changes:
+    description: Whether the plan contains changes (true/false)
+    value: ${{ steps.plan.outputs.has_changes }}
+  exit_code:
+    description: Exit code from tofu plan command
+    value: ${{ steps.plan.outputs.exit_code }}
+
 runs:
-  using: 'composite'
+  using: composite
   steps:
     - name: Plan OpenTofu changes
+      id: plan
       shell: bash
       run: |
-        bash ${{ github.action_path }}/../../scripts/opentofu-plan.sh "${{ inputs.target_path }}" "${{ inputs.var_file }}"
+        bash ${{ github.workspace }}/.github/scripts/opentofu-plan.sh \
+          "${{ inputs.working_directory }}" \
+          "${{ inputs.var_file }}" \
+          "${{ inputs.plan_binary_file }}" \
+          "${{ inputs.plan_text_file }}"
