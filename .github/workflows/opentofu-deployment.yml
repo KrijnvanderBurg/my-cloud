@@ -4,15 +4,7 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'environments/**'
-      - 'modules/**'
   pull_request:
-    branches:
-      - main
-    paths:
-      - 'environments/**'
-      - 'modules/**'
   workflow_dispatch:
 
 permissions:
