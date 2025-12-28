@@ -7,6 +7,15 @@ data "azurerm_management_group" "tenant_root" {
   name = var.tenant_id
 }
 
+# Management Management Group - for management resources
+module "management_management_group" {
+  source = "../../modules/management-group"
+
+  name                       = "mg-management-${var.environment}-glb-01"
+  display_name               = "management"
+  parent_management_group_id = data.azurerm_management_group.tenant_root.id
+}
+
 # Drive Management Group - for shared drive services
 module "drive_management_group" {
   source = "../../modules/management-group"
@@ -22,15 +31,6 @@ module "sandbox_management_group" {
 
   name                       = "mg-sandbox-${var.environment}-glb-01"
   display_name               = "sandbox"
-  parent_management_group_id = data.azurerm_management_group.tenant_root.id
-}
-
-# Management Management Group - for management resources
-module "management_management_group" {
-  source = "../../modules/management-group"
-
-  name                       = "mg-management-${var.environment}-glb-01"
-  display_name               = "management"
   parent_management_group_id = data.azurerm_management_group.tenant_root.id
 }
 
