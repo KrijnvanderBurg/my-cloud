@@ -9,6 +9,14 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
+# Lock file - include in version control for reproducible builds
+# .terraform.lock.hcl
+
+# Plan files
+*.tfplan
+tfplan
+*.plan
+
 # Sensitive variable files
 *.auto.tfvars
 secret.tfvars

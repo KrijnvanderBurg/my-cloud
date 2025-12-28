@@ -56,12 +56,12 @@ jobs:
       - name: Initialize OpenTofu
         uses: ./.github/actions/opentofu-init
         with:
-          target_path: ./environments/${{ inputs.environment || 'dev' }}
+          target_path: ./environments/${{ inputs.environment }}
 
       - name: Lint configuration
         uses: ./.github/actions/opentofu-lint
         with:
-          target_path: ./environments/${{ inputs.environment || 'dev' }}
+          target_path: ./environments/${{ inputs.environment }}
 
   plan:
     name: Plan
@@ -84,12 +84,12 @@ jobs:
       - name: Initialize OpenTofu
         uses: ./.github/actions/opentofu-init
         with:
-          target_path: ./environments/${{ inputs.environment || 'dev' }}
+          target_path: ./environments/${{ inputs.environment }}
 
       - name: Plan changes
         uses: ./.github/actions/opentofu-plan
         with:
-          target_path: ./environments/${{ inputs.environment || 'dev' }}
+          target_path: ./environments/${{ inputs.environment }}
 
   apply:
     name: Apply
@@ -114,10 +114,10 @@ jobs:
       - name: Initialize OpenTofu
         uses: ./.github/actions/opentofu-init
         with:
-          target_path: ./environments/${{ inputs.environment || 'dev' }}
+          target_path: ./environments/${{ inputs.environment }}
 
       - name: Apply changes
         uses: ./.github/actions/opentofu-apply
         with:
-          target_path: ./environments/${{ inputs.environment || 'dev' }}
+          target_path: ./environments/${{ inputs.environment }}
           auto_approve: 'true'
