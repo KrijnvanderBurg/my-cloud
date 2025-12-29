@@ -1,4 +1,4 @@
-name: OpenTofu PR Comment
+name: OpenTofu Plan Comment
 description: Post OpenTofu plan output as a PR comment
 
 inputs:
@@ -27,7 +27,7 @@ runs:
       id: comment
       shell: bash
       run: |
-        bash ${{ github.workspace }}/.github/scripts/opentofu-pr-comment.sh \
+        bash ${{ github.workspace }}/.github/scripts/opentofu-plan-comment.sh \
           ${{ inputs.plan_text_file }} \
           ${{ inputs.environment }} \
           ${{ inputs.working_directory }}

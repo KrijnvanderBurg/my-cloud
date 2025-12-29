@@ -5,13 +5,13 @@ on:
     branches:
       - main
     paths:
-      - 1_management/**
+      - 1_platform_management/**
       - .github/workflows/opentofu-deployment.yml
       - .github/actions/**
       - .github/scripts/**
   pull_request:
     paths:
-      - 1_management/**
+      - 1_platform_management/**
       - .github/workflows/opentofu-deployment.yml
       - .github/actions/**
       - .github/scripts/**
@@ -23,9 +23,10 @@ permissions:
 
 env:
   ENVIRONMENT: dev
-  TARGET_PATH: ./1_management/environments/dev
+  TARGET_PATH: ./1_platform_management/environments/dev
   PLAN_BINARY_FILENAME: tfplan
   PLAN_TEXT_FILENAME: tfplan.txt
+  APPLY_OUTPUT_FILENAME: apply-output.txt
   ARM_CLIENT_ID: "9ad476c4-b845-40e3-a46f-0a77984b1a57"
   ARM_TENANT_ID: "90d27970-b92c-43dc-9935-1ed557d8e20e"
   ARM_SUBSCRIPTION_ID: "9312c5c5-b089-4b62-bb90-0d92d421d66c"
@@ -121,7 +122,7 @@ jobs:
 
       - name: Post Plan to PR
         if: github.event_name == 'pull_request'
-        uses: ./.github/actions/opentofu-pr-comment
+        uses: ./.github/actions/opentofu-plan-comment
         with:
           plan_text_file: ${{ steps.plan.outputs.plan_text_file }}
           environment: ${{ env.ENVIRONMENT }}
@@ -166,3 +167,14 @@ jobs:
         with:
           working_directory: ${{ env.TARGET_PATH }}
           plan_binary_file: ${{ runner.temp }}/${{ env.PLAN_BINARY_FILENAME }}
+          apply_output_file: ${{ runner.temp }}/${{ env.APPLY_OUTPUT_FILENAME }}
+
+      - name: Post Apply Result to PR
+        if: always()
+        uses: ./.github/actions/opentofu-apply-comment
+        with:
+          apply_output_file: ${{ runner.temp }}/${{ env.APPLY_OUTPUT_FILENAME }}
+          environment: ${{ env.ENVIRONMENT }}
+          working_directory: ${{ env.TARGET_PATH }}
+          apply_status: ${{ steps.apply.outcome }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

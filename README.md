@@ -67,7 +67,7 @@ All steps performed to setup initial infrastructure and to current state.
      --scope "/providers/Microsoft.Management/managementGroups/90d27970-b92c-43dc-9935-1ed557d8e20e"
    ```
 9. **Granted Billing permissions for subscription creation (Portal only):**
-   > Billing permissions cannot be assigned via Azure CLI or Terraform — Portal only.
+   Billing permissions cannot be assigned via Azure CLI or Terraform — Portal only.
    1. Go to **Azure Portal** → **Cost Management + Billing**
    2. Navigate to **Access control (IAM)**
    3. Click **+ Add**
