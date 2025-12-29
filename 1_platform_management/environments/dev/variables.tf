@@ -18,8 +18,8 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "pl_connectivity_subscription_id" {
-  description = "Subscription ID for the connectivity subscription"
+variable "pl_management_subscription_id" {
+  description = "Subscription ID for the management subscription"
   type        = string
 }
 
