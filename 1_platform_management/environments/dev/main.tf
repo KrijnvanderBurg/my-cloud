@@ -91,3 +91,17 @@ data "azurerm_billing_mca_account_scope" "billing" {
   billing_profile_name = each.value.billing_profile_name
   invoice_section_name = each.value.invoice_section_name
 }
+
+# =============================================================================
+# Subscriptions
+# =============================================================================
+module "drive_subscription" {
+  source              = "../../modules/subscription"
+  name                = "pl-management-${var.environment}-na-01"
+  billing_scope_id    = data.azurerm_billing_mca_account_scope.billing["platform"].id
+  management_group_id = module.drive_management_group.id
+  tags = merge(
+    var.tags,
+    {}
+  )
+}
