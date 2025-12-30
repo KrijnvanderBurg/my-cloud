@@ -38,7 +38,7 @@ runs:
       with:
         issue-number: ${{ github.event.pull_request.number }}
         comment-author: github-actions[bot]
-        body-includes: "OpenTofu Plan - ${{ inputs.environment }}"
+        body-includes: "**Environment:** `${{ inputs.environment }}`"
 
     - name: Create or update comment
       id: create-comment
