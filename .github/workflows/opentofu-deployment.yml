@@ -4,21 +4,7 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 1_platform_management/**
-      - 2_platform_connectivity/**
-      - .github/workflows/opentofu-deployment.yml
-      - .github/workflows/opentofu-template.yml
-      - .github/actions/**
-      - .github/scripts/**
   pull_request:
-    paths:
-      - 1_platform_management/**
-      - 2_platform_connectivity/**
-      - .github/workflows/opentofu-deployment.yml
-      - .github/workflows/opentofu-template.yml
-      - .github/actions/**
-      - .github/scripts/**
 
 jobs:
   pl-management:
