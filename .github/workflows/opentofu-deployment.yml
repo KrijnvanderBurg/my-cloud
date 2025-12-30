@@ -1,18 +1,12 @@
 name: OpenTofu Deployment
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
 
 permissions:
   contents: read
   pull-requests: write
   id-token: write
-
-env:
-  PR_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
   pl-management-dev-lint:
