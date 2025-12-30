@@ -28,20 +28,20 @@ jobs:
       working_directory: ./1_platform_management/environments/dev
       artifact_prefix: pl-management-dev
 
-  pl-connectivity-dev-global:
-    name: pl-connectivity dev-global
-    needs: pl-management
-    if: always() && (needs.pl-management.result == 'success' || github.event_name == 'pull_request')
-    uses: ./.github/workflows/opentofu-template.yml
-    with:
-      working_directory: ./2_platform_connectivity/environments/dev-global
-      artifact_prefix: pl-connectivity-dev-global
+  # pl-connectivity-dev-global:
+  #   name: pl-connectivity dev-global
+  #   needs: pl-management
+  #   if: always() && (needs.pl-management.result == 'success' || github.event_name == 'pull_request')
+  #   uses: ./.github/workflows/opentofu-template.yml
+  #   with:
+  #     working_directory: ./2_platform_connectivity/environments/dev-global
+  #     artifact_prefix: pl-connectivity-dev-global
 
-  pl-connectivity-dev-gwc:
-    name: pl-connectivity dev-gwc
-    needs: pl-connectivity-dev-global
-    if: always() && (needs.pl-connectivity-dev-global.result == 'success' || github.event_name == 'pull_request')
-    uses: ./.github/workflows/opentofu-template.yml
-    with:
-      working_directory: ./2_platform_connectivity/environments/dev-gwc
-      artifact_prefix: pl-connectivity-dev-gwc
+  # pl-connectivity-dev-gwc:
+  #   name: pl-connectivity dev-gwc
+  #   needs: pl-connectivity-dev-global
+  #   if: always() && (needs.pl-connectivity-dev-global.result == 'success' || github.event_name == 'pull_request')
+  #   uses: ./.github/workflows/opentofu-template.yml
+  #   with:
+  #     working_directory: ./2_platform_connectivity/environments/dev-gwc
+  #     artifact_prefix: pl-connectivity-dev-gwc
