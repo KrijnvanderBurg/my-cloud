@@ -22,7 +22,13 @@ jobs:
     name: pl-connectivity lint
     uses: ./.github/workflows/opentofu-lint.yml
     with:
-      working_directory: ./2_platform_connectivity/environments/dev
+      working_directory: ./2_platform_connectivity/environments/dev-global
+
+  pl-connectivity-gwc-lint:
+    name: pl-connectivity-gwc lint
+    uses: ./.github/workflows/opentofu-lint.yml
+    with:
+      working_directory: ./2_platform_connectivity/environments/dev-gwc
 
   pl-management-plan:
     name: pl-management plan
@@ -43,12 +49,12 @@ jobs:
 
   pl-connectivity-plan:
     name: pl-connectivity plan
-    needs: [pl-connectivity-lint, pl-management-apply]
-    if: always() && (needs.pl-management-apply.result == 'success' || github.event_name == 'pull_request')
+    needs: [pl-connectivity-lint, pl-connectivity-gwc-apply]
+    if: always() && (needs.pl-connectivity-gwc-apply.result == 'success' || github.event_name == 'pull_request')
     uses: ./.github/workflows/opentofu-plan.yml
     with:
-      working_directory: ./2_platform_connectivity/environments/dev
-      artifact_name: pl-connectivity-dev
+      working_directory: ./2_platform_connectivity/environments/dev-global
+      artifact_name: pl-connectivity-dev-global
 
   pl-connectivity-apply:
     name: pl-connectivity apply
@@ -56,23 +62,23 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     uses: ./.github/workflows/opentofu-apply.yml
     with:
-      working_directory: ./2_platform_connectivity/environments/dev
-      artifact_name: pl-connectivity-dev
+      working_directory: ./2_platform_connectivity/environments/dev-global
+      artifact_name: pl-connectivity-dev-global
 
-  # pl-connectivity-dev-global:
-  #   name: pl-connectivity dev-global
-  #   needs: pl-management
-  #   if: always() && (needs.pl-management.result == 'success' || github.event_name == 'pull_request')
-  #   uses: ./.github/workflows/opentofu-template.yml
-  #   with:
-  #     working_directory: ./2_platform_connectivity/environments/dev-global
-  #     artifact_prefix: pl-connectivity-dev-global
+  pl-connectivity-gwc-plan:
+    name: pl-connectivity-gwc plan
+    needs: [pl-connectivity-gwc-lint, pl-management-apply]
+    if: always() && (needs.pl-management-apply.result == 'success' || github.event_name == 'pull_request')
+    uses: ./.github/workflows/opentofu-plan.yml
+    with:
+      working_directory: ./2_platform_connectivity/environments/dev-gwc
+      artifact_name: pl-connectivity-dev-gwc
 
-  # pl-connectivity-dev-gwc:
-  #   name: pl-connectivity dev-gwc
-  #   needs: pl-connectivity-dev-global
-  #   if: always() && (needs.pl-connectivity-dev-global.result == 'success' || github.event_name == 'pull_request')
-  #   uses: ./.github/workflows/opentofu-template.yml
-  #   with:
-  #     working_directory: ./2_platform_connectivity/environments/dev-gwc
-  #     artifact_prefix: pl-connectivity-dev-gwc
+  pl-connectivity-gwc-apply:
+    name: pl-connectivity-gwc apply
+    needs: [pl-connectivity-gwc-plan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: ./.github/workflows/opentofu-apply.yml
+    with:
+      working_directory: ./2_platform_connectivity/environments/dev-gwc
+      artifact_name: pl-connectivity-dev-gwc
