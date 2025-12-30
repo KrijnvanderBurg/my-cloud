@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 locals {
-  pr_suffix = "-pr${var.pr_number}"
+  pr_suffix = var.pr_number != "" ? "-pr${var.pr_number}" : ""
 
   common_tags = merge(var.tags, {
     environment = var.environment

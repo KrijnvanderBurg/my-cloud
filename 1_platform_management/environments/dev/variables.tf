@@ -24,11 +24,6 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "pl_management_subscription_id" {
-  description = "Subscription ID for the platform management subscription"
-  type        = string
-}
-
 # =============================================================================
 # Billing Configuration (Microsoft Customer Agreement)
 # =============================================================================
