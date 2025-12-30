@@ -84,3 +84,4 @@ jobs:
           working_directory: ${{ inputs.working_directory }}
           apply_status: ${{ steps.apply.outcome }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_number: ${{ github.event.pull_request.number }}
