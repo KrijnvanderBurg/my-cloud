@@ -66,7 +66,7 @@ resource "azurerm_management_group_policy_assignment" "platform_connectivity_den
 # Subscription Associations
 # =============================================================================
 #
-# IMPORTANT: The management subscription (9312c5c5-b089-4b62-bb90-0d92d421d66c) is the ONLY
+# IMPORTANT: The management subscription (e388ddce-c79d-4db0-8a6f-cd69b1708954) is the ONLY
 # subscription created manually outside of Terraform. This is required because it
 # contains the tfstate storage account used by this Terraform configuration.
 # All other subscriptions MUST be created and associated via Terraform.
@@ -74,7 +74,7 @@ module "management_subscription_association" {
   source = "../../modules/subscription-association"
 
   management_group_id = module.management_management_group.id
-  subscription_id     = "9312c5c5-b089-4b62-bb90-0d92d421d66c"
+  subscription_id     = "e388ddce-c79d-4db0-8a6f-cd69b1708954"
 }
 
 # =============================================================================
