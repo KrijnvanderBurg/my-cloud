@@ -70,12 +70,12 @@ module "policy_deny_delete" {
 # =============================================================================
 
 # Protect a management group from accidental deletions
-resource "azurerm_management_group_policy_assignment" "platform_connectivity_deny_delete" {
-  name                 = "deny-del-pl-connectivity"
-  display_name         = "Deny Delete Operations - Platform Connectivity"
-  description          = "Prevents deletion of any resources under platform connectivity management group"
+resource "azurerm_management_group_policy_assignment" "platform_management_deny_delete" {
+  name                 = "deny-del-pl-management"
+  display_name         = "Deny Delete Operations - Platform Management"
+  description          = "Prevents deletion of any resources under platform management management group"
   policy_definition_id = module.policy_deny_delete.id
-  management_group_id  = module.pl_connectivity.id
+  management_group_id  = module.pl_management.id
   enforce              = true
 }
 
