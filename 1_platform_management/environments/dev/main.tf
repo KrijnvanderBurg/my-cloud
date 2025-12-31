@@ -88,7 +88,7 @@ resource "azurerm_subscription" "platform_connectivity" {
 
 import {
   to = azurerm_subscription.platform_connectivity
-  id = "/subscriptions/9312c5c5-b089-4b62-bb90-0d92d421d66c"
+  id = "9312c5c5-b089-4b62-bb90-0d92d421d66c"
 }
 
 module "platform_connectivity_subscription_association" {
