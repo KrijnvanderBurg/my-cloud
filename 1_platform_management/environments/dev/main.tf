@@ -89,7 +89,7 @@ resource "azurerm_subscription" "platform_management" {
   subscription_id   = "e388ddce-c79d-4db0-8a6f-cd69b1708954"
 }
 
-module "management_subscription_association" {
+module "pl_management_subscription_association" {
   source = "../../modules/subscription-association"
 
   management_group_id = module.pl_management.id
@@ -106,7 +106,7 @@ resource "azurerm_subscription" "platform_connectivity" {
   subscription_id   = "9312c5c5-b089-4b62-bb90-0d92d421d66c"
 }
 
-module "platform_connectivity_subscription_association" {
+module "pl_connectivity_subscription_association" {
   source = "../../modules/subscription-association"
 
   management_group_id = module.pl_connectivity.id
