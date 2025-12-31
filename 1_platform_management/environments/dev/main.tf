@@ -78,6 +78,27 @@ module "management_subscription_association" {
 }
 
 # =============================================================================
+# Subscriptions
+# =============================================================================
+
+resource "azurerm_subscription" "platform_connectivity" {
+  subscription_name = "sub-pl-connectivity-dev-na-01"
+  billing_scope_id  = data.azurerm_billing_mca_account_scope.billing["platform"].id
+}
+
+import {
+  to = azurerm_subscription.platform_connectivity
+  id = "/subscriptions/9312c5c5-b089-4b62-bb90-0d92d421d66c"
+}
+
+module "platform_connectivity_subscription_association" {
+  source = "../../modules/subscription-association"
+
+  management_group_id = module.platform_connectivity_management_group.id
+  subscription_id     = azurerm_subscription.platform_connectivity.subscription_id
+}
+
+# =============================================================================
 # Billing Scopes (Microsoft Customer Agreement)
 # =============================================================================
 # Creates data sources for each billing scope defined in var.billing_scopes.

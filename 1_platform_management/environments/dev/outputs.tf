@@ -38,13 +38,12 @@ output "platform_management_subscription_association" {
   }
 }
 
-# IMPORTANT: Change to connectivity subscription later
 output "platform_connectivity_subscription_association" {
   description = "Platform Connectivity subscription association details"
   value = {
-    id                  = module.management_subscription_association.id
-    management_group_id = module.management_subscription_association.management_group_id
-    subscription_id     = module.management_subscription_association.subscription_id
+    id                  = module.platform_connectivity_subscription_association.id
+    management_group_id = module.platform_connectivity_subscription_association.management_group_id
+    subscription_id     = module.platform_connectivity_subscription_association.subscription_id
   }
 }
 
