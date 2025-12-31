@@ -21,5 +21,5 @@ provider "azurerm" {
   features {}
 
   storage_use_azuread = true
-  subscription_id     = data.terraform_remote_state.pl-management.outputs.pl_connectivity_subscription_association.subscription_id
+  subscription_id     = data.terraform_remote_state.pl-management.outputs.pl_connectivity_subscription.subscription_id
 }

@@ -65,6 +65,22 @@ output "pl_connectivity_subscription_association" {
   }
 }
 
+output "pl_management_subscription" {
+  description = "Platform Management subscription"
+  value = {
+    id              = azurerm_subscription.platform_management.id
+    subscription_id = azurerm_subscription.platform_management.subscription_id
+  }
+}
+
+output "pl_connectivity_subscription" {
+  description = "Platform Connectivity subscription"
+  value = {
+    id              = azurerm_subscription.platform_connectivity.id
+    subscription_id = azurerm_subscription.platform_connectivity.subscription_id
+  }
+}
+
 # =============================================================================
 # Environment Information
 # =============================================================================
