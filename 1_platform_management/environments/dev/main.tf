@@ -23,7 +23,7 @@ module "sandbox" {
 
   name                       = "mg-sandbox-${var.environment}-na-01"
   display_name               = "mg-sandbox-${var.environment}-na-01"
-  parent_management_group_id = data.azurerm_management_group.levendaal.id
+  parent_management_group_id = module.levendaal.id
 }
 
 # Platform Management Group - platform management group
@@ -32,7 +32,7 @@ module "platform" {
 
   name                       = "mg-platform-${var.environment}-na-01"
   display_name               = "mg-platform-${var.environment}-na-01"
-  parent_management_group_id = data.azurerm_management_group.levendaal.id
+  parent_management_group_id = module.levendaal.id
 }
 
 # Platform management Management Group - for management resources
@@ -41,7 +41,7 @@ module "pl_management" {
 
   name                       = "mg-pl-management-${var.environment}-na-01"
   display_name               = "mg-pl-management-${var.environment}-na-01"
-  parent_management_group_id = data.azurerm_management_group.platform.id
+  parent_management_group_id = module.platform.id
 }
 
 # Platform connectivity Management Group - for management resources
@@ -50,7 +50,7 @@ module "pl_connectivity" {
 
   name                       = "mg-pl-connectivity-${var.environment}-na-01"
   display_name               = "mg-pl-connectivity-${var.environment}-na-01"
-  parent_management_group_id = data.azurerm_management_group.platform.id
+  parent_management_group_id = module.platform.id
 }
 
 # =============================================================================
@@ -62,7 +62,7 @@ module "policy_deny_delete" {
 
   name                = "deny-delete-platform"
   display_name        = "Deny Delete Operations"
-  management_group_id = data.azurerm_management_group.levendaal.id
+  management_group_id = module.levendaal.id
 }
 
 # =============================================================================
