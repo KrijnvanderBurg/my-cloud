@@ -60,7 +60,7 @@ module "pl_connectivity" {
 module "policy_deny_delete" {
   source = "../../modules/policy-deny-delete"
 
-  name                = "deny-delete-platform"
+  name                = "deny-delete-operations"
   display_name        = "Deny Delete Operations"
   management_group_id = module.levendaal.id
 }
