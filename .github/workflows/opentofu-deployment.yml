@@ -48,15 +48,15 @@ jobs:
       state_key: pl-management-dev.tfstate
       pr_number:
 
-  # pl-connectivity-dev-gwc-plan:
-  #   name: pl-connectivity-dev-gwc plan
-  #   needs: [pl-management-dev-apply]
-  #   uses: ./.github/workflows/opentofu-plan.yml
-  #   with:
-  #     working_directory: ./2_platform_connectivity/environments/dev-gwc
-  #     artifact_name: pl-connectivity-dev-gwc-pr${{ github.event.pull_request.number }}
-  #     state_key: pl-connectivity-dev-gwc-pr${{ github.event.pull_request.number }}.tfstate
-  #     pr_number: ${{ github.event.pull_request.number }}
+  pl-connectivity-dev-gwc-plan:
+    name: pl-connectivity-dev-gwc plan
+    needs: [pl-management-dev-apply]
+    uses: ./.github/workflows/opentofu-plan.yml
+    with:
+      working_directory: ./2_platform_connectivity/environments/dev-gwc
+      artifact_name: pl-connectivity-dev-gwc-pr${{ github.event.pull_request.number }}
+      state_key: pl-connectivity-dev-gwc-pr${{ github.event.pull_request.number }}.tfstate
+      pr_number: ${{ github.event.pull_request.number }}
 
   # pl-connectivity-dev-gwc-apply:
   #   name: pl-connectivity-dev-gwc apply
