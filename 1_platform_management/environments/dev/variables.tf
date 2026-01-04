@@ -1,3 +1,9 @@
+variable "pr_number" {
+  description = "PR number for ephemeral deployments (empty for prod)"
+  type        = string
+  default     = ""
+}
+
 variable "tenant_id" {
   description = "Azure Tenant ID (GUID format)"
   type        = string
@@ -16,25 +22,4 @@ variable "environment" {
 variable "tags" {
   description = "Common tags to apply to all resources that support tagging"
   type        = map(string)
-}
-
-variable "pl_management_subscription_id" {
-  description = "Subscription ID for the platform management subscription"
-  type        = string
-}
-
-# =============================================================================
-# Billing Configuration (Microsoft Customer Agreement)
-# =============================================================================
-# Define multiple billing scopes for different subscriptions. Each key is a
-# logical name you can reference when creating subscriptions.
-# =============================================================================
-
-variable "billing_scopes" {
-  description = "Map of billing scopes for MCA subscription creation"
-  type = map(object({
-    billing_account_name = string
-    billing_profile_name = string
-    invoice_section_name = string
-  }))
 }

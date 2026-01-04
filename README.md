@@ -15,7 +15,7 @@ All steps performed to setup initial infrastructure and to current state.
    az group create --name "rg-tfstate-co-dev-gwc-01" --location "germanywestcentral"
    az storage account create --name "sttfstatecodevgwc01" --resource-group "rg-tfstate-co-dev-gwc-01" --location "germanywestcentral" --sku "Standard_LRS"
    az storage container create --name "tfstate-pl-management" --account-name "sttfstatecodevgwc01"
-   az storage container create --name "tfstate-pl-connectivity" --account-name "sttfstatecodevgwc01"
+   az storage container create --name "tfstate-pl-identity" --account-name "sttfstatecodevgwc01"
    ```
 4. **Configured backend** in `environments/dev/backend.tf`
 5. **Created App Registration for GitHub Actions OIDC:**
@@ -67,10 +67,3 @@ All steps performed to setup initial infrastructure and to current state.
      --role "User Access Administrator" \
      --scope "/providers/Microsoft.Management/managementGroups/90d27970-b92c-43dc-9935-1ed557d8e20e"
    ```
-9. **Granted Billing permissions for subscription creation (Portal only):**
-   Billing permissions cannot be assigned via Azure CLI or Terraform — Portal only.
-   1. Go to **Azure Portal** → **Cost Management + Billing**
-   2. Navigate to **Access control (IAM)**
-   3. Click **+ Add**
-   4. Select role: **Billing account contributor**
-   5. Select the CI/CD service principal (`github-opentofu-deployment` / `167a99fd-6289-4088-a9e0-dd2dc1a2c509`)
