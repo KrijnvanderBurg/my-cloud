@@ -87,7 +87,21 @@ All steps performed to setup initial infrastructure and to current state.
       - `Policy.ReadWrite.ConditionalAccess` - Create and manage conditional access policies
       - `Policy.Read.All` - Read all policies
       - `Application.Read.All` - Read applications (for named locations)
-   6. Click **Grant admin consent** for the tenant
+   6. Click **Grant admin consent for [tenant name]** (CRITICAL - must click this button)
+
+11. **Granted Entra ID directory roles for identity management (Portal only):**
+   API permissions alone are insufficient for role-assignable groups and CA policies.
+   1. Go to **Azure Portal** → **Entra ID** → **Roles and administrators**
+   2. Search for and select **Conditional Access Administrator**
+   3. Click **Add assignments**
+   4. Select the service principal `github-opentofu-deployment`
+   5. Click **Add**
+   6. Repeat for **Groups Administrator** role
+
+   These roles grant the service principal permission to:
+   - Create/manage role-assignable security groups
+   - Create/manage conditional access policies
+   - Manage named locations
 
 ---
 
