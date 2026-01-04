@@ -16,18 +16,6 @@ jobs:
     with:
       working_directory: ./1_platform_management/environments/dev
 
-  pl-identity-dev-lint:
-    name: pl-identity-dev lint
-    uses: ./.github/workflows/opentofu-lint.yml
-    with:
-      working_directory: ./2_platform_identity/environments/dev
-
-  alz-drive-dev-lint:
-    name: alz-drive-dev lint
-    uses: ./.github/workflows/opentofu-lint.yml
-    with:
-      working_directory: ./3_platform_storage/environments/dev
-
   pl-management-dev-plan:
     name: pl-management-dev plan
     needs: [pl-management-dev-lint]
@@ -46,6 +34,12 @@ jobs:
       artifact_name: pl-management-dev
       state_key: pl-management-dev.tfstate
 
+  pl-identity-dev-lint:
+    name: pl-identity-dev lint
+    uses: ./.github/workflows/opentofu-lint.yml
+    with:
+      working_directory: ./2_platform_identity/environments/dev
+
   pl-identity-dev-plan:
     name: pl-identity-dev plan
     needs: [pl-identity-dev-lint]
@@ -63,6 +57,12 @@ jobs:
       working_directory: ./2_platform_identity/environments/dev
       artifact_name: pl-identity-dev
       state_key: pl-identity-dev.tfstate
+
+  alz-drive-dev-lint:
+    name: alz-drive-dev lint
+    uses: ./.github/workflows/opentofu-lint.yml
+    with:
+      working_directory: ./3_alz_drives/environments/dev
 
   alz-drive-dev-plan:
     name: alz-drive-dev plan
