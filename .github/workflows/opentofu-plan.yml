@@ -32,6 +32,7 @@ env:
   ARM_USE_OIDC: true
   PLAN_BINARY_FILENAME: tfplan
   PLAN_TEXT_FILENAME: tfplan.txt
+  allow-no-subscriptions: true
 
 jobs:
   plan:
