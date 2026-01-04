@@ -81,7 +81,7 @@ resource "azurerm_monitor_action_group" "identity_alerts" {
 resource "azurerm_monitor_activity_log_alert" "breakglass_signin" {
   name                = "alert-breakglass-signin-${var.environment}-${local.region}-01"
   resource_group_name = azurerm_resource_group.monitoring.name
-  location            = local.location
+  location            = "westeurope"
   scopes              = ["/subscriptions/${data.terraform_remote_state.management.outputs.pl_identity_subscription.subscription_id}"]
   description         = "Critical alert: Emergency break-glass account sign-in detected"
   tags                = local.common_tags
