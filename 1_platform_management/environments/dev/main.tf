@@ -146,7 +146,7 @@ module "pl_identity_subscription_association" {
 
 import {
   to = azurerm_subscription.alz_drive
-  id = "/subscriptions/4111975b-f6ca-4e08-b7b6-87d7b6c35840"
+  id = "/providers/Microsoft.Subscription/aliases/alz-drive-on-dev-na-01"
 }
 
 resource "azurerm_subscription" "alz_drive" {
