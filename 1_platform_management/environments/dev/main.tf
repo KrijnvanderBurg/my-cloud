@@ -150,7 +150,7 @@ import {
 }
 
 resource "azurerm_subscription" "alz_drive" {
-  subscription_name = "alz-drive-on-dev-na-02"
+  subscription_name = "alz-drive-on-dev-na-01"
   subscription_id   = "4111975b-f6ca-4e08-b7b6-87d7b6c35840"
 }
 
