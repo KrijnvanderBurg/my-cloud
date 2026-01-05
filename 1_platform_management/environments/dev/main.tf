@@ -1,29 +1,3 @@
-
-# =============================================================================
-# Current Azure Client Configuration
-# =============================================================================
-
-data "azurerm_client_config" "current" {}
-
-# =============================================================================
-# Terraform State Bootstrap
-# =============================================================================
-
-# tfstate import
-module "tfstate" {
-  source               = "../../modules/tfstate-bootstrap"
-  environment          = "dev"
-  region               = "gwc"
-  location             = "germanywestcentral"
-  tags                 = local.common_tags
-  allowed_ips          = []
-  containers           = ["tfstate-pl-management", "tfstate-pl-identity", "tfstate-alz-drive"]
-  subscription_id      = data.azurerm_client_config.current.subscription_id
-  resource_group_name  = "rg-tfstate-co-dev-gwc-01"
-  storage_account_name = "sttfstatecodevgwc01"
-}
-
-
 # =============================================================================
 # Dev Environment - Management Groups
 # =============================================================================
