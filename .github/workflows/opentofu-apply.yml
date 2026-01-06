@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     env:
-      TF_VAR_ALLOWED_IPS: ${{ secrets.ALLOWED_IPS }}
+      TF_VAR_allowed_ips: ${{ secrets.ALLOWED_IPS }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

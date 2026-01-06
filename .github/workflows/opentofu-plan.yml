@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: dev
     env:
-      TF_VAR_ALLOWED_IPS: ${{ secrets.ALLOWED_IPS }}
+      TF_VAR_allowed_ips: ${{ secrets.ALLOWED_IPS }}
     outputs:
       plan_binary_file: ${{ steps.plan.outputs.plan_binary_file }}
       plan_text_file: ${{ steps.plan.outputs.plan_text_file }}
