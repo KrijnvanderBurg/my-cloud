@@ -10,4 +10,8 @@ module "drive" {
   location    = local.location
   allowed_ips = var.allowed_ips
   tags        = local.common_tags
+
+  containers = [
+    "p1",
+  ]
 }
