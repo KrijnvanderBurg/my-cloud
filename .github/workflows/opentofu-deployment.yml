@@ -83,6 +83,7 @@ jobs:
       working_directory: ./3_alz_drives/environments/dev
       artifact_name: alz-drive-dev
       state_key: alz-drive-dev.tfstate
+    secrets: inherit
 
   alz-drive-dev-apply:
     name: alz-drive-dev apply
@@ -92,3 +93,4 @@ jobs:
       working_directory: ./3_alz_drives/environments/dev
       artifact_name: alz-drive-dev
       state_key: alz-drive-dev.tfstate
+    secrets: inherit
