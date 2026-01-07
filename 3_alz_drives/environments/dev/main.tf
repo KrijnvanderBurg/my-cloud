@@ -2,16 +2,16 @@
 # Dev Environment - Platform Storage
 # =============================================================================
 
-module "drive" {
-  source = "../../modules/drive"
+# module "drive" {
+#   source = "../../modules/drive"
 
-  environment = var.environment
-  region      = local.region
-  location    = local.location
-  allowed_ips = var.allowed_ips
-  tags        = local.common_tags
+#   environment = var.environment
+#   region      = local.region
+#   location    = local.location
+#   allowed_ips = var.allowed_ips
+#   tags        = local.common_tags
 
-  containers = [
-    "tier1",
-  ]
-}
+#   containers = [
+#     "tier1",
+#   ]
+# }
