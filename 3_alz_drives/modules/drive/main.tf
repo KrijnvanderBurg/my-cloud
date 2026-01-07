@@ -36,13 +36,6 @@ resource "azurerm_storage_account" "this" {
     }
   }
 
-  # Network restrictions - deny all by default, allow only whitelisted IPs
-  network_rules {
-    default_action = "Deny"
-    bypass         = ["AzureServices"]
-    ip_rules       = var.allowed_ips
-  }
-
   tags = var.tags
 }
 
@@ -51,4 +44,14 @@ resource "azurerm_storage_data_lake_gen2_filesystem" "containers" {
 
   name               = each.value
   storage_account_id = azurerm_storage_account.this.id
+}
+
+resource "azurerm_storage_account_network_rules" "this" {
+  storage_account_id = azurerm_storage_account.this.id
+
+  default_action = "Allow"
+  bypass         = []
+  ip_rules       = var.allowed_ips
+
+  depends_on = [azurerm_storage_data_lake_gen2_filesystem.containers]
 }
