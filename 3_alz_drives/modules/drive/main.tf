@@ -16,7 +16,7 @@ resource "azurerm_storage_account" "this" {
   is_hns_enabled = true
 
   # Security hardening
-  shared_access_key_enabled       = false
+  shared_access_key_enabled       = true
   allow_nested_items_to_be_public = false
   min_tls_version                 = "TLS1_2"
   https_traffic_only_enabled      = true
