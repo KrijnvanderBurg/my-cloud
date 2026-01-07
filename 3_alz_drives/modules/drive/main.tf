@@ -39,12 +39,12 @@ resource "azurerm_storage_account" "this" {
   tags = var.tags
 }
 
-resource "azurerm_storage_data_lake_gen2_filesystem" "containers" {
-  for_each = toset(var.containers)
+# resource "azurerm_storage_data_lake_gen2_filesystem" "containers" {
+#   for_each = toset(var.containers)
 
-  name               = each.value
-  storage_account_id = azurerm_storage_account.this.id
-}
+#   name               = each.value
+#   storage_account_id = azurerm_storage_account.this.id
+# }
 
 resource "azurerm_storage_account_network_rules" "this" {
   storage_account_id = azurerm_storage_account.this.id
@@ -53,5 +53,5 @@ resource "azurerm_storage_account_network_rules" "this" {
   bypass         = ["AzureServices"]
   ip_rules       = var.allowed_ips
 
-  depends_on = [azurerm_storage_data_lake_gen2_filesystem.containers]
+  # depends_on = [azurerm_storage_data_lake_gen2_filesystem.containers]
 }
