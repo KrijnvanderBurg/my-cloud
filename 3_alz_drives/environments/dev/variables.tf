@@ -13,4 +13,5 @@ variable "allowed_ips" {
   description = "List of IP addresses or CIDR ranges allowed to access the storage account"
   type        = list(string)
   default     = []
+  sensitive   = true
 }

@@ -22,3 +22,9 @@ variable "tags" {
   description = "A map of tags to apply to all resources"
   type        = map(string)
 }
+
+variable "containers" {
+  description = "List of container names to create in the storage account"
+  type        = list(string)
+  default     = []
+}
