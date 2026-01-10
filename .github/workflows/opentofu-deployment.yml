@@ -31,7 +31,7 @@ jobs:
       working_directory: ./1_platform_management/environments/dev
       artifact_name: pl-management-dev
       state_key: pl-management-dev.tfstate
-      client_id: "167a99fd-6289-4088-a9e0-dd2dc1a2c509"
+      client_id: "bcba6fb0-afb6-4e1b-9517-dd7ffb35c2c6"
 
   pl-management-dev-apply:
     name: pl-management-dev apply
@@ -41,7 +41,7 @@ jobs:
       working_directory: ./1_platform_management/environments/dev
       artifact_name: pl-management-dev
       state_key: pl-management-dev.tfstate
-      client_id: "167a99fd-6289-4088-a9e0-dd2dc1a2c509"
+      client_id: "bcba6fb0-afb6-4e1b-9517-dd7ffb35c2c6"
 
   # ===== Platform Identity (dev) =====
   # Lint, plan and apply for platform identity
