@@ -7,7 +7,7 @@ module "sp_platform_management" {
 
   name = "sp-platform-management-co-${var.environment}-na-01"
   subjects = [
-    "repo:KrijnvanderBurg/my-cloud:ref:refs/heads/main"
+    "repo:KrijnvanderBurg/my-cloud:environment:dev"
   ]
 }
 
@@ -16,7 +16,7 @@ module "sp_platform_identity" {
 
   name = "sp-platform-identity-co-${var.environment}-na-01"
   subjects = [
-    "repo:KrijnvanderBurg/my-cloud:ref:refs/heads/main"
+    "repo:KrijnvanderBurg/my-cloud:environment:dev"
   ]
 }
 
@@ -25,7 +25,7 @@ module "sp_alz_drives" {
 
   name = "sp-alz-drives-on-${var.environment}-na-01"
   subjects = [
-    "repo:KrijnvanderBurg/my-cloud:ref:refs/heads/main"
+    "repo:KrijnvanderBurg/my-cloud:environment:dev"
   ]
 }
 
