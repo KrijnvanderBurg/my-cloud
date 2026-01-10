@@ -7,6 +7,15 @@ output "tenant_root_management_group_id" {
   value       = data.azurerm_management_group.tenant_root.id
 }
 
+output "levendaal_management_group" {
+  description = "Levendaal root management group details"
+  value = {
+    id           = module.levendaal.id
+    name         = module.levendaal.name
+    display_name = module.levendaal.display_name
+  }
+}
+
 output "sandbox_management_group" {
   description = "Sandbox management group details"
   value = {
