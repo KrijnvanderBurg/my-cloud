@@ -13,8 +13,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Jobs in reverse order of dependency; then its in right order in the gh actions UI
-
   # ===== Platform Management (dev) =====
   # Lint, plan and apply for platform management
   pl-management-dev-lint:
@@ -46,13 +44,12 @@ jobs:
 
   # ===== Platform Identity (dev) =====
   # Lint, plan and apply for platform identity
-  # NOTE: Using old SP for bootstrap. After first successful apply, change to: c1594f54-4c7a-401d-bfbb-ff0c975ae894
   pl-identity-dev-lint:
     name: pl-identity-dev lint
     uses: ./.github/workflows/opentofu-lint.yml
     with:
       working_directory: ./2_platform_identity/environments/dev
-      client_id: "167a99fd-6289-4088-a9e0-dd2dc1a2c509"
+      client_id: "c1594f54-4c7a-401d-bfbb-ff0c975ae894"
 
   pl-identity-dev-plan:
     name: pl-identity-dev plan
@@ -62,7 +59,7 @@ jobs:
       working_directory: ./2_platform_identity/environments/dev
       artifact_name: pl-identity-dev
       state_key: pl-identity-dev.tfstate
-      client_id: "167a99fd-6289-4088-a9e0-dd2dc1a2c509"
+      client_id: "c1594f54-4c7a-401d-bfbb-ff0c975ae894"
 
   pl-identity-dev-apply:
     name: pl-identity-dev apply
@@ -72,7 +69,7 @@ jobs:
       working_directory: ./2_platform_identity/environments/dev
       artifact_name: pl-identity-dev
       state_key: pl-identity-dev.tfstate
-      client_id: "167a99fd-6289-4088-a9e0-dd2dc1a2c509"
+      client_id: "c1594f54-4c7a-401d-bfbb-ff0c975ae894"
 
   # ===== ALZ Drives (dev) =====
   # Lint, plan and apply for ALZ drives (storage)
