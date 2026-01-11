@@ -33,6 +33,13 @@ module "sp_alz_drives" {
 # RBAC Role Assignments - Platform Management SP
 # =============================================================================
 
+# Access to tenant root management group (needed to read it and create child MGs)
+resource "azurerm_role_assignment" "sp_platform_management_tenant_root_reader" {
+  scope                = "/providers/Microsoft.Management/managementGroups/${data.terraform_remote_state.management.outputs.environment_info.tenant_id}"
+  role_definition_name = "Management Group Contributor"
+  principal_id         = module.sp_platform_management.object_id
+}
+
 resource "azurerm_role_assignment" "sp_platform_management_mg_contributor" {
   scope                = data.terraform_remote_state.management.outputs.levendaal_management_group.id
   role_definition_name = "Management Group Contributor"
@@ -48,6 +55,13 @@ resource "azurerm_role_assignment" "sp_platform_management_policy_contributor" {
 resource "azurerm_role_assignment" "sp_platform_management_tfstate" {
   scope                = data.terraform_remote_state.management.outputs.tfstate_storage_account.id
   role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = module.sp_platform_management.object_id
+}
+
+# Subscription management - needed for azurerm_subscription resources
+resource "azurerm_role_assignment" "sp_platform_management_subscription_contributor" {
+  scope                = "/providers/Microsoft.Management/managementGroups/${data.terraform_remote_state.management.outputs.environment_info.tenant_id}"
+  role_definition_name = "Contributor"
   principal_id         = module.sp_platform_management.object_id
 }
 
