@@ -22,6 +22,7 @@ jobs:
     uses: ./.github/workflows/opentofu-lint.yml
     with:
       working_directory: ./1_platform_management/environments/dev
+      client_id: "bcba6fb0-afb6-4e1b-9517-dd7ffb35c2c6"
 
   pl-management-dev-plan:
     name: pl-management-dev plan
@@ -50,6 +51,7 @@ jobs:
     uses: ./.github/workflows/opentofu-lint.yml
     with:
       working_directory: ./2_platform_identity/environments/dev
+      client_id: "c1594f54-4c7a-401d-bfbb-ff0c975ae894"
 
   pl-identity-dev-plan:
     name: pl-identity-dev plan
@@ -78,6 +80,7 @@ jobs:
     uses: ./.github/workflows/opentofu-lint.yml
     with:
       working_directory: ./3_alz_drives/environments/dev
+      client_id: "7d68fcf5-8620-48ed-9774-4ce00a474045"
 
   alz-drive-dev-plan:
     name: alz-drive-dev plan
