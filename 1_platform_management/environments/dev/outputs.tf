@@ -95,24 +95,24 @@ output "alz_drive_subscription_association" {
 output "pl_management_subscription" {
   description = "Platform Management subscription"
   value = {
-    id              = azurerm_subscription.platform_management.id
-    subscription_id = azurerm_subscription.platform_management.subscription_id
+    id              = data.azurerm_subscription.platform_management.id
+    subscription_id = data.azurerm_subscription.platform_management.subscription_id
   }
 }
 
 output "pl_identity_subscription" {
   description = "Platform Identity subscription"
   value = {
-    id              = azurerm_subscription.platform_identity.id
-    subscription_id = azurerm_subscription.platform_identity.subscription_id
+    id              = data.azurerm_subscription.platform_identity.id
+    subscription_id = data.azurerm_subscription.platform_identity.subscription_id
   }
 }
 
 output "alz_drive_subscription" {
   description = "ALZ Drive subscription"
   value = {
-    id              = azurerm_subscription.alz_drive.id
-    subscription_id = azurerm_subscription.alz_drive.subscription_id
+    id              = data.azurerm_subscription.alz_drive.id
+    subscription_id = data.azurerm_subscription.alz_drive.subscription_id
   }
 }
 
