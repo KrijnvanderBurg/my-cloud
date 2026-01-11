@@ -135,9 +135,17 @@ output "environment_info" {
 output "tfstate_storage_account" {
   description = "Terraform state storage account details"
   value = {
-    id                  = "/subscriptions/e388ddce-c79d-4db0-8a6f-cd69b1708954/resourceGroups/rg-tfstate-co-dev-gwc-01/providers/Microsoft.Storage/storageAccounts/sttfstatecodevgwc01"
+    id                  = "/subscriptions/${data.azurerm_subscription.platform_management.subscription_id}/resourceGroups/rg-tfstate-co-dev-gwc-01/providers/Microsoft.Storage/storageAccounts/sttfstatecodevgwc01"
     name                = "sttfstatecodevgwc01"
     resource_group_name = "rg-tfstate-co-dev-gwc-01"
-    subscription_id     = "e388ddce-c79d-4db0-8a6f-cd69b1708954"
+    subscription_id     = data.azurerm_subscription.platform_management.subscription_id
+  }
+}
+
+output "tfstate_subscription" {
+  description = "Subscription where tfstate storage account is located"
+  value = {
+    id              = data.azurerm_subscription.platform_management.id
+    subscription_id = data.azurerm_subscription.platform_management.subscription_id
   }
 }
