@@ -7,6 +7,15 @@ output "tenant_root_management_group_id" {
   value       = data.azurerm_management_group.tenant_root.id
 }
 
+output "levendaal_management_group" {
+  description = "Levendaal root management group details"
+  value = {
+    id           = module.levendaal.id
+    name         = module.levendaal.name
+    display_name = module.levendaal.display_name
+  }
+}
+
 output "sandbox_management_group" {
   description = "Sandbox management group details"
   value = {
@@ -116,5 +125,19 @@ output "environment_info" {
   value = {
     tenant_id   = var.tenant_id
     environment = var.environment
+  }
+}
+
+# =============================================================================
+# Terraform State Storage
+# =============================================================================
+
+output "tfstate_storage_account" {
+  description = "Terraform state storage account details"
+  value = {
+    id                  = "/subscriptions/e388ddce-c79d-4db0-8a6f-cd69b1708954/resourceGroups/rg-tfstate-co-dev-gwc-01/providers/Microsoft.Storage/storageAccounts/sttfstatecodevgwc01"
+    name                = "sttfstatecodevgwc01"
+    resource_group_name = "rg-tfstate-co-dev-gwc-01"
+    subscription_id     = "e388ddce-c79d-4db0-8a6f-cd69b1708954"
   }
 }

@@ -67,3 +67,7 @@ All steps performed to setup initial infrastructure and to current state.
      --role "User Access Administrator" \
      --scope "/providers/Microsoft.Management/managementGroups/90d27970-b92c-43dc-9935-1ed557d8e20e"
    ```
+9. **Granted Application Administrator for service principal creation:**
+   Required to create app registrations and service principals via Terraform.
+
+   **Azure Portal:** Entra ID → Roles and administrators → Application Administrator → Add assignment → Select your user
