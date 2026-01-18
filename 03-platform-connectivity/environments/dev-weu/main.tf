@@ -14,21 +14,6 @@ resource "azurerm_resource_group" "connectivity" {
 }
 
 # =============================================================================
-# Storage Account for NSG Flow Logs
-# =============================================================================
-
-module "flowlogs_storage" {
-  source = "../../modules/storage-account"
-
-  name                        = "stflowlogs${local.environment}${local.region}01"
-  resource_group_name         = azurerm_resource_group.connectivity.name
-  location                    = local.location
-  lifecycle_delete_after_days = 30
-
-  tags = local.common_tags
-}
-
-# =============================================================================
 # Hub Network
 # =============================================================================
 
@@ -46,24 +31,6 @@ module "hub" {
 }
 
 # =============================================================================
-# Hub NSG Flow Logs
-# =============================================================================
-
-module "hub_flow_logs" {
-  source   = "../../modules/nsg-flow-logs"
-  for_each = module.hub.network_security_groups
-
-  name                      = "flowlog-${each.value.name}"
-  resource_group_name       = azurerm_resource_group.connectivity.name
-  location                  = local.location
-  network_security_group_id = each.value.id
-  storage_account_id        = module.flowlogs_storage.id
-  retention_days            = 30
-
-  tags = local.common_tags
-}
-
-# =============================================================================
 # Spoke Networks
 # =============================================================================
 
@@ -75,24 +42,6 @@ module "spoke" {
   resource_group_name = azurerm_resource_group.connectivity.name
   location            = local.location
   address_space       = each.value
-
-  tags = local.common_tags
-}
-
-# =============================================================================
-# Spoke NSG Flow Logs
-# =============================================================================
-
-module "spoke_flow_logs" {
-  source   = "../../modules/nsg-flow-logs"
-  for_each = local.spoke_cidrs
-
-  name                      = "flowlog-nsg-vnet-${each.key}-co-${local.environment}-${local.region}-01-default"
-  resource_group_name       = azurerm_resource_group.connectivity.name
-  location                  = local.location
-  network_security_group_id = module.spoke[each.key].default_nsg_id
-  storage_account_id        = module.flowlogs_storage.id
-  retention_days            = 30
 
   tags = local.common_tags
 }
