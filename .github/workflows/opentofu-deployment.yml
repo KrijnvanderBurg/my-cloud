@@ -88,7 +88,6 @@ jobs:
       artifact_name: pl-connectivity-dev-weu
       state_key: pl-connectivity-dev-weu.tfstate
       client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
-    secrets: inherit
 
   pl-connectivity-dev-weu-apply:
     name: pl-connectivity-dev-weu apply
@@ -99,7 +98,6 @@ jobs:
       artifact_name: pl-connectivity-dev-weu
       state_key: pl-connectivity-dev-weu.tfstate
       client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
-    secrets: inherit
 
   # ===== Platform Connectivity (dev-gwc) =====
   # Lint, plan and apply for platform connectivity - Germany West Central
@@ -118,7 +116,6 @@ jobs:
       artifact_name: pl-connectivity-dev-gwc
       state_key: pl-connectivity-dev-gwc.tfstate
       client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
-    secrets: inherit
 
   pl-connectivity-dev-gwc-apply:
     name: pl-connectivity-dev-gwc apply
@@ -129,7 +126,6 @@ jobs:
       artifact_name: pl-connectivity-dev-gwc
       state_key: pl-connectivity-dev-gwc.tfstate
       client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
-    secrets: inherit
 
   # ===== Platform Connectivity (dev-glb) =====
   # Lint, plan and apply for platform connectivity - Global (hub-to-hub peering)
@@ -142,14 +138,13 @@ jobs:
 
   pl-connectivity-dev-glb-plan:
     name: pl-connectivity-dev-glb plan
-    needs: [pl-connectivity-dev-glb-lint, pl-connectivity-dev-weu-apply, pl-connectivity-dev-gwc-apply]
+    needs: [pl-connectivity-dev-glb-lint]
     uses: ./.github/workflows/opentofu-plan.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-glb
       artifact_name: pl-connectivity-dev-glb
       state_key: pl-connectivity-dev-glb.tfstate
       client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
-    secrets: inherit
 
   pl-connectivity-dev-glb-apply:
     name: pl-connectivity-dev-glb apply
@@ -160,7 +155,6 @@ jobs:
       artifact_name: pl-connectivity-dev-glb
       state_key: pl-connectivity-dev-glb.tfstate
       client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
-    secrets: inherit
 
   # ===== ALZ Drives (dev) =====
   # Lint, plan and apply for ALZ drives (storage)
