@@ -82,6 +82,7 @@ jobs:
 
   pl-connectivity-dev-weu-plan:
     name: pl-connectivity-dev-weu plan
+    needs: [pl-connectivity-dev-weu-lint]
     uses: ./.github/workflows/opentofu-plan.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-weu
@@ -110,6 +111,7 @@ jobs:
 
   pl-connectivity-dev-gwc-plan:
     name: pl-connectivity-dev-gwc plan
+    needs: [pl-connectivity-dev-gwc-lint]
     uses: ./.github/workflows/opentofu-plan.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-gwc
