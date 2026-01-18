@@ -78,7 +78,7 @@ jobs:
     uses: ./.github/workflows/opentofu-lint.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-weu
-      client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
 
   pl-connectivity-dev-weu-plan:
     name: pl-connectivity-dev-weu plan
@@ -88,7 +88,7 @@ jobs:
       working_directory: ./03-platform-connectivity/environments/dev-weu
       artifact_name: pl-connectivity-dev-weu
       state_key: pl-connectivity-dev-weu.tfstate
-      client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
 
   pl-connectivity-dev-weu-apply:
     name: pl-connectivity-dev-weu apply
@@ -98,7 +98,7 @@ jobs:
       working_directory: ./03-platform-connectivity/environments/dev-weu
       artifact_name: pl-connectivity-dev-weu
       state_key: pl-connectivity-dev-weu.tfstate
-      client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
 
   # ===== Platform Connectivity (dev-gwc) =====
   # Lint, plan and apply for platform connectivity - Germany West Central
@@ -107,7 +107,7 @@ jobs:
     uses: ./.github/workflows/opentofu-lint.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-gwc
-      client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
 
   pl-connectivity-dev-gwc-plan:
     name: pl-connectivity-dev-gwc plan
@@ -117,7 +117,7 @@ jobs:
       working_directory: ./03-platform-connectivity/environments/dev-gwc
       artifact_name: pl-connectivity-dev-gwc
       state_key: pl-connectivity-dev-gwc.tfstate
-      client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
 
   pl-connectivity-dev-gwc-apply:
     name: pl-connectivity-dev-gwc apply
@@ -127,7 +127,7 @@ jobs:
       working_directory: ./03-platform-connectivity/environments/dev-gwc
       artifact_name: pl-connectivity-dev-gwc
       state_key: pl-connectivity-dev-gwc.tfstate
-      client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
 
   # ===== Platform Connectivity (dev-glb) =====
   # Lint, plan and apply for platform connectivity - Global (hub-to-hub peering)
@@ -136,7 +136,7 @@ jobs:
     uses: ./.github/workflows/opentofu-lint.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-glb
-      client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
 
   pl-connectivity-dev-glb-plan:
     name: pl-connectivity-dev-glb plan
@@ -146,7 +146,7 @@ jobs:
       working_directory: ./03-platform-connectivity/environments/dev-glb
       artifact_name: pl-connectivity-dev-glb
       state_key: pl-connectivity-dev-glb.tfstate
-      client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
 
   pl-connectivity-dev-glb-apply:
     name: pl-connectivity-dev-glb apply
@@ -156,7 +156,7 @@ jobs:
       working_directory: ./03-platform-connectivity/environments/dev-glb
       artifact_name: pl-connectivity-dev-glb
       state_key: pl-connectivity-dev-glb.tfstate
-      client_id: "YOURSPID" # sp-platform-connectivity-on-dev-na-01
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
 
   # ===== ALZ Drives (dev) =====
   # Lint, plan and apply for ALZ drives (storage)
