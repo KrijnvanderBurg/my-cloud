@@ -59,10 +59,16 @@ resource "azurerm_role_assignment" "sp_platform_management_tfstate" {
 # =============================================================================
 # RBAC Role Assignments - ALZ Drives SP
 # =============================================================================
-
 resource "azurerm_role_assignment" "sp_alz_drives_subscription_contributor" {
   scope                = local.alz_drive_subscription_scope
   role_definition_name = "Contributor"
+  principal_id         = module.sp_alz_drives.object_id
+}
+
+# User Access Administrator role for creating management locks
+resource "azurerm_role_assignment" "sp_alz_drives_subscription_uaa" {
+  scope                = local.alz_drive_subscription_scope
+  role_definition_name = "User Access Administrator"
   principal_id         = module.sp_alz_drives.object_id
 }
 
