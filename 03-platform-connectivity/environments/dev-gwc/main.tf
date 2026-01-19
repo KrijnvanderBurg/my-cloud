@@ -75,22 +75,3 @@ module "spoke_to_hub_peering" {
   allow_forwarded_traffic   = true
   use_remote_gateways       = false # Enable when gateway is deployed
 }
-
-# =============================================================================
-# Private DNS Zones
-# =============================================================================
-
-module "private_dns" {
-  source   = "../../modules/private-dns-zone"
-  for_each = toset(local.private_dns_zones)
-
-  name                = each.value
-  resource_group_name = azurerm_resource_group.connectivity.name
-
-  # Link to hub VNet for DNS resolution
-  virtual_network_links = {
-    hub = module.hub.id
-  }
-
-  tags = local.common_tags
-}
