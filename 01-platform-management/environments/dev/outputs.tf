@@ -1,11 +1,20 @@
 # =============================================================================
-# Management Group Outputs
+# Tenant Outputs
 # =============================================================================
+
+output "tenant_id" {
+  description = "The Azure AD tenant ID"
+  value       = local.tenant_id
+}
 
 output "tenant_root_management_group_id" {
   description = "The fully qualified ID of the tenant root management group"
   value       = data.azurerm_management_group.tenant_root.id
 }
+
+# =============================================================================
+# Management Group Outputs
+# =============================================================================
 
 output "levendaal_management_group" {
   description = "Levendaal root management group details"
@@ -52,6 +61,15 @@ output "platform_identity_management_group" {
   }
 }
 
+output "platform_connectivity_management_group" {
+  description = "Platform Connectivity management group details"
+  value = {
+    id           = module.pl_connectivity.id
+    name         = module.pl_connectivity.name
+    display_name = module.pl_connectivity.display_name
+  }
+}
+
 output "landingzone_management_group" {
   description = "Landing Zone management group details"
   value = {
@@ -62,35 +80,8 @@ output "landingzone_management_group" {
 }
 
 # =============================================================================
-# Subscription Association Outputs
+# Subscription Outputs
 # =============================================================================
-
-output "pl_management_subscription_association" {
-  description = "Platform Management subscription association details"
-  value = {
-    id                  = module.pl_management_subscription_association.id
-    management_group_id = module.pl_management_subscription_association.management_group_id
-    subscription_id     = module.pl_management_subscription_association.subscription_id
-  }
-}
-
-output "pl_identity_subscription_association" {
-  description = "Platform Identity subscription association details"
-  value = {
-    id                  = module.pl_identity_subscription_association.id
-    management_group_id = module.pl_identity_subscription_association.management_group_id
-    subscription_id     = module.pl_identity_subscription_association.subscription_id
-  }
-}
-
-output "alz_drive_subscription_association" {
-  description = "ALZ Drive subscription association details"
-  value = {
-    id                  = module.alz_drive_subscription_association.id
-    management_group_id = module.alz_drive_subscription_association.management_group_id
-    subscription_id     = module.alz_drive_subscription_association.subscription_id
-  }
-}
 
 output "pl_management_subscription" {
   description = "Platform Management subscription"
@@ -108,6 +99,14 @@ output "pl_identity_subscription" {
   }
 }
 
+output "pl_connectivity_subscription" {
+  description = "Platform Connectivity subscription"
+  value = {
+    id              = data.azurerm_subscription.platform_connectivity.id
+    subscription_id = data.azurerm_subscription.platform_connectivity.subscription_id
+  }
+}
+
 output "alz_drive_subscription" {
   description = "ALZ Drive subscription"
   value = {
@@ -120,12 +119,9 @@ output "alz_drive_subscription" {
 # Environment Information
 # =============================================================================
 
-output "environment_info" {
-  description = "Current environment configuration"
-  value = {
-    tenant_id   = var.tenant_id
-    environment = var.environment
-  }
+output "environment" {
+  description = "The current environment name"
+  value       = local.environment
 }
 
 # =============================================================================
