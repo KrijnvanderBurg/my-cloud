@@ -40,5 +40,4 @@ locals {
   # ---------------------------------------------------------------------------
   # Used for cross-region DNS linking
   private_dns_zones_weu = data.terraform_remote_state.weu.outputs.private_dns_zones
-  private_dns_zones_gwc = data.terraform_remote_state.gwc.outputs.private_dns_zones
 }
