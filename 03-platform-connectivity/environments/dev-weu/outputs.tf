@@ -12,15 +12,6 @@ output "hub" {
   }
 }
 
-output "resource_group" {
-  description = "Connectivity resource group"
-  value = {
-    name     = module.hub.resource_group_name
-    location = local.location
-    id       = module.hub.resource_group_id
-  }
-}
-
 output "spoke_networks" {
   description = "Spoke VNet details"
   value = {
