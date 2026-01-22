@@ -39,9 +39,3 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
-
-variable "create_resource_group" {
-  description = "Create a new resource group for the hub"
-  type        = bool
-  default     = true
-}
