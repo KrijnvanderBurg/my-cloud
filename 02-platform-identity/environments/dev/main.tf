@@ -110,27 +110,27 @@ resource "azurerm_role_assignment" "sp_platform_connectivity_tfstate" {
   principal_id         = module.sp_platform_connectivity.object_id
 }
 
-# =============================================================================
-# RBAC Role Assignments - PLZ Drives SP
-# =============================================================================
+# # =============================================================================
+# # RBAC Role Assignments - PLZ Drives SP
+# # =============================================================================
 
-resource "azurerm_role_assignment" "sp_plz_drives_subscription_contributor" {
-  scope                = local.plz_drives_subscription_scope
-  role_definition_name = "Contributor"
-  principal_id         = module.sp_plz_drives.object_id
-}
+# resource "azurerm_role_assignment" "sp_plz_drives_subscription_contributor" {
+#   scope                = local.plz_drives_subscription_scope
+#   role_definition_name = "Contributor"
+#   principal_id         = module.sp_plz_drives.object_id
+# }
 
-resource "azurerm_role_assignment" "sp_plz_drives_subscription_uaa" {
-  scope                = local.plz_drives_subscription_scope
-  role_definition_name = "User Access Administrator"
-  principal_id         = module.sp_plz_drives.object_id
-}
+# resource "azurerm_role_assignment" "sp_plz_drives_subscription_uaa" {
+#   scope                = local.plz_drives_subscription_scope
+#   role_definition_name = "User Access Administrator"
+#   principal_id         = module.sp_plz_drives.object_id
+# }
 
-resource "azurerm_role_assignment" "sp_plz_drives_tfstate" {
-  scope                = local.tfstate_storage_account_id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = module.sp_plz_drives.object_id
-}
+# resource "azurerm_role_assignment" "sp_plz_drives_tfstate" {
+#   scope                = local.tfstate_storage_account_id
+#   role_definition_name = "Storage Blob Data Contributor"
+#   principal_id         = module.sp_plz_drives.object_id
+# }
 
 # =============================================================================
 # Security Groups
