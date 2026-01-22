@@ -28,10 +28,6 @@ module "spoke" {
   source   = "../../modules/spoke-network"
   for_each = local.spoke_cidrs
 
-  providers = {
-    azurerm.hub = azurerm
-  }
-
   name                = "vnet-${each.key}-co-${local.environment}-${local.region}-01"
   resource_group_name = module.hub.resource_group_name
   location            = local.location
@@ -40,9 +36,15 @@ module "spoke" {
   hub_vnet_name           = module.hub.name
   hub_vnet_id             = module.hub.id
   hub_resource_group_name = module.hub.resource_group_name
-  peering_name_suffix     = each.key
 
-  tags = local.common_tags
+  use_remote_gateways       = false
+  hub_allow_gateway_transit = true
+  private_dns_zones         = []
+
+  tags = merge(
+    local.common_tags,
+    {}
+  )
 }
 
 # =============================================================================
@@ -71,32 +73,27 @@ module "private_dns" {
 }
 
 # =============================================================================
-# Landing Zone: Drives - Spoke Network (deployed in LZ subscription)
+# Landing Zone Spoke Networks (deployed in LZ subscriptions)
 # =============================================================================
 
-module "lz_spoke_drives" {
-  source = "../../modules/spoke-network"
+module "lz_spoke" {
+  source   = "../../modules/spoke-network"
+  for_each = local.lz_spoke_cidrs
 
-  providers = {
-    azurerm     = azurerm.plz_drives
-    azurerm.hub = azurerm
-  }
+  name                = "vnet-${each.key}-on-${local.environment}-${local.region}-01"
+  resource_group_name = "rg-connectivity-${each.key}-${local.environment}-${local.region}-01"
+  location            = local.location
+  address_space       = [each.value]
 
-  name                            = "vnet-drives-on-${local.environment}-${local.region}-01"
-  resource_group_name             = "rg-connectivity-drives-${local.environment}-${local.region}-01"
-  location                        = local.location
-  address_space                   = local.lz_spoke_cidrs["drives"]
-  create_resource_group           = true
+  hub_vnet_name           = module.hub.name
+  hub_vnet_id             = module.hub.id
+  hub_resource_group_name = module.hub.resource_group_name
+  private_dns_zones       = toset(local.private_dns_zones)
 
-  hub_vnet_name                   = module.hub.name
-  hub_vnet_id                     = module.hub.id
-  hub_resource_group_name         = module.hub.resource_group_name
-  peering_name_suffix             = "drives-${local.environment}-${local.region}"
-
-  private_dns_zones               = toset(local.private_dns_zones)
-  private_dns_resource_group_name = module.hub.resource_group_name
+  use_remote_gateways       = false
+  hub_allow_gateway_transit = true
 
   tags = merge(local.common_tags, {
-    landing_zone = "drives"
+    landing_zone = each.key
   })
 }

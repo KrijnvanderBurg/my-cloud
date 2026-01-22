@@ -75,10 +75,7 @@ resource "azurerm_route_table" "default" {
 # =============================================================================
 
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
-  count    = var.hub_vnet_name != null ? 1 : 0
-  provider = azurerm.hub
-
-  name                      = "peer-hub-to-${var.peering_name_suffix}"
+  name                      = "peer-${var.hub_vnet_name}-to-${var.name}"
   resource_group_name       = var.hub_resource_group_name
   virtual_network_name      = var.hub_vnet_name
   remote_virtual_network_id = azurerm_virtual_network.this.id
@@ -91,9 +88,7 @@ resource "azurerm_virtual_network_peering" "hub_to_spoke" {
 # =============================================================================
 
 resource "azurerm_virtual_network_peering" "spoke_to_hub" {
-  count = var.hub_vnet_id != null ? 1 : 0
-
-  name                      = "peer-${var.peering_name_suffix}-to-hub"
+  name                      = "peer-${var.name}-to-${var.hub_vnet_name}"
   resource_group_name       = azurerm_resource_group.this.name
   virtual_network_name      = azurerm_virtual_network.this.name
   remote_virtual_network_id = var.hub_vnet_id
@@ -106,11 +101,10 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
 # =============================================================================
 
 resource "azurerm_private_dns_zone_virtual_network_link" "this" {
-  provider = azurerm.hub
   for_each = var.private_dns_zones
 
-  name                  = "link-${var.peering_name_suffix}"
-  resource_group_name   = var.private_dns_resource_group_name
+  name                  = "link-${var.name}"
+  resource_group_name   = var.hub_resource_group_name
   private_dns_zone_name = each.value
   virtual_network_id    = azurerm_virtual_network.this.id
   registration_enabled  = false

@@ -24,15 +24,14 @@ module "hub" {
 # Spoke Networks
 # =============================================================================
 
-module "spoke" {
+module "spokes" {
   source   = "../../modules/spoke-network"
   for_each = local.spoke_cidrs
 
-  name                = "vnet-${each.key}-co-${local.environment}-${local.region}-01"
-  resource_group_name = module.hub.resource_group_name
-  location            = local.location
-  address_space       = [each.value]
-
+  name                    = "vnet-${each.key}-co-${local.environment}-${local.region}-01"
+  resource_group_name     = module.hub.resource_group_name
+  location                = local.location
+  address_space           = [each.value]
   hub_vnet_name           = module.hub.name
   hub_vnet_id             = module.hub.id
   hub_resource_group_name = module.hub.resource_group_name
