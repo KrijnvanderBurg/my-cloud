@@ -5,16 +5,7 @@
 # This deployment manages cross-region resources:
 # - Hub-to-Hub VNet peering (global peering between regional hubs)
 #
-# NOTE: Cross-region Private DNS links are now managed in the WEU deployment
-# The centralized DNS architecture links zones to all hubs directly
-# =============================================================================
-
-# =============================================================================
-# Hub-to-Hub Global VNet Peering
-# =============================================================================
-# Global VNet peering allows the regional hubs to communicate directly.
-# Traffic flows hub <-> hub for cross-region connectivity.
-# This enables spokes in different regions to reach each other via their hubs.
+# NOTE: Cross-region Private DNS links are managed in the WEU deployment
 # =============================================================================
 
 # West Europe Hub -> Germany West Central Hub

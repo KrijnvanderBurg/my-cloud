@@ -29,41 +29,26 @@ module "spokes" {
   location            = local.location
   address_space       = [each.value]
 
-  hub_vnet_name           = module.hub.name
-  hub_vnet_id             = module.hub.id
-  hub_resource_group_name = module.hub.resource_group_name
+  hub_vnet_id   = module.hub.id
+  hub_vnet_name = module.hub.name
 
-  use_remote_gateways       = false
-  hub_allow_gateway_transit = true
-  private_dns_zones         = []
-
-  tags = merge(
-    local.common_tags,
-    {}
-  )
+  tags = local.common_tags
 }
 
-module "lz-spokes" {
-  source     = "../../modules/spoke-network"
-  for_each   = local.lz_spoke_cidrs
-  depends_on = [module.hub]
+# =============================================================================
+# Hub-to-Spoke Peering (platform spokes)
+# =============================================================================
 
-  name                = "vnet-${each.key}-on-${local.environment}-${local.region}-01"
-  resource_group_name = "rg-connectivity-${each.key}-${local.environment}-${local.region}-01"
-  location            = local.location
-  address_space       = [each.value]
+resource "azurerm_virtual_network_peering" "hub_to_spoke" {
+  for_each   = module.spokes
+  depends_on = [module.spokes]
 
-  hub_vnet_name           = module.hub.name
-  hub_vnet_id             = module.hub.id
-  hub_resource_group_name = module.hub.resource_group_name
-  private_dns_zones       = toset(local.private_dns_zones)
-
-  use_remote_gateways       = false
-  hub_allow_gateway_transit = true
-
-  tags = merge(local.common_tags, {
-    landing_zone = each.key
-  })
+  name                      = "peer-${module.hub.name}-to-${each.value.name}"
+  resource_group_name       = module.hub.resource_group_name
+  virtual_network_name      = module.hub.name
+  remote_virtual_network_id = each.value.id
+  allow_forwarded_traffic   = true
+  allow_gateway_transit     = true
 }
 
 
@@ -71,24 +56,26 @@ module "lz-spokes" {
 # Private DNS Zones (CENTRALIZED - Global DNS Management)
 # =============================================================================
 
-module "private_dns" {
-  source     = "../../modules/private-dns-zone"
-  for_each   = toset(local.private_dns_zones)
-  depends_on = [module.hub]
+# can we move this to global? but of course still put it in one of the hubs
 
-  name                = each.value
-  resource_group_name = module.hub.resource_group_name
+# module "private_dns" {
+#   source     = "../../modules/private-dns-zone"
+#   for_each   = toset(local.private_dns_zones)
+#   depends_on = [module.hub]
 
-  virtual_network_links = {
-    hub-weu = local.hub_weu_id
-    hub-gwc = local.hub_gwc_id
-  }
+#   name                = each.value
+#   resource_group_name = module.hub.resource_group_name
 
-  tags = merge(
-    local.common_tags,
-    {
-      "dns-scope"  = "global"
-      "managed-in" = "weu"
-    }
-  )
-}
+#   virtual_network_links = {
+#     hub-weu = local.hub_weu_id
+#     hub-gwc = local.hub_gwc_id
+#   }
+
+#   tags = merge(
+#     local.common_tags,
+#     {
+#       "dns-scope"  = "global"
+#       "managed-in" = "weu"
+#     }
+#   )
+# }

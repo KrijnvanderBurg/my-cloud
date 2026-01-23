@@ -71,19 +71,6 @@ resource "azurerm_route_table" "default" {
 }
 
 # =============================================================================
-# Hub-to-Spoke Peering
-# =============================================================================
-
-resource "azurerm_virtual_network_peering" "hub_to_spoke" {
-  name                      = "peer-${var.hub_vnet_name}-to-${var.name}"
-  resource_group_name       = var.hub_resource_group_name
-  virtual_network_name      = var.hub_vnet_name
-  remote_virtual_network_id = azurerm_virtual_network.this.id
-  allow_forwarded_traffic   = true
-  allow_gateway_transit     = var.hub_allow_gateway_transit
-}
-
-# =============================================================================
 # Spoke-to-Hub Peering
 # =============================================================================
 
@@ -94,20 +81,4 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
   remote_virtual_network_id = var.hub_vnet_id
   allow_forwarded_traffic   = true
   use_remote_gateways       = var.use_remote_gateways
-}
-
-# =============================================================================
-# Private DNS Zone Links
-# =============================================================================
-
-resource "azurerm_private_dns_zone_virtual_network_link" "this" {
-  for_each = var.private_dns_zones
-
-  name                  = "link-${var.name}"
-  resource_group_name   = var.hub_resource_group_name
-  private_dns_zone_name = each.value
-  virtual_network_id    = azurerm_virtual_network.this.id
-  registration_enabled  = false
-
-  tags = var.tags
 }

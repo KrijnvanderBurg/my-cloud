@@ -1,4 +1,18 @@
 # =============================================================================
+# Spoke Network Outputs
+# =============================================================================
+
+output "spoke" {
+  description = "Spoke network details for connectivity layer hub-to-spoke peering"
+  value = {
+    id                  = module.spoke.id
+    name                = module.spoke.name
+    resource_group_name = module.spoke.resource_group_name
+    address_space       = module.spoke.address_space
+  }
+}
+
+# =============================================================================
 # Resource Group Outputs
 # =============================================================================
 

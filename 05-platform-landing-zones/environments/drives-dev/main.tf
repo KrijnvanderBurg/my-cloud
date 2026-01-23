@@ -3,6 +3,58 @@
 # =============================================================================
 
 # =============================================================================
+# Spoke Network (owned by this landing zone)
+# =============================================================================
+
+module "spoke" {
+  source = "../../../03-platform-connectivity/modules/spoke-network"
+
+  name                = "vnet-${local.landing_zone}-on-${local.environment}-${local.location_short}-01"
+  resource_group_name = "rg-connectivity-${local.landing_zone}-${local.environment}-${local.location_short}-01"
+  location            = local.location
+  address_space       = [local.spoke_cidr]
+
+  hub_vnet_id   = local.hub_vnet_id
+  hub_vnet_name = local.hub_vnet_name
+
+  tags = local.common_tags
+}
+
+# =============================================================================
+# Hub-to-Spoke Peering (created in connectivity subscription)
+# =============================================================================
+
+resource "azurerm_virtual_network_peering" "hub_to_spoke" {
+  provider   = azurerm.connectivity
+  depends_on = [module.spoke]
+
+  name                      = "peer-${local.hub_vnet_name}-to-${module.spoke.name}"
+  resource_group_name       = local.hub_resource_group_name
+  virtual_network_name      = local.hub_vnet_name
+  remote_virtual_network_id = module.spoke.id
+  allow_forwarded_traffic   = true
+  allow_gateway_transit     = true
+}
+
+# =============================================================================
+# Private DNS Zone Links (created in connectivity subscription)
+# =============================================================================
+
+resource "azurerm_private_dns_zone_virtual_network_link" "this" {
+  provider   = azurerm.connectivity
+  for_each   = toset(local.private_dns_zones)
+  depends_on = [module.spoke]
+
+  name                  = "link-${module.spoke.name}"
+  resource_group_name   = local.hub_resource_group_name
+  private_dns_zone_name = each.value
+  virtual_network_id    = module.spoke.id
+  registration_enabled  = false
+
+  tags = local.common_tags
+}
+
+# =============================================================================
 # Resource Group - Landing Zone Workloads
 # =============================================================================
 
@@ -14,21 +66,22 @@ resource "azurerm_resource_group" "workloads" {
 }
 
 # =============================================================================
-# Subnets (in spoke VNet managed by connectivity)
+# Subnets (in spoke VNet owned by this landing zone)
 # =============================================================================
 
 module "subnet" {
-  source   = "../../modules/subnet"
-  for_each = local.subnets
+  source     = "../../modules/subnet"
+  for_each   = local.subnets
+  depends_on = [module.spoke]
 
   name                   = each.key
-  resource_group_name    = local.spoke_resource_group_name
-  virtual_network_name   = local.spoke_vnet_name
+  resource_group_name    = module.spoke.resource_group_name
+  virtual_network_name   = module.spoke.name
   address_prefixes       = [each.value.address_prefix]
   location               = local.location
   service_endpoints      = each.value.service_endpoints
-  default_nsg_id         = local.spoke_default_nsg_id
-  default_route_table_id = local.spoke_default_route_table_id
+  default_nsg_id         = module.spoke.default_nsg_id
+  default_route_table_id = module.spoke.default_route_table_id
 
   tags = local.common_tags
 }

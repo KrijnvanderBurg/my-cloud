@@ -114,17 +114,6 @@ locals {
   }
 
   # ---------------------------------------------------------------------------
-  # Landing Zone Spoke VNets (deployed in LZ subscriptions)
-  # ---------------------------------------------------------------------------
-  # These spokes are created in their respective landing zone subscriptions
-  # but managed by connectivity for network topology consistency.
-  # ---------------------------------------------------------------------------
-
-  lz_spoke_cidrs = {
-    drives = cidrsubnet(local.region_cidr, 4, 6) # 10.1.96.0/20  (4,096 IPs)
-  }
-
-  # ---------------------------------------------------------------------------
   # Private DNS Zones
   # ---------------------------------------------------------------------------
   # Common Private Link DNS zones for Azure services

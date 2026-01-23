@@ -23,32 +23,18 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "hub_vnet_name" {
-  description = "Hub VNet name for peering"
-  type        = string
-}
-
 variable "hub_vnet_id" {
   description = "Hub VNet ID for peering"
   type        = string
 }
 
-variable "hub_resource_group_name" {
-  description = "Hub resource group name for peering"
+variable "hub_vnet_name" {
+  description = "Hub VNet name for peering reference"
   type        = string
-}
-
-variable "hub_allow_gateway_transit" {
-  description = "Allow hub to share gateway with spoke"
-  type        = bool
 }
 
 variable "use_remote_gateways" {
   description = "Use hub's gateways for spoke traffic"
   type        = bool
-}
-
-variable "private_dns_zones" {
-  description = "Private DNS zones to link to this VNet"
-  type        = set(string)
+  default     = false
 }
