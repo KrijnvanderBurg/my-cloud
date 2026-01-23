@@ -12,8 +12,6 @@ resource "azurerm_resource_group" "this" {
 }
 
 resource "azurerm_virtual_network" "this" {
-  depends_on = [azurerm_resource_group.this]
-
   name                = var.name
   location            = var.location
   resource_group_name = azurerm_resource_group.this.name
@@ -27,11 +25,10 @@ resource "azurerm_virtual_network" "this" {
 # =============================================================================
 
 resource "azurerm_subnet" "azure" {
-  depends_on = [azurerm_virtual_network.this]
-  for_each   = var.azure_subnets
+  for_each = var.azure_subnets
 
   name                 = each.key
-  resource_group_name  = var.resource_group_name
+  resource_group_name  = azurerm_resource_group.this.name
   virtual_network_name = azurerm_virtual_network.this.name
   address_prefixes     = [each.value]
 }
@@ -41,11 +38,10 @@ resource "azurerm_subnet" "azure" {
 # =============================================================================
 
 resource "azurerm_subnet" "managed" {
-  depends_on = [azurerm_virtual_network.this]
-  for_each   = var.managed_subnets
+  for_each = var.managed_subnets
 
   name                 = each.key
-  resource_group_name  = var.resource_group_name
+  resource_group_name  = azurerm_resource_group.this.name
   virtual_network_name = azurerm_virtual_network.this.name
   address_prefixes     = [each.value]
 }
@@ -55,11 +51,12 @@ resource "azurerm_subnet" "managed" {
 # =============================================================================
 
 resource "azurerm_network_security_group" "this" {
-  for_each = var.managed_subnets
+  depends_on = [azurerm_resource_group.this]
+  for_each   = var.managed_subnets
 
   name                = "nsg-${each.key}"
   location            = var.location
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.this.name
 
   security_rule {
     name                       = "DenyAllInbound"
@@ -89,8 +86,7 @@ resource "azurerm_network_security_group" "this" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "this" {
-  depends_on = [azurerm_network_security_group.this, azurerm_subnet.managed]
-  for_each   = var.managed_subnets
+  for_each = var.managed_subnets
 
   subnet_id                 = azurerm_subnet.managed[each.key].id
   network_security_group_id = azurerm_network_security_group.this[each.key].id
@@ -101,19 +97,19 @@ resource "azurerm_subnet_network_security_group_association" "this" {
 # =============================================================================
 
 resource "azurerm_route_table" "this" {
-  for_each = var.managed_subnets
+  depends_on = [azurerm_resource_group.this]
+  for_each   = var.managed_subnets
 
   name                          = "rt-${each.key}"
   location                      = var.location
-  resource_group_name           = var.resource_group_name
+  resource_group_name           = azurerm_resource_group.this.name
   bgp_route_propagation_enabled = false
 
   tags = var.tags
 }
 
 resource "azurerm_subnet_route_table_association" "this" {
-  depends_on = [azurerm_route_table.this, azurerm_subnet.managed]
-  for_each   = var.managed_subnets
+  for_each = var.managed_subnets
 
   subnet_id      = azurerm_subnet.managed[each.key].id
   route_table_id = azurerm_route_table.this[each.key].id
