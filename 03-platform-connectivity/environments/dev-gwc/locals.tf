@@ -1,7 +1,3 @@
-# =============================================================================
-# Germany West Central (gwc) - Local Variables
-# =============================================================================
-
 locals {
   # ---------------------------------------------------------------------------
   # Remote State Outputs
@@ -28,13 +24,19 @@ locals {
   }
 
   # ---------------------------------------------------------------------------
+  # Hub VNet IDs - All Regions
+  # ---------------------------------------------------------------------------
+  hub_weu_id = module.hub.id
+  hub_gwc_id = data.terraform_remote_state.gwc.outputs.hub.id
+
+  # ---------------------------------------------------------------------------
   # IP Address Space
   # ---------------------------------------------------------------------------
   # Enterprise-wide CIDR allocation using cidrsubnet() for easy calculation.
   #
   # Supernet: 10.0.0.0/8 (16,777,216 IPs)
   #   ├── 10.0.0.0/16     Reserved: on-premises          (65,536 IPs)
-  #   ├── 10.1.0.0/16     West Europe (weu)              (65,536 IPs)
+  #   ├── 10.2.0.0/16     West Europe (weu)              (65,536 IPs)
   #   ├── 10.2.0.0/16     Germany West Central (gwc)     (65,536 IPs)
   #   ├── 10.3.0.0/16     North Europe (neu)             (65,536 IPs)
   #   ├── ...             Future regions                 (65,536 IPs each)
@@ -73,17 +75,17 @@ locals {
 
   # Azure reserved subnets - no NSG/RT allowed
   hub_azure_subnets = {
-    GatewaySubnet            = cidrsubnet(local.hub_cidr, 6, 0) # 10.2.0.0/26    (64 IPs) - VPN/ExpressRoute Gateway
-    AzureFirewallSubnet      = cidrsubnet(local.hub_cidr, 6, 1) # 10.2.0.64/26   (64 IPs) - Azure Firewall
-    AzureBastionSubnet       = cidrsubnet(local.hub_cidr, 6, 2) # 10.2.0.128/26  (64 IPs) - Azure Bastion
-    RouteServerSubnet        = cidrsubnet(local.hub_cidr, 6, 3) # 10.2.0.192/26  (64 IPs) - Route Server
-    AzureFirewallManagement  = cidrsubnet(local.hub_cidr, 6, 4) # 10.2.1.0/26    (64 IPs) - Firewall management
-    ApplicationGatewaySubnet = cidrsubnet(local.hub_cidr, 6, 5) # 10.2.1.64/26   (64 IPs) - App Gateway
-    ApiManagementSubnet      = cidrsubnet(local.hub_cidr, 6, 6) # 10.2.1.128/26  (64 IPs) - API Management
+    GatewaySubnet           = cidrsubnet(local.hub_cidr, 6, 0) # 10.2.0.0/26    (64 IPs) - VPN/ExpressRoute Gateway
+    AzureFirewallSubnet     = cidrsubnet(local.hub_cidr, 6, 1) # 10.2.0.64/26   (64 IPs) - Azure Firewall
+    AzureBastionSubnet      = cidrsubnet(local.hub_cidr, 6, 2) # 10.2.0.128/26  (64 IPs) - Azure Bastion
+    RouteServerSubnet       = cidrsubnet(local.hub_cidr, 6, 3) # 10.2.0.192/26  (64 IPs) - Route Server
+    AzureFirewallManagement = cidrsubnet(local.hub_cidr, 6, 4) # 10.2.1.0/26    (64 IPs) - Firewall management
   }
 
   # Platform managed subnets - get NSG and route table
   hub_managed_subnets = {
+    ApplicationGatewaySubnet                                          = cidrsubnet(local.hub_cidr, 6, 5)  # 10.2.1.64/26   (64 IPs) - App Gateway
+    ApiManagementSubnet                                               = cidrsubnet(local.hub_cidr, 6, 6)  # 10.2.1.128/26  (64 IPs) - API Management
     "snet-nva-co-${local.environment}-${local.region}-01"             = cidrsubnet(local.hub_cidr, 7, 14) # 10.2.1.192/27  (32 IPs) - NVA
     "snet-dns-inbound-co-${local.environment}-${local.region}-01"     = cidrsubnet(local.hub_cidr, 7, 15) # 10.2.1.224/27  (32 IPs) - DNS inbound
     "snet-dns-outbound-co-${local.environment}-${local.region}-01"    = cidrsubnet(local.hub_cidr, 7, 16) # 10.2.2.0/27    (32 IPs) - DNS outbound
@@ -99,11 +101,29 @@ locals {
   # ---------------------------------------------------------------------------
 
   spoke_cidrs = {
-    # identity = cidrsubnet(local.region_cidr, 4, 1) # 10.2.16.0/20  (4,096 IPs)
-    # data     = cidrsubnet(local.region_cidr, 4, 2) # 10.2.32.0/20  (4,096 IPs)
-    # app      = cidrsubnet(local.region_cidr, 4, 3) # 10.2.48.0/20  (4,096 IPs)
-    # web      = cidrsubnet(local.region_cidr, 4, 4) # 10.2.64.0/20  (4,096 IPs)
-    # shared   = cidrsubnet(local.region_cidr, 4, 5) # 10.2.80.0/20  (4,096 IPs)
+    identity = cidrsubnet(local.region_cidr, 4, 1) # 10.2.16.0/20  (4,096 IPs)
+    data     = cidrsubnet(local.region_cidr, 4, 2) # 10.2.32.0/20  (4,096 IPs)
+    app      = cidrsubnet(local.region_cidr, 4, 3) # 10.2.48.0/20  (4,096 IPs)
+    web      = cidrsubnet(local.region_cidr, 4, 4) # 10.2.64.0/20  (4,096 IPs)
+    shared   = cidrsubnet(local.region_cidr, 4, 5) # 10.2.80.0/20  (4,096 IPs)
   }
 
+  # ---------------------------------------------------------------------------
+  # Landing Zone Spoke VNets (deployed in LZ subscriptions)
+  # ---------------------------------------------------------------------------
+  # These spokes are created in their respective landing zone subscriptions
+  # but managed by connectivity for network topology consistency.
+  # ---------------------------------------------------------------------------
+
+  lz_spoke_cidrs = {
+    drives = cidrsubnet(local.region_cidr, 4, 6) # 10.2.96.0/20  (4,096 IPs)
+  }
+
+  # ---------------------------------------------------------------------------
+  # Private DNS Zones
+  # ---------------------------------------------------------------------------
+  # Common Private Link DNS zones for Azure services
+  # ---------------------------------------------------------------------------
+
+  private_dns_zones = []
 }

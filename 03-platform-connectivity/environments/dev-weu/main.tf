@@ -1,8 +1,4 @@
 # =============================================================================
-# West Europe (weu) - Main Configuration
-# =============================================================================
-
-# =============================================================================
 # Hub Network
 # =============================================================================
 
@@ -23,9 +19,10 @@ module "hub" {
 # Spoke Networks
 # =============================================================================
 
-module "spoke" {
-  source   = "../../modules/spoke-network"
-  for_each = local.spoke_cidrs
+module "spokes" {
+  source     = "../../modules/spoke-network"
+  for_each   = local.spoke_cidrs
+  depends_on = [module.hub]
 
   name                = "vnet-${each.key}-co-${local.environment}-${local.region}-01"
   resource_group_name = module.hub.resource_group_name
@@ -46,38 +43,10 @@ module "spoke" {
   )
 }
 
-# =============================================================================
-# Private DNS Zones (CENTRALIZED - Global DNS Management)
-# =============================================================================
-
-module "private_dns" {
-  source   = "../../modules/private-dns-zone"
-  for_each = toset(local.private_dns_zones)
-
-  name                = each.value
-  resource_group_name = module.hub.resource_group_name
-
-  virtual_network_links = {
-    hub-weu = local.hub_weu_id
-    hub-gwc = local.hub_gwc_id
-  }
-
-  tags = merge(
-    local.common_tags,
-    {
-      "dns-scope"  = "global"
-      "managed-in" = "weu"
-    }
-  )
-}
-
-# =============================================================================
-# Landing Zone Spoke Networks (deployed in LZ subscriptions)
-# =============================================================================
-
-module "lz_spoke" {
-  source   = "../../modules/spoke-network"
-  for_each = local.lz_spoke_cidrs
+module "lz-spokes" {
+  source     = "../../modules/spoke-network"
+  for_each   = local.lz_spoke_cidrs
+  depends_on = [module.hub]
 
   name                = "vnet-${each.key}-on-${local.environment}-${local.region}-01"
   resource_group_name = "rg-connectivity-${each.key}-${local.environment}-${local.region}-01"
@@ -95,4 +64,31 @@ module "lz_spoke" {
   tags = merge(local.common_tags, {
     landing_zone = each.key
   })
+}
+
+
+# =============================================================================
+# Private DNS Zones (CENTRALIZED - Global DNS Management)
+# =============================================================================
+
+module "private_dns" {
+  source     = "../../modules/private-dns-zone"
+  for_each   = toset(local.private_dns_zones)
+  depends_on = [module.hub]
+
+  name                = each.value
+  resource_group_name = module.hub.resource_group_name
+
+  virtual_network_links = {
+    hub-weu = local.hub_weu_id
+    hub-gwc = local.hub_gwc_id
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      "dns-scope"  = "global"
+      "managed-in" = "weu"
+    }
+  )
 }

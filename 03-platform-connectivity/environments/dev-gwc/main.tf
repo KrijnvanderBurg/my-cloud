@@ -1,8 +1,4 @@
 # =============================================================================
-# Germany West Central (gwc) - Main Configuration
-# =============================================================================
-
-# =============================================================================
 # Hub Network
 # =============================================================================
 
@@ -23,9 +19,10 @@ module "hub" {
 # Spoke Networks
 # =============================================================================
 
-module "spoke" {
-  source   = "../../modules/spoke-network"
-  for_each = local.spoke_cidrs
+module "spokes" {
+  source     = "../../modules/spoke-network"
+  for_each   = local.spoke_cidrs
+  depends_on = [module.hub]
 
   name                = "vnet-${each.key}-co-${local.environment}-${local.region}-01"
   resource_group_name = module.hub.resource_group_name
@@ -46,6 +43,28 @@ module "spoke" {
   )
 }
 
+module "lz-spokes" {
+  source     = "../../modules/spoke-network"
+  for_each   = local.lz_spoke_cidrs
+  depends_on = [module.hub]
+
+  name                = "vnet-${each.key}-on-${local.environment}-${local.region}-01"
+  resource_group_name = "rg-connectivity-${each.key}-${local.environment}-${local.region}-01"
+  location            = local.location
+  address_space       = [each.value]
+
+  hub_vnet_name           = module.hub.name
+  hub_vnet_id             = module.hub.id
+  hub_resource_group_name = module.hub.resource_group_name
+  private_dns_zones       = toset(local.private_dns_zones)
+
+  use_remote_gateways       = false
+  hub_allow_gateway_transit = true
+
+  tags = merge(local.common_tags, {
+    landing_zone = each.key
+  })
+}
 
 # =============================================================================
 # Private DNS Zones
