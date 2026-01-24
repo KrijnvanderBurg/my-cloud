@@ -12,15 +12,15 @@ output "hub" {
   }
 }
 
-output "spoke_networks" {
-  description = "Spoke VNet details"
-  value = {
-    for key, spoke in module.spokes : key => {
-      id            = spoke.id
-      name          = spoke.name
-      address_space = spoke.address_space
-    }
-  }
-}
+# output "spoke_networks" {
+#   description = "Spoke VNet details"
+#   value = {
+#     for key, spoke in module.spokes : key => {
+#       id            = spoke.id
+#       name          = spoke.name
+#       address_space = spoke.address_space
+#     }
+#   }
+# }
 
 # NOTE: DNS zones are managed centrally in WEU - no DNS outputs here

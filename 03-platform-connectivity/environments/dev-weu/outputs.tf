@@ -12,16 +12,16 @@ output "hub" {
   }
 }
 
-output "spoke_networks" {
-  description = "Spoke VNet details"
-  value = {
-    for key, spoke in module.spokes : key => {
-      id            = spoke.id
-      name          = spoke.name
-      address_space = spoke.address_space
-    }
-  }
-}
+# output "spoke_networks" {
+#   description = "Spoke VNet details"
+#   value = {
+#     for key, spoke in module.spokes : key => {
+#       id            = spoke.id
+#       name          = spoke.name
+#       address_space = spoke.address_space
+#     }
+#   }
+# }
 
 # output "private_dns_zones" {
 #   description = "Centralized Private DNS zones (managed in WEU)"
