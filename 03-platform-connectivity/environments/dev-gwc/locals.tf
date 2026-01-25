@@ -23,22 +23,6 @@ locals {
     location    = local.location
   }
 
-  # ---------------------------------------------------------------------------
-  # IP Address Space
-  # ---------------------------------------------------------------------------
-  # Enterprise-wide CIDR allocation using cidrsubnet() for easy calculation.
-  #
-  # Supernet: 10.0.0.0/8 (16,777,216 IPs)
-  #   ├── 10.1.0.0/16     West Europe (weu)              (65,536 IPs)
-  #   ├── 10.2.0.0/16     Germany West Central (gwc)     (65,536 IPs)
-  #   └── ...
-  #
-  # Hub weu breakdown (65,536 IPs):
-  #   ├── /20 slot 0      Hub network                    (4,096 IPs)
-  #   ├── /20 slot 1      Spoke: plz-drives              (4,096 IPs)
-  #   └── ...
-  # ---------------------------------------------------------------------------
-
   enterprise_cidr = "10.0.0.0/8"
 
   # This location /16 block

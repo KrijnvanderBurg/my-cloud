@@ -1,5 +1,28 @@
 # =============================================================================
-# Global (glb) - Local Variables
+# Enterprise IP Address Allocation
+# =============================================================================
+# Enterprise-wide CIDR allocation using cidrsubnet() for calculation.
+#
+# Supernet: 10.0.0.0/8 (16,777,216 IPs total)
+#
+# ├── 10.1.0.0/16     West Europe (weu)              [65,536 IPs - ACTIVE]
+# │   ├── 10.1.0.0/20      Hub Network                (4,096 IPs - slot 0)
+# │   ├── 10.1.16.0/20     Spoke: plz-drives          (4,096 IPs - slot 1)
+# │   ├── 10.1.32.0/20     Reserved                   (4,096 IPs - slot 2)
+# │   ├── 10.1.48.0/20     Reserved                   (4,096 IPs - slot 3)
+# │   └── 10.1.64.0/18     Reserved (slots 4-15)     (49,152 IPs - future)
+# │
+# ├── 10.2.0.0/16     Germany West Central (gwc)     [65,536 IPs - ACTIVE]
+# │   ├── 10.2.0.0/20      Hub Network                (4,096 IPs - slot 0)
+# │   └── 10.2.16.0/20     Reserved (slots 1-15)     (61,440 IPs - future)
+# │
+# └── 10.3.0.0/16+    Reserved (regions 3+)          [Future expansion]
+#
+# Notes:
+#   - Each region gets a /16 block (65,536 IPs)
+#   - Each region divided into /20 slots (4,096 IPs each, 16 slots total)
+#   - Slot 0 always reserved for hub network
+#   - Slots 1+ allocated for spoke networks as needed
 # =============================================================================
 
 locals {
