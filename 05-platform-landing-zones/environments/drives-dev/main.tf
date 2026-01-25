@@ -6,7 +6,7 @@ module "vnet-spoke" {
     azurerm.connectivity = azurerm.connectivity
   }
 
-  name                = "vnet-${local.landing_zone}-on-${local.environment}-${local.location_short}-01"
+  name                = "vnet-spoke-${local.landing_zone}-on-${local.environment}-${local.location_short}-01"
   resource_group_name = "rg-connectivity-${local.landing_zone}-${local.environment}-${local.location_short}-01"
   location            = local.location
   address_space       = [local.spoke_cidr]
