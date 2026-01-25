@@ -14,6 +14,7 @@ locals {
   hub_vnet_id             = data.terraform_remote_state.connectivity_weu.outputs.hub.id
   hub_vnet_name           = data.terraform_remote_state.connectivity_weu.outputs.hub.name
   hub_resource_group_name = data.terraform_remote_state.connectivity_weu.outputs.hub.resource_group_name
+  hub_subnets             = data.terraform_remote_state.connectivity_weu.outputs.hub.subnets
   spoke_cidr              = data.terraform_remote_state.connectivity_weu.outputs.spokes.plz_drives.cidr
 
   # ---------------------------------------------------------------------------
