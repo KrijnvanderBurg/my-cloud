@@ -43,99 +43,124 @@ module "sp_plz_drives" {
 # =============================================================================
 # RBAC Role Assignments - Platform Management SP
 # =============================================================================
+module "rbac_platform_management" {
+  source = "../../modules/02-rbac-platform-management"
 
-# Management Group Contributor at tenant root - for reading tenant root and managing MG hierarchy
-resource "azurerm_role_assignment" "sp_platform_management_tenant_root_mg_contributor" {
-  scope                = local.tenant_root_management_group_id
-  role_definition_name = "Management Group Contributor"
-  principal_id         = module.sp_platform_management.object_id
-}
+  principal_id                    = module.sp_platform_management.object_id
+  tenant_root_management_group_id = local.tenant_root_management_group_id
+  tfstate_storage_account_id      = local.tfstate_storage_account_id
 
-# Resource Policy Contributor for policy management
-resource "azurerm_role_assignment" "sp_platform_management_policy_contributor" {
-  scope                = local.tenant_root_management_group_id
-  role_definition_name = "Resource Policy Contributor"
-  principal_id         = module.sp_platform_management.object_id
-}
-
-resource "azurerm_role_assignment" "sp_platform_management_tfstate" {
-  scope                = local.tfstate_storage_account_id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = module.sp_platform_management.object_id
+  depends_on = [module.sp_platform_management]
 }
 
 # =============================================================================
 # RBAC Role Assignments - ALZ Drives SP
 # =============================================================================
-resource "azurerm_role_assignment" "sp_alz_drives_subscription_contributor" {
-  scope                = local.alz_drive_subscription_scope
-  role_definition_name = "Contributor"
-  principal_id         = module.sp_alz_drives.object_id
-}
+module "rbac_alz_drives" {
+  source = "../../modules/03-rbac-alz-drives"
 
-# User Access Administrator role for creating management locks
-resource "azurerm_role_assignment" "sp_alz_drives_subscription_uaa" {
-  scope                = local.alz_drive_subscription_scope
-  role_definition_name = "User Access Administrator"
-  principal_id         = module.sp_alz_drives.object_id
-}
+  principal_id                 = module.sp_alz_drives.object_id
+  alz_drive_subscription_scope = local.alz_drive_subscription_scope
+  tfstate_storage_account_id   = local.tfstate_storage_account_id
 
-resource "azurerm_role_assignment" "sp_alz_drives_tfstate" {
-  scope                = local.tfstate_storage_account_id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = module.sp_alz_drives.object_id
+  depends_on = [module.sp_alz_drives]
 }
 
 # =============================================================================
 # RBAC Role Assignments - Platform Connectivity SP
 # =============================================================================
+module "rbac_platform_connectivity" {
+  source = "../../modules/04-rbac-platform-connectivity"
 
-resource "azurerm_role_assignment" "sp_platform_connectivity_subscription_contributor" {
-  scope                = local.pl_connectivity_subscription_scope
-  role_definition_name = "Contributor"
-  principal_id         = module.sp_platform_connectivity.object_id
+  principal_id                       = module.sp_platform_connectivity.object_id
+  pl_connectivity_subscription_scope = local.pl_connectivity_subscription_scope
+  plz_drives_subscription_scope      = local.plz_drives_subscription_scope
+  tfstate_storage_account_id         = local.tfstate_storage_account_id
+
+  depends_on = [module.sp_platform_connectivity]
 }
 
-# Connectivity SP needs Contributor on PLZ Drives subscription to create spoke VNet
-resource "azurerm_role_assignment" "sp_platform_connectivity_plz_drives_contributor" {
-  scope                = local.plz_drives_subscription_scope
-  role_definition_name = "Contributor"
-  principal_id         = module.sp_platform_connectivity.object_id
+# =============================================================================
+# RBAC Role Assignments - PLZ Drives SP
+# =============================================================================
+module "rbac_plz_drives" {
+  source = "../../modules/05-rbac-plz-drives"
+
+  principal_id                  = module.sp_plz_drives.object_id
+  plz_drives_subscription_scope = local.plz_drives_subscription_scope
+  tfstate_storage_account_id    = local.tfstate_storage_account_id
+
+  depends_on = [module.sp_plz_drives]
 }
 
-resource "azurerm_role_assignment" "sp_platform_connectivity_tfstate" {
-  scope                = local.tfstate_storage_account_id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = module.sp_platform_connectivity.object_id
+# =============================================================================
+# Moved Blocks - State Migration for Role Assignments
+# =============================================================================
+moved {
+  from = azurerm_role_assignment.sp_platform_management_tenant_root_mg_contributor
+  to   = module.rbac_platform_management.azurerm_role_assignment.tenant_root_mg_contributor
 }
 
-# # =============================================================================
-# # RBAC Role Assignments - PLZ Drives SP
-# # =============================================================================
-
-resource "azurerm_role_assignment" "sp_plz_drives_subscription_contributor" {
-  scope                = local.plz_drives_subscription_scope
-  role_definition_name = "Contributor"
-  principal_id         = module.sp_plz_drives.object_id
+moved {
+  from = azurerm_role_assignment.sp_platform_management_policy_contributor
+  to   = module.rbac_platform_management.azurerm_role_assignment.policy_contributor
 }
 
-resource "azurerm_role_assignment" "sp_plz_drives_subscription_uaa" {
-  scope                = local.plz_drives_subscription_scope
-  role_definition_name = "User Access Administrator"
-  principal_id         = module.sp_plz_drives.object_id
+moved {
+  from = azurerm_role_assignment.sp_platform_management_tfstate
+  to   = module.rbac_platform_management.azurerm_role_assignment.tfstate
 }
 
-resource "azurerm_role_assignment" "sp_plz_drives_tfstate" {
-  scope                = local.tfstate_storage_account_id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = module.sp_plz_drives.object_id
+moved {
+  from = azurerm_role_assignment.sp_alz_drives_subscription_contributor
+  to   = module.rbac_alz_drives.azurerm_role_assignment.subscription_contributor
+}
+
+moved {
+  from = azurerm_role_assignment.sp_alz_drives_subscription_uaa
+  to   = module.rbac_alz_drives.azurerm_role_assignment.subscription_uaa
+}
+
+moved {
+  from = azurerm_role_assignment.sp_alz_drives_tfstate
+  to   = module.rbac_alz_drives.azurerm_role_assignment.tfstate
+}
+
+moved {
+  from = azurerm_role_assignment.sp_platform_connectivity_subscription_contributor
+  to   = module.rbac_platform_connectivity.azurerm_role_assignment.subscription_contributor
+}
+
+moved {
+  from = azurerm_role_assignment.sp_platform_connectivity_plz_drives_contributor
+  to   = module.rbac_platform_connectivity.azurerm_role_assignment.plz_drives_contributor
+}
+
+moved {
+  from = azurerm_role_assignment.sp_platform_connectivity_tfstate
+  to   = module.rbac_platform_connectivity.azurerm_role_assignment.tfstate
+}
+
+moved {
+  from = azurerm_role_assignment.sp_plz_drives_subscription_contributor
+  to   = module.rbac_plz_drives.azurerm_role_assignment.subscription_contributor
+}
+
+moved {
+  from = azurerm_role_assignment.sp_plz_drives_subscription_uaa
+  to   = module.rbac_plz_drives.azurerm_role_assignment.subscription_uaa
+}
+
+moved {
+  from = azurerm_role_assignment.sp_plz_drives_tfstate
+  to   = module.rbac_plz_drives.azurerm_role_assignment.tfstate
 }
 
 # =============================================================================
 # Security Groups
 # =============================================================================
 module "sg_rbac_platform_contributors" {
-  source = "../../modules/02-entra-group"
+  source = "../../modules/06-entra-group"
 
   display_name       = "sg-rbac-platform-contributors-${local.environment}-na-01"
   description        = "Members have Contributor access to platform subscriptions via Azure RBAC"
@@ -146,7 +171,7 @@ module "sg_rbac_platform_contributors" {
 # Monitoring Alerts
 # =============================================================================
 module "monitoring_alerts" {
-  source = "../../modules/03-monitoring-alerts"
+  source = "../../modules/07-monitoring-alerts"
 
   environment     = local.environment
   location        = local.location
