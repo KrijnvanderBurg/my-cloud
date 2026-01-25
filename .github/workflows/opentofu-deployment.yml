@@ -193,7 +193,7 @@ jobs:
 
   plz-drives-dev-plan:
     name: plz-drives-dev plan
-    needs: [plz-drives-dev-lint, pl-connectivity-dev-weu-apply]
+    needs: [plz-drives-dev-lint]
     uses: ./.github/workflows/opentofu-plan.yml
     with:
       working_directory: ./05-platform-landing-zones/environments/drives-dev
