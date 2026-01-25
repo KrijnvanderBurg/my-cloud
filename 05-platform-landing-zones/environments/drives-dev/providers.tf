@@ -16,6 +16,14 @@ provider "azurerm" {
   storage_use_azuread = true
 }
 
+provider "azurerm" {
+  alias = "connectivity"
+  features {}
+
+  subscription_id     = local.connectivity_subscription_id
+  storage_use_azuread = true
+}
+
 # =============================================================================
 # Remote State - Management Layer
 # =============================================================================
