@@ -22,3 +22,14 @@ module "vnet-spoke" {
 
   tags = local.common_tags
 }
+
+module "key_vault" {
+  source = "../../modules/key-vault"
+
+  name                       = "kv-${local.landing_zone}-${local.environment}-${local.location_short}-01"
+  location                   = local.location
+  tenant_id                  = data.azurerm_client_config.current.tenant_id
+  log_analytics_workspace_id = "" # Add Log Analytics workspace ID if diagnostic settings are enabled
+
+  tags = local.common_tags
+}

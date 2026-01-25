@@ -4,9 +4,16 @@
 # Creates an Azure Key Vault with RBAC authorization and diagnostic settings.
 # =============================================================================
 
+resource "azurerm_resource_group" "this" {
+  name     = var.resource_group_name
+  location = var.location
+
+  tags = var.tags
+}
+
 resource "azurerm_key_vault" "this" {
   name                          = var.name
-  resource_group_name           = var.resource_group_name
+  resource_group_name           = azurerm_resource_group.this.name
   location                      = var.location
   tenant_id                     = var.tenant_id
   sku_name                      = "standard"
