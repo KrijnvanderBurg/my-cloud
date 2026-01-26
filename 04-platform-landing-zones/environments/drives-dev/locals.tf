@@ -6,9 +6,11 @@ locals {
   # ---------------------------------------------------------------------------
   # Remote State Outputs
   # ---------------------------------------------------------------------------
-  tenant_id                    = data.terraform_remote_state.management.outputs.tenant_id
-  subscription_id              = data.terraform_remote_state.management.outputs.plz_drives_subscription.subscription_id
-  connectivity_subscription_id = data.terraform_remote_state.management.outputs.pl_connectivity_subscription.subscription_id
+  tenant_id                       = data.terraform_remote_state.management.outputs.tenant_id
+  subscription_id                 = data.terraform_remote_state.management.outputs.plz_drives_subscription.subscription_id
+  subscription_scope              = data.terraform_remote_state.management.outputs.plz_drives_subscription.id
+  connectivity_subscription_id    = data.terraform_remote_state.management.outputs.pl_connectivity_subscription.subscription_id
+  connectivity_subscription_scope = data.terraform_remote_state.management.outputs.pl_connectivity_subscription.id
 
   # Hub VNet from connectivity layer (for peering)
   hub_vnet_id             = data.terraform_remote_state.connectivity_weu.outputs.hub.id

@@ -30,8 +30,8 @@ module "network_manager" {
   resource_group_name     = "rg-netmgr-${local.landing_zone}-${local.environment}-${local.location_short}-01"
   location                = local.location
   scope_subscription_ids = [
-    "/subscriptions/${local.subscription_id}",
-    "/subscriptions/${local.connectivity_subscription_id}"
+    local.subscription_scope,
+    local.connectivity_subscription_scope
   ]
 
   tags = local.common_tags
