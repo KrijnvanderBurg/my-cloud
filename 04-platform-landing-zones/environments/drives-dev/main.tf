@@ -76,7 +76,7 @@ module "vnet_spoke" {
 # =============================================================================
 
 # module "key_vault" {
-#   source = "../../modules/key-vault"
+#   source = "../../modules/0-4key-vault"
 
 #   name                       = "kv-${local.landing_zone}-${local.environment}-${local.location_short}-01"
 #   resource_group_name        = "rg-security-${local.landing_zone}-${local.environment}-${local.location_short}-01"
