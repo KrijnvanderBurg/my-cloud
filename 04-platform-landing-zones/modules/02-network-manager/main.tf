@@ -15,12 +15,22 @@ terraform {
 }
 
 # -----------------------------------------------------------------------------
+# Resource Group
+# -----------------------------------------------------------------------------
+
+resource "azurerm_resource_group" "this" {
+  name     = var.resource_group_name
+  location = var.location
+  tags     = var.tags
+}
+
+# -----------------------------------------------------------------------------
 # Network Manager
 # -----------------------------------------------------------------------------
 
 resource "azurerm_network_manager" "this" {
   name                = var.name
-  resource_group_name = var.resource_group_name
+  resource_group_name = azurerm_resource_group.this.name
   location            = var.location
 
   scope {
