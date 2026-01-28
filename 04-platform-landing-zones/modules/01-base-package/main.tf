@@ -7,10 +7,6 @@
 # - Key Vault with RBAC authorization and diagnostic settings
 # =============================================================================
 
-# =============================================================================
-# Local Computed Names
-# =============================================================================
-
 locals {
   resource_group_name = "rg-connectivity-${var.landing_zone}-${var.environment}-${var.location_short}-01"
   log_analytics_name  = "law-${var.landing_zone}-${var.environment}-${var.location_short}-01"
@@ -26,5 +22,5 @@ resource "azurerm_resource_group" "this" {
 }
 
 # 01-log-analytics
-# 02-spoke-vnet
-# 03-keyvault
+# 02a-spoke-vnet
+# 02b-keyvault
