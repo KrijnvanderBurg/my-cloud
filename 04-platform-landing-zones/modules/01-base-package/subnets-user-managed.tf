@@ -61,6 +61,13 @@ resource "azurerm_network_security_group" "lz_managed" {
   tags = var.tags
 }
 
+resource "azurerm_subnet_network_security_group_association" "lz_managed" {
+  for_each = var.lz_managed_subnets
+
+  subnet_id                 = azurerm_subnet.lz_managed[each.key].id
+  network_security_group_id = azurerm_network_security_group.lz_managed[each.key].id
+}
+
 # -----------------------------------------------------------------------------
 # Route Tables (Explicit Route Control)
 # -----------------------------------------------------------------------------
@@ -75,21 +82,6 @@ resource "azurerm_route_table" "lz_managed" {
 
   tags = var.tags
 }
-
-# -----------------------------------------------------------------------------
-# NSG Associations
-# -----------------------------------------------------------------------------
-
-resource "azurerm_subnet_network_security_group_association" "lz_managed" {
-  for_each = var.lz_managed_subnets
-
-  subnet_id                 = azurerm_subnet.lz_managed[each.key].id
-  network_security_group_id = azurerm_network_security_group.lz_managed[each.key].id
-}
-
-# -----------------------------------------------------------------------------
-# Route Table Associations
-# -----------------------------------------------------------------------------
 
 resource "azurerm_subnet_route_table_association" "lz_managed" {
   for_each = var.lz_managed_subnets
