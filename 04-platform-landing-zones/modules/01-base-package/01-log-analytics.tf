@@ -88,5 +88,5 @@ resource "azurerm_log_analytics_data_export_rule" "to_storage" {
 resource "azurerm_log_analytics_workspace_table" "container_logs_basic" {
   workspace_id = azurerm_log_analytics_workspace.this.id
   name         = "ContainerLogV2" # High-volume table
-  plan         = "Basic"          # 50% cost reduction
+  plan         = "Basic"
 }
