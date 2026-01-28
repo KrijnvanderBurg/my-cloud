@@ -7,7 +7,7 @@ resource "azurerm_log_analytics_workspace" "this" {
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
   sku                 = "PerGB2018"
-  retention_in_days   = 7
+  retention_in_days   = 30
 
   daily_quota_gb = 1 # Daily ingestion cap in GB (prevents unexpected costs)
   tags           = var.tags
@@ -53,9 +53,9 @@ resource "azurerm_storage_management_policy" "logs_lifecycle" {
 
     actions {
       base_blob {
-        tier_to_cool_after_days_since_modification_greater_than    = 14 # Move to cool after 7 days
-        tier_to_archive_after_days_since_modification_greater_than = 30 # Archive after 30 days
-        delete_after_days_since_modification_greater_than          = 60 # Delete after 7 years (optional)
+        tier_to_cool_after_days_since_modification_greater_than    = 30 # Move to cool after 30 days
+        tier_to_archive_after_days_since_modification_greater_than = 60 # Archive after 60 days
+        delete_after_days_since_modification_greater_than          = 90 # Delete after 90 days (optional)
       }
     }
   }
