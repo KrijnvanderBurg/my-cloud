@@ -12,34 +12,26 @@
 # =============================================================================
 
 locals {
-  name_prefix = "${var.landing_zone}-${var.environment}-${var.location_short}"
-
-  # Resource names following naming convention
-  log_analytics_name                = "law-${local.name_prefix}-01"
-  log_analytics_resource_group_name = "rg-logs-${local.name_prefix}-01"
-
-  key_vault_name                = "kv-${local.name_prefix}-01"
-  key_vault_resource_group_name = "rg-security-${local.name_prefix}-01"
-
-  vnet_name           = "vnet-spoke-${local.name_prefix}-01"
-  resource_group_name = "rg-connectivity-${local.name_prefix}-01"
+  resource_group_name = "rg-connectivity-${var.landing_zone}-${var.environment}-${var.location_short}-01"
+  log_analytics_name  = "law-${var.landing_zone}-${var.environment}-${var.location_short}-01"
+  key_vault_name      = "kv-${var.landing_zone}-${var.environment}-${var.location_short}-01"
+  vnet_name           = "vnet-spoke-${var.landing_zone}-${var.environment}-${var.location_short}-01"
 }
 
-# =============================================================================
-# Log Analytics Resources
-# =============================================================================
-
-resource "azurerm_resource_group" "logs" {
-  name     = local.log_analytics_resource_group_name
+resource "azurerm_resource_group" "this" {
+  name     = local.resource_group_name
   location = var.location
 
   tags = var.tags
 }
 
+# =============================================================================
+# Log Analytics Resources
+# =============================================================================
 resource "azurerm_log_analytics_workspace" "this" {
   name                = local.log_analytics_name
-  resource_group_name = azurerm_resource_group.logs.name
-  location            = azurerm_resource_group.logs.location
+  resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.this.location
   sku                 = "PerGB2018"
   retention_in_days   = var.log_analytics_retention_in_days
 
@@ -50,16 +42,9 @@ resource "azurerm_log_analytics_workspace" "this" {
 # Spoke Network Resources
 # =============================================================================
 
-resource "azurerm_resource_group" "this" {
-  name     = local.resource_group_name
-  location = var.location
-
-  tags = var.tags
-}
-
 resource "azurerm_virtual_network" "this" {
   name                = local.vnet_name
-  location            = var.location
+  location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
   address_space       = var.address_space
 
@@ -95,31 +80,19 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
 # =============================================================================
 # Key Vault Resources
 # =============================================================================
-
-resource "azurerm_resource_group" "key_vault" {
-  name     = local.key_vault_resource_group_name
-  location = var.location
-
-  tags = var.tags
-}
-
 resource "azurerm_key_vault" "this" {
   name                          = local.key_vault_name
-  resource_group_name           = azurerm_resource_group.key_vault.name
-  location                      = var.location
+  resource_group_name           = azurerm_resource_group.this.name
+  location                      = azurerm_resource_group.this.location
   tenant_id                     = var.tenant_id
   sku_name                      = "standard"
-  soft_delete_retention_days    = 7
+  soft_delete_retention_days    = 30
   purge_protection_enabled      = false
   rbac_authorization_enabled    = true
   public_network_access_enabled = false
 
   tags = var.tags
 }
-
-# =============================================================================
-# Key Vault Diagnostic Settings
-# =============================================================================
 
 resource "azurerm_monitor_diagnostic_setting" "key_vault" {
   name                       = "diag-${local.key_vault_name}"
