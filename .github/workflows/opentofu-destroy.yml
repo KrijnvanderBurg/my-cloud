@@ -1,17 +1,32 @@
 name: OpenTofu Destroy
 description: Destroy OpenTofu-managed infrastructure from a given directory
-
 on:
   schedule:
     - cron: '0 2 * * *' # Runs every day at 2:00 UTC
   pull_request:
     types: [closed]
-
+  workflow_call:
+    inputs:
+      working_directory:
+        description: Path to the OpenTofu configuration directory
+        required: true
+        type: string
+      artifact_name:
+        description: Name for artifacts and display
+        required: true
+        type: string
+      state_key:
+        description: State file key for backend configuration
+        required: true
+        type: string
+      client_id:
+        description: Azure AD application client ID for OIDC authentication
+        required: false
+        type: string
 permissions:
   contents: read
   pull-requests: write
   id-token: write
-
 jobs:
   destroy:
     name: Destroy ${{ inputs.artifact_name }}
@@ -25,7 +40,6 @@ jobs:
         uses: azure/login@v2
         with:
           client-id: ${{ inputs.client_id }}
-          tenant-id: "90d27970-b92c-43dc-9935-1ed557d8e20e"
           allow-no-subscriptions: true
 
       - name: Install OpenTofu
