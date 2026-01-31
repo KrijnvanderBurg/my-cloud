@@ -17,10 +17,6 @@ resource "azurerm_key_vault" "this" {
   tags = var.tags
 }
 
-# =============================================================================
-# Diagnostic Settings
-# =============================================================================
-
 resource "azurerm_monitor_diagnostic_setting" "key_vault" {
   name                       = "diag-${local.key_vault_name}"
   target_resource_id         = azurerm_key_vault.this.id
