@@ -3,7 +3,7 @@ description: Lint and validate OpenTofu configuration files
 
 inputs:
   working_directory:
-    description: Absolute or relative path to the OpenTofu configuration directory
+    description: Path to the OpenTofu configuration directory
     required: true
 
 runs:

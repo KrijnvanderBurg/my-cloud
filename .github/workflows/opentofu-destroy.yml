@@ -1,75 +1,71 @@
 name: OpenTofu Destroy
-
+description: Destroy OpenTofu-managed infrastructure from a given directory
 on:
   schedule:
     - cron: '0 2 * * *' # Runs every day at 2:00 UTC
   pull_request:
     types: [closed]
-
+  workflow_call:
+    inputs:
+      working_directory:
+        description: Path to the OpenTofu configuration directory
+        required: true
+        type: string
+      artifact_name:
+        description: Name for artifacts and display
+        required: true
+        type: string
+      state_key:
+        description: State file key for backend configuration
+        required: true
+        type: string
+      client_id:
+        description: Azure AD application client ID for OIDC authentication
+        required: false
+        type: string
 permissions:
   contents: read
   pull-requests: write
   id-token: write
-
-
-
 jobs:
-  # ===== Platform Management (dev) =====
-  pl-management-dev-destroy:
-    name: pl-management-dev destroy
-    uses: ./.github/workflows/opentofu-destroy.yml
-    with:
-      working_directory: ./01-platform-management/environments/dev
-      artifact_name: pl-management-dev
-      state_key: pl-management-dev.tfstate
-      client_id: "bcba6fb0-afb6-4e1b-9517-dd7ffb35c2c6"
+  destroy:
+    name: Destroy ${{ inputs.artifact_name }}
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  # ===== Platform Identity (dev) =====
-  pl-identity-dev-destroy:
-    name: pl-identity-dev destroy
-    uses: ./.github/workflows/opentofu-destroy.yml
-    with:
-      working_directory: ./02-platform-identity/environments/dev
-      artifact_name: pl-identity-dev
-      state_key: pl-identity-dev.tfstate
-      client_id: "2972657a-4e99-44c6-80f8-1e265595c81b"
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ inputs.client_id }}
+          tenant-id: "90d27970-b92c-43dc-9935-1ed557d8e20e"
+          allow-no-subscriptions: true
 
-  # ===== Platform Connectivity (dev-weu) =====
-  pl-connectivity-dev-weu-destroy:
-    name: pl-connectivity-dev-weu destroy
-    uses: ./.github/workflows/opentofu-destroy.yml
-    with:
-      working_directory: ./03-platform-connectivity/environments/dev-weu
-      artifact_name: pl-connectivity-dev-weu
-      state_key: pl-connectivity-dev-weu.tfstate
-      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd"
+      - name: Install OpenTofu
+        uses: ./.github/actions/opentofu-install
+        with:
+          tofu_version: 1.8.0
 
-  # ===== Platform Connectivity (dev-gwc) =====
-  pl-connectivity-dev-gwc-destroy:
-    name: pl-connectivity-dev-gwc destroy
-    uses: ./.github/workflows/opentofu-destroy.yml
-    with:
-      working_directory: ./03-platform-connectivity/environments/dev-gwc
-      artifact_name: pl-connectivity-dev-gwc
-      state_key: pl-connectivity-dev-gwc.tfstate
-      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd"
+      - name: Initialize OpenTofu
+        uses: ./.github/actions/opentofu-init
+        with:
+          working_directory: ${{ inputs.working_directory }}
+          state_key: ${{ inputs.state_key }}
 
-  # ===== Platform Connectivity (dev-glb) =====
-  pl-connectivity-dev-glb-destroy:
-    name: pl-connectivity-dev-glb destroy
-    uses: ./.github/workflows/opentofu-destroy.yml
-    with:
-      working_directory: ./03-platform-connectivity/environments/dev-glb
-      artifact_name: pl-connectivity-dev-glb
-      state_key: pl-connectivity-dev-glb.tfstate
-      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd"
+      - name: Destroy resources
+        id: destroy
+        uses: ./.github/actions/opentofu-destroy
+        with:
+          working_directory: ${{ inputs.working_directory }}
 
-  # ===== Platform Landing Zone - Drives (dev) =====
-  plz-drives-dev-destroy:
-    name: plz-drives-dev destroy
-    uses: ./.github/workflows/opentofu-destroy.yml
-    with:
-      working_directory: ./04-platform-landing-zones/environments/drives-dev
-      artifact_name: plz-drives-dev
-      state_key: plz-drives-dev.tfstate
-      client_id: "e8716cc9-4c26-4f93-9feb-0860aedfe0e7"
+      - name: Post Destroy Result to PR
+        if: always()
+        uses: ./.github/actions/opentofu-apply-comment
+        with:
+          apply_output_file: ${{ steps.destroy.outputs.destroy_output_file }}
+          environment: ${{ inputs.artifact_name }}
+          working_directory: ${{ inputs.working_directory }}
+          apply_status: ${{ steps.destroy.outcome }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
