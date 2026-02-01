@@ -1,0 +1,84 @@
+name: OpenTofu Destroy All
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Runs every day at 2:00 UTC
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  # Destroy jobs in reverse dependency order to avoid missing dependencies during deletion that trigger alerts.
+
+  # ===== Platform Landing Zone - Drives (dev) =====
+  plz-drives-dev-destroy:
+    name: plz-drives-dev destroy
+    uses: ./.github/workflows/opentofu-destroy.yml
+    with:
+      working_directory: ./04-platform-landing-zones/environments/drives-dev
+      artifact_name: plz-drives-dev
+      state_key: plz-drives-dev.tfstate
+      client_id: "e8716cc9-4c26-4f93-9feb-0860aedfe0e7" # sp-plz-drives-on-dev-na-01
+
+  # ===== Platform Connectivity (dev-glb) =====
+  pl-connectivity-dev-glb-destroy:
+    name: pl-connectivity-dev-glb destroy
+    needs: [plz-drives-dev-destroy]
+    uses: ./.github/workflows/opentofu-destroy.yml
+    with:
+      working_directory: ./03-platform-connectivity/environments/dev-glb
+      artifact_name: pl-connectivity-dev-glb
+      state_key: pl-connectivity-dev-glb.tfstate
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
+
+  # ===== Platform Connectivity (dev-gwc) =====
+  pl-connectivity-dev-gwc-destroy:
+    name: pl-connectivity-dev-gwc destroy
+    needs: [plz-drives-dev-destroy]
+    uses: ./.github/workflows/opentofu-destroy.yml
+    with:
+      working_directory: ./03-platform-connectivity/environments/dev-gwc
+      artifact_name: pl-connectivity-dev-gwc
+      state_key: pl-connectivity-dev-gwc.tfstate
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
+
+  # ===== Platform Connectivity (dev-weu) =====
+  pl-connectivity-dev-weu-destroy:
+    name: pl-connectivity-dev-weu destroy
+    needs: [plz-drives-dev-destroy]
+    uses: ./.github/workflows/opentofu-destroy.yml
+    with:
+      working_directory: ./03-platform-connectivity/environments/dev-weu
+      artifact_name: pl-connectivity-dev-weu
+      state_key: pl-connectivity-dev-weu.tfstate
+      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
+
+  # ===== Platform Identity (dev) =====
+  pl-identity-dev-destroy:
+    name: pl-identity-dev destroy
+    needs: [pl-connectivity-dev-glb-destroy, pl-connectivity-dev-gwc-destroy, pl-connectivity-dev-weu-destroy]
+    uses: ./.github/workflows/opentofu-destroy.yml
+    with:
+      working_directory: ./02-platform-identity/environments/dev
+      artifact_name: pl-identity-dev
+      state_key: pl-identity-dev.tfstate
+      client_id: "2972657a-4e99-44c6-80f8-1e265595c81b" # sp-platform-identity-on-dev-na-01
+
+  # ===== Platform Management (dev) =====
+  pl-management-dev-destroy:
+    name: pl-management-dev destroy
+    needs: [pl-identity-dev-destroy]
+    uses: ./.github/workflows/opentofu-destroy.yml
+    with:
+      working_directory: ./01-platform-management/environments/dev
+      artifact_name: pl-management-dev
+      state_key: pl-management-dev.tfstate
+      client_id: "bcba6fb0-afb6-4e1b-9517-dd7ffb35c2c6" # sp-platform-management-on-dev-na-01

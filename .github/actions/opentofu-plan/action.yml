@@ -3,7 +3,7 @@ description: Generate and show OpenTofu execution plan
 
 inputs:
   working_directory:
-    description: Absolute or relative path to the OpenTofu configuration directory
+    description: Path to the OpenTofu configuration directory
     required: true
   plan_binary_file:
     description: Absolute path for the output binary plan file (used by apply)

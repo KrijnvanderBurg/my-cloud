@@ -3,7 +3,7 @@ description: Initialize OpenTofu working directory and download providers
 
 inputs:
   working_directory:
-    description: Absolute or relative path to the OpenTofu configuration directory
+    description: Path to the OpenTofu configuration directory
     required: true
   state_key:
     description: State file key for backend configuration

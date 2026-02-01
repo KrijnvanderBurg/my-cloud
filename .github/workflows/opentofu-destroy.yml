@@ -1,4 +1,4 @@
-name: OpenTofu Apply
+name: OpenTofu Destroy
 
 on:
   workflow_call:
@@ -29,12 +29,10 @@ env:
   ARM_CLIENT_ID: ${{ inputs.client_id }}
   ARM_TENANT_ID: "90d27970-b92c-43dc-9935-1ed557d8e20e"
   ARM_USE_OIDC: true
-  PLAN_BINARY_FILENAME: tfplan
-  APPLY_OUTPUT_FILENAME: apply-output.txt
 
 jobs:
-  apply:
-    name: Apply ${{ inputs.artifact_name }}
+  destroy:
+    name: Destroy ${{ inputs.artifact_name }}
     runs-on: ubuntu-latest
     environment: dev
     steps:
@@ -44,7 +42,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
-          client-id: ${{ env.ARM_CLIENT_ID }}
+          client-id: ${{ inputs.client_id }}
           tenant-id: ${{ env.ARM_TENANT_ID }}
           allow-no-subscriptions: true
 
@@ -59,33 +57,18 @@ jobs:
           working_directory: ${{ inputs.working_directory }}
           state_key: ${{ inputs.state_key }}
 
-      - name: Download Plan Binary Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan-${{ inputs.artifact_name }}-binary
-          path: ${{ runner.temp }}
-
-      - name: Show Plan Before Applying
-        working-directory: ${{ inputs.working_directory }}
-        run: |
-          echo "::group::📋 Plan to be applied"
-          tofu show ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.PLAN_BINARY_FILENAME }}
-          echo "::endgroup::"
-
-      - name: Apply changes
-        id: apply
-        uses: ./.github/actions/opentofu-apply
+      - name: Destroy resources
+        id: destroy
+        uses: ./.github/actions/opentofu-destroy
         with:
           working_directory: ${{ inputs.working_directory }}
-          plan_binary_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.PLAN_BINARY_FILENAME }}
-          apply_output_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.APPLY_OUTPUT_FILENAME }}
 
-      - name: Post Apply Result to PR
+      - name: Post Destroy Result to PR
         if: always()
         uses: ./.github/actions/opentofu-apply-comment
         with:
-          apply_output_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.APPLY_OUTPUT_FILENAME }}
+          apply_output_file: ${{ steps.destroy.outputs.destroy_output_file }}
           environment: ${{ inputs.artifact_name }}
           working_directory: ${{ inputs.working_directory }}
-          apply_status: ${{ steps.apply.outcome }}
+          apply_status: ${{ steps.destroy.outcome }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

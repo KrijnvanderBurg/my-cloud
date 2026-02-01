@@ -86,7 +86,8 @@ resource "azurerm_log_analytics_data_export_rule" "to_storage" {
 # Configure via azurerm_log_analytics_workspace_table resource
 
 resource "azurerm_log_analytics_workspace_table" "container_logs_basic" {
-  workspace_id = azurerm_log_analytics_workspace.this.id
-  name         = "ContainerLogV2" # High-volume table
-  plan         = "Basic"
+  workspace_id            = azurerm_log_analytics_workspace.this.id
+  name                    = "ContainerLogV2" # High-volume table
+  plan                    = "Basic"
+  total_retention_in_days = 30 # Must match workspace retention or use allowed values
 }

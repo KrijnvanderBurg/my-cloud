@@ -3,7 +3,7 @@ description: Apply OpenTofu configuration changes from a saved plan
 
 inputs:
   working_directory:
-    description: Absolute or relative path to the OpenTofu configuration directory
+    description: Path to the OpenTofu configuration directory
     required: true
   plan_binary_file:
     description: Absolute path to the binary plan file to apply
