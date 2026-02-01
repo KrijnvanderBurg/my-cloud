@@ -63,12 +63,13 @@ jobs:
         with:
           working_directory: ${{ inputs.working_directory }}
 
-      - name: Post Destroy Result to PR
-        if: always()
-        uses: ./.github/actions/opentofu-apply-comment
-        with:
-          apply_output_file: ${{ steps.destroy.outputs.destroy_output_file }}
-          environment: ${{ inputs.artifact_name }}
-          working_directory: ${{ inputs.working_directory }}
-          apply_status: ${{ steps.destroy.outcome }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      # Too many post-destroy comments can spam PRs; disable for now
+      # - name: Post Destroy Result to PR
+      #   if: always()
+      #   uses: ./.github/actions/opentofu-apply-comment
+      #   with:
+      #     apply_output_file: ${{ steps.destroy.outputs.destroy_output_file }}
+      #     environment: ${{ inputs.artifact_name }}
+      #     working_directory: ${{ inputs.working_directory }}
+      #     apply_status: ${{ steps.destroy.outcome }}
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
