@@ -16,6 +16,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Destroy jobs in reverse dependency order to avoid missing dependencies during deletion that trigger alerts.
+
   # ===== Platform Landing Zone - Drives (dev) =====
   plz-drives-dev-destroy:
     name: plz-drives-dev destroy
