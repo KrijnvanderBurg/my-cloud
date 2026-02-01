@@ -1,10 +1,6 @@
 name: OpenTofu Destroy
-description: Destroy OpenTofu-managed infrastructure from a given directory
+
 on:
-  schedule:
-    - cron: '0 2 * * *' # Runs every day at 2:00 UTC
-  pull_request:
-    types: [closed]
   workflow_call:
     inputs:
       working_directory:
@@ -28,6 +24,10 @@ permissions:
   contents: read
   pull-requests: write
   id-token: write
+
+env:
+  ARM_CLIENT_ID: ${{ inputs.client_id }}
+  ARM_USE_OIDC: true
 
 jobs:
   destroy:
