@@ -3,8 +3,8 @@ name: OpenTofu Destroy All
 on:
   schedule:
     - cron: '0 2 * * *' # Runs every day at 2:00 UTC
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
+  # pull_request:
+  #   types: [opened, synchronize, reopened, closed]
 
 permissions:
   contents: read
