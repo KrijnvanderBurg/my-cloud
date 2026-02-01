@@ -16,8 +16,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Destroy jobs in reverse dependency order to avoid missing dependencies during deletion that trigger alerts.
-
   # ===== Platform Landing Zone - Drives (dev) =====
   plz-drives-dev-destroy:
     name: plz-drives-dev destroy
@@ -31,7 +29,6 @@ jobs:
   # ===== Platform Connectivity (dev-glb) =====
   pl-connectivity-dev-glb-destroy:
     name: pl-connectivity-dev-glb destroy
-    needs: [plz-drives-dev-destroy]
     uses: ./.github/workflows/opentofu-destroy.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-glb
@@ -42,7 +39,6 @@ jobs:
   # ===== Platform Connectivity (dev-gwc) =====
   pl-connectivity-dev-gwc-destroy:
     name: pl-connectivity-dev-gwc destroy
-    needs: [plz-drives-dev-destroy]
     uses: ./.github/workflows/opentofu-destroy.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-gwc
@@ -53,7 +49,6 @@ jobs:
   # ===== Platform Connectivity (dev-weu) =====
   pl-connectivity-dev-weu-destroy:
     name: pl-connectivity-dev-weu destroy
-    needs: [plz-drives-dev-destroy]
     uses: ./.github/workflows/opentofu-destroy.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-weu
@@ -64,7 +59,6 @@ jobs:
   # ===== Platform Identity (dev) =====
   pl-identity-dev-destroy:
     name: pl-identity-dev destroy
-    needs: [pl-connectivity-dev-glb-destroy, pl-connectivity-dev-gwc-destroy, pl-connectivity-dev-weu-destroy]
     uses: ./.github/workflows/opentofu-destroy.yml
     with:
       working_directory: ./02-platform-identity/environments/dev
@@ -75,7 +69,6 @@ jobs:
   # ===== Platform Management (dev) =====
   pl-management-dev-destroy:
     name: pl-management-dev destroy
-    needs: [pl-identity-dev-destroy]
     uses: ./.github/workflows/opentofu-destroy.yml
     with:
       working_directory: ./01-platform-management/environments/dev
