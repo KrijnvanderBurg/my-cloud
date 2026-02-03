@@ -5,16 +5,6 @@ on:
     types: [opened, synchronize, reopened, closed]
   push:
     branches: [main]
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Environment to deploy'
-        required: true
-        type: choice
-        options:
-          - dev
-          - prod
-        default: dev
 
 permissions:
   contents: read
@@ -22,36 +12,10 @@ permissions:
   id-token: write
 
 concurrency:
-  group: opentofu-${{ github.event.inputs.environment || (github.event_name == 'push' && 'prod') || 'dev' }}
+  group: opentofu-operations
   cancel-in-progress: false
 
-# =============================================================================
-# DEPLOYMENT CONFIGURATION
-# =============================================================================
-# Dev Environment:
-#   - Triggered on: pull_request events
-#   - Approval gates: None (auto-deploy on PR merge)
-#   - State backend: Uses default values from backend.tf in each environment
-#
-# Prod Environment:
-#   - Triggered on: push to main, workflow_dispatch with prod selected
-#   - Approval gates: Requires GitHub Environment approval (configure in repo settings)
-#   - State backend: sttfstatecoprodgwc01 / rg-tfstate-co-prod-gwc-01
-#
-# TODO: Prod Setup Checklist:
-#   1. Create Azure subscriptions for prod platform layers
-#   2. Create prod state storage account (sttfstatecoprodgwc01)
-#   3. Create service principals with federated credentials for environment:prod
-#   4. Update client_id values in prod jobs below
-#   5. Create GitHub 'prod' environment with required reviewers in repo settings
-#   6. Create prod environment folders (01-platform-management/environments/prod/, etc.)
-# =============================================================================
-
 jobs:
-  # ===========================================================================
-  # DEV ENVIRONMENT - Triggered on Pull Requests
-  # ===========================================================================
-
   # ===== Platform Management (dev) =====
   deploy-management-dev:
     name: 🔧 Management (dev)
@@ -61,11 +25,11 @@ jobs:
       working_directory: ./01-platform-management/environments/dev
       artifact_name: pl-management-dev
       state_key: pl-management-dev.tfstate
-      client_id: "bcba6fb0-afb6-4e1b-9517-dd7ffb35c2c6" # sp-platform-management-on-dev-na-01
+      client_id: bcba6fb0-afb6-4e1b-9517-dd7ffb35c2c6 # sp-platform-management-on-dev-na-01
       environment: dev
-      state_storage_account: "sttfstatecodevgwc01"
-      state_resource_group: "rg-tfstate-co-dev-gwc-01"
-      state_container: "tfstate"
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate
 
   # ===== Platform Identity (dev) =====
   deploy-identity-dev:
@@ -77,11 +41,11 @@ jobs:
       working_directory: ./02-platform-identity/environments/dev
       artifact_name: pl-identity-dev
       state_key: pl-identity-dev.tfstate
-      client_id: "2972657a-4e99-44c6-80f8-1e265595c81b" # sp-platform-identity-on-dev-na-01
+      client_id: 2972657a-4e99-44c6-80f8-1e265595c81b # sp-platform-identity-on-dev-na-01
       environment: dev
-      state_storage_account: "sttfstatecodevgwc01"
-      state_resource_group: "rg-tfstate-co-dev-gwc-01"
-      state_container: "tfstate"
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate
 
   # ===== Platform Connectivity West Europe (dev) =====
   deploy-connectivity-weu-dev:
@@ -93,11 +57,11 @@ jobs:
       working_directory: ./03-platform-connectivity/environments/dev-weu
       artifact_name: pl-connectivity-dev-weu
       state_key: pl-connectivity-dev-weu.tfstate
-      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
+      client_id: 869a0c27-8210-4f91-8a16-80082b8462fd # sp-platform-connectivity-on-dev-na-01
       environment: dev
-      state_storage_account: "sttfstatecodevgwc01"
-      state_resource_group: "rg-tfstate-co-dev-gwc-01"
-      state_container: "tfstate"
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate
 
   # ===== Platform Connectivity Germany West Central (dev) =====
   deploy-connectivity-gwc-dev:
@@ -109,11 +73,11 @@ jobs:
       working_directory: ./03-platform-connectivity/environments/dev-gwc
       artifact_name: pl-connectivity-dev-gwc
       state_key: pl-connectivity-dev-gwc.tfstate
-      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
+      client_id: 869a0c27-8210-4f91-8a16-80082b8462fd # sp-platform-connectivity-on-dev-na-01
       environment: dev
-      state_storage_account: "sttfstatecodevgwc01"
-      state_resource_group: "rg-tfstate-co-dev-gwc-01"
-      state_container: "tfstate"
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate
 
   # ===== Platform Connectivity Global (dev) =====
   deploy-connectivity-glb-dev:
@@ -125,11 +89,11 @@ jobs:
       working_directory: ./03-platform-connectivity/environments/dev-glb
       artifact_name: pl-connectivity-dev-glb
       state_key: pl-connectivity-dev-glb.tfstate
-      client_id: "869a0c27-8210-4f91-8a16-80082b8462fd" # sp-platform-connectivity-on-dev-na-01
+      client_id: 869a0c27-8210-4f91-8a16-80082b8462fd # sp-platform-connectivity-on-dev-na-01
       environment: dev
-      state_storage_account: "sttfstatecodevgwc01"
-      state_resource_group: "rg-tfstate-co-dev-gwc-01"
-      state_container: "tfstate"
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate
 
   # ===== Platform Landing Zone - Drives (dev) =====
   deploy-drives-dev:
@@ -141,113 +105,8 @@ jobs:
       working_directory: ./04-platform-landing-zones/environments/drives-dev
       artifact_name: plz-drives-dev
       state_key: plz-drives-dev.tfstate
-      client_id: "e8716cc9-4c26-4f93-9feb-0860aedfe0e7" # sp-plz-drives-on-dev-na-01
+      client_id: e8716cc9-4c26-4f93-9feb-0860aedfe0e7 # sp-plz-drives-on-dev-na-01
       environment: dev
-      state_storage_account: "sttfstatecodevgwc01"
-      state_resource_group: "rg-tfstate-co-dev-gwc-01"
-      state_container: "tfstate"
-
-  # ===========================================================================
-  # PROD ENVIRONMENT - Triggered on Push to Main or Manual Dispatch
-  # ===========================================================================
-  # NOTE: Prod deployments require:
-  #   - GitHub 'prod' environment configured with required reviewers
-  #   - Prod service principals created and client_id values updated below
-  #   - Prod state storage account created
-  #   - Prod environment folders created in each platform directory
-  # ===========================================================================
-
-  # ===== Platform Management (prod) =====
-  deploy-management-prod:
-    name: 🔧 Management (prod)
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod')
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
-    with:
-      working_directory: ./01-platform-management/environments/prod
-      artifact_name: pl-management-prod
-      state_key: pl-management-prod.tfstate
-      client_id: "TODO-PROD-SP-MANAGEMENT" # TODO: Replace with sp-platform-management-on-prod-na-01 client ID
-      environment: prod
-      state_storage_account: "sttfstatecoprodgwc01"      # TODO: Create this storage account
-      state_resource_group: "rg-tfstate-co-prod-gwc-01"  # TODO: Create this resource group
-      state_container: "tfstate"
-
-  # ===== Platform Identity (prod) =====
-  deploy-identity-prod:
-    name: 🔑 Identity (prod)
-    needs: [deploy-management-prod]
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod')
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
-    with:
-      working_directory: ./02-platform-identity/environments/prod
-      artifact_name: pl-identity-prod
-      state_key: pl-identity-prod.tfstate
-      client_id: "TODO-PROD-SP-IDENTITY" # TODO: Replace with sp-platform-identity-on-prod-na-01 client ID
-      environment: prod
-      state_storage_account: "sttfstatecoprodgwc01"
-      state_resource_group: "rg-tfstate-co-prod-gwc-01"
-      state_container: "tfstate"
-
-  # ===== Platform Connectivity West Europe (prod) =====
-  deploy-connectivity-weu-prod:
-    name: 🌐 Connectivity WEU (prod)
-    needs: [deploy-identity-prod]
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod')
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
-    with:
-      working_directory: ./03-platform-connectivity/environments/prod-weu
-      artifact_name: pl-connectivity-prod-weu
-      state_key: pl-connectivity-prod-weu.tfstate
-      client_id: "TODO-PROD-SP-CONNECTIVITY" # TODO: Replace with sp-platform-connectivity-on-prod-na-01 client ID
-      environment: prod
-      state_storage_account: "sttfstatecoprodgwc01"
-      state_resource_group: "rg-tfstate-co-prod-gwc-01"
-      state_container: "tfstate"
-
-  # ===== Platform Connectivity Germany West Central (prod) =====
-  deploy-connectivity-gwc-prod:
-    name: 🌐 Connectivity GWC (prod)
-    needs: [deploy-connectivity-weu-prod]
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod')
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
-    with:
-      working_directory: ./03-platform-connectivity/environments/prod-gwc
-      artifact_name: pl-connectivity-prod-gwc
-      state_key: pl-connectivity-prod-gwc.tfstate
-      client_id: "TODO-PROD-SP-CONNECTIVITY" # TODO: Replace with sp-platform-connectivity-on-prod-na-01 client ID
-      environment: prod
-      state_storage_account: "sttfstatecoprodgwc01"
-      state_resource_group: "rg-tfstate-co-prod-gwc-01"
-      state_container: "tfstate"
-
-  # ===== Platform Connectivity Global (prod) =====
-  deploy-connectivity-glb-prod:
-    name: 🌐 Connectivity GLB (prod)
-    needs: [deploy-connectivity-gwc-prod]
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod')
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
-    with:
-      working_directory: ./03-platform-connectivity/environments/prod-glb
-      artifact_name: pl-connectivity-prod-glb
-      state_key: pl-connectivity-prod-glb.tfstate
-      client_id: "TODO-PROD-SP-CONNECTIVITY" # TODO: Replace with sp-platform-connectivity-on-prod-na-01 client ID
-      environment: prod
-      state_storage_account: "sttfstatecoprodgwc01"
-      state_resource_group: "rg-tfstate-co-prod-gwc-01"
-      state_container: "tfstate"
-
-  # ===== Platform Landing Zone - Drives (prod) =====
-  deploy-drives-prod:
-    name: 🚀 Landing Zone Drives (prod)
-    needs: [deploy-connectivity-glb-prod]
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'prod')
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
-    with:
-      working_directory: ./04-platform-landing-zones/environments/drives-prod
-      artifact_name: plz-drives-prod
-      state_key: plz-drives-prod.tfstate
-      client_id: "TODO-PROD-SP-PLZ-DRIVES" # TODO: Replace with sp-plz-drives-on-prod-na-01 client ID
-      environment: prod
-      state_storage_account: "sttfstatecoprodgwc01"
-      state_resource_group: "rg-tfstate-co-prod-gwc-01"
-      state_container: "tfstate"
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate
