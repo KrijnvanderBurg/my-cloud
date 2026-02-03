@@ -75,3 +75,7 @@ jobs:
       artifact_name: pl-management-dev
       state_key: pl-management-dev.tfstate
       client_id: "e7ca86e6-c986-4d07-81c2-7b90f0f856a9" # sp-pl-management-on-dev-na-01
+      environment: dev
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate-pl-management
