@@ -87,14 +87,8 @@ All steps performed to setup initial infrastructure and to current state.
     az role assignment create --assignee $SP_ID --role "Contributor" \
       --scope "/subscriptions/9312c5c5-b089-4b62-bb90-0d92d421d66c"
 
-    az role assignment create --assignee $SP_ID --role "User Access Administrator" \
-      --scope "/subscriptions/e388ddce-c79d-4db0-8a6f-cd69b1708954"
-
-    az role assignment create --assignee $SP_ID --role "User Access Administrator" \
-      --scope "/subscriptions/6018b0fb-7b8c-491f-8abf-375d2c07ef97"
-
-    az role assignment create --assignee $SP_ID --role "User Access Administrator" \
-      --scope "/subscriptions/4111975b-f6ca-4e08-b7b6-87d7b6c35840"
+    az role assignment create --assignee "2972657a-4e99-44c6-80f8-1e265595c81b" --role "User Access Administrator" \
+      --scope "/providers/Microsoft.Management/managementGroups/90d27970-b92c-43dc-9935-1ed557d8e20e"
 
     az role assignment create --assignee $SP_ID --role "Storage Blob Data Contributor" \
       --scope "/subscriptions/e388ddce-c79d-4db0-8a6f-cd69b1708954/resourceGroups/rg-tfstate-co-dev-gwc-01/providers/Microsoft.Storage/storageAccounts/sttfstatecodevgwc01"
