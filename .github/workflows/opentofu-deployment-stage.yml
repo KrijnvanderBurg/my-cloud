@@ -28,6 +28,7 @@ on:
         required: false
         type: string
         default: "90d27970-b92c-43dc-9935-1ed557d8e20e"
+
       # State backend configuration
       state_storage_account:
         description: Azure Storage Account name for state backend
@@ -56,15 +57,10 @@ env:
   APPLY_OUTPUT_FILENAME: apply-output.txt
 
 jobs:
-  # ===== Lint, Plan, and Apply Job =====
-  # Note: For production environments, configure environment protection rules
-  # in GitHub Settings > Environments > prod to require manual approval before apply steps
   deploy:
     name: Lint, Plan & Apply
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    env:
-      TF_VAR_allowed_ips: ${{ secrets.ALLOWED_IPS }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
