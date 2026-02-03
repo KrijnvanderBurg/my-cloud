@@ -3,8 +3,6 @@ target_path="${1:?Target path is required}"
 plan_file="${2:?Plan file is required}"
 output_file="${3:-}"
 
-source "$(dirname "$0")/opentofu-install.sh"
-
 cd "$target_path" || exit 1
 
 # Run apply and capture output if output file is specified

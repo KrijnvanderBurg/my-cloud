@@ -74,17 +74,15 @@ jobs:
 
       - name: Install OpenTofu
         uses: ./.github/actions/opentofu-install
-        with:
-          tofu_version: 1.8.0
 
       - name: Initialize OpenTofu
         uses: ./.github/actions/opentofu-init
         with:
           working_directory: ${{ inputs.working_directory }}
-          state_key: ${{ inputs.state_key }}
           storage_account_name: ${{ inputs.state_storage_account }}
           resource_group_name: ${{ inputs.state_resource_group }}
           container_name: ${{ inputs.state_container }}
+          state_key: ${{ inputs.state_key }}
 
       - name: Lint configuration
         uses: ./.github/actions/opentofu-lint
@@ -119,8 +117,8 @@ jobs:
         if: always() && github.event_name == 'pull_request'
         uses: ./.github/actions/opentofu-apply-comment
         with:
-          apply_output_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.APPLY_OUTPUT_FILENAME }}
           environment: ${{ inputs.environment }}
+          apply_output_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.APPLY_OUTPUT_FILENAME }}
           working_directory: ${{ inputs.working_directory }}
           apply_status: ${{ steps.apply.outcome }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
