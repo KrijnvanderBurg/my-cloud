@@ -1,21 +1,21 @@
-# name: OpenTofu Destroy All
+name: OpenTofu Destroy All
 
-# # on:
-# #   schedule:
-# #     - cron: '0 2 * * *' # Runs every day at 2:00 UTC
-#   # pull_request:
-#   #   types: [opened, synchronize, reopened, closed]
+# on:
+#   schedule:
+#     - cron: '0 2 * * *' # Runs every day at 2:00 UTC
+  # pull_request:
+  #   types: [opened, synchronize, reopened, closed]
 
-# permissions:
-#   contents: read
-#   pull-requests: write
-#   id-token: write
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
 
-# concurrency:
-#   group: opentofu-operations
-#   cancel-in-progress: false
+concurrency:
+  group: opentofu-operations
+  cancel-in-progress: false
 
-# jobs:
+jobs:
 #   # ===== Platform Landing Zone - Drives (dev) =====
 #   plz-drives-dev-destroy:
 #     name: plz-drives-dev destroy
