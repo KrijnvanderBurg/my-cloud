@@ -15,6 +15,10 @@ resource "azurerm_key_vault" "this" {
   public_network_access_enabled = false
 
   tags = var.tags
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "azurerm_monitor_diagnostic_setting" "key_vault" {

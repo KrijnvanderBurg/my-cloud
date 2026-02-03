@@ -30,12 +30,20 @@ resource "azurerm_storage_account" "logs" {
   allow_nested_items_to_be_public = false
 
   tags = var.tags
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "azurerm_storage_container" "logs" {
   name                  = "law-export"
   storage_account_id    = azurerm_storage_account.logs.id
   container_access_type = "private"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Lifecycle policy: Hot (30d) → Cool (90d) → Archive (indefinite)
