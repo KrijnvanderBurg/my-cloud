@@ -42,7 +42,7 @@ All steps performed to setup initial infrastructure and to current state.
 6. **Created sp-platform-management Service Principal (Manual - Identity deployment comes later):**
    ```bash
    # Create app and service principal
-   az ad app create --display-name "sp-platform-management-co-dev-na-01"
+   az ad app create --display-name "sp-pl-management-co-dev-na-01"
    az ad sp create --id $(az ad app list --display-name "sp-platform-management-co-dev-na-01" --query "[0].appId" -o tsv)
 
    # Create GitHub federated credential
@@ -66,7 +66,7 @@ All steps performed to setup initial infrastructure and to current state.
 7. **Created sp-platform-identity Service Principal (Manual - Cannot Manage Itself):**
     ```bash
     # Create app and service principal
-    az ad app create --display-name "sp-platform-identity-co-dev-na-01"
+    az ad app create --display-name "sp-pl-identity-co-dev-na-01"
     az ad sp create --id $(az ad app list --display-name "sp-platform-identity-co-dev-na-01" --query "[0].appId" -o tsv)
 
     # Create GitHub federated credential
