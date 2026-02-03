@@ -59,6 +59,9 @@ All steps performed to setup initial infrastructure and to current state.
    az role assignment create --assignee $SP_ID --role "Resource Policy Contributor" \
      --scope "/providers/Microsoft.Management/managementGroups/90d27970-b92c-43dc-9935-1ed557d8e20e"
 
+   az role assignment create --assignee $SP_ID --role "User Access Administrator" \
+     --scope "/providers/Microsoft.Management/managementGroups/90d27970-b92c-43dc-9935-1ed557d8e20e"
+
    az role assignment create --assignee $SP_ID --role "Storage Blob Data Contributor" \
      --scope "/subscriptions/e388ddce-c79d-4db0-8a6f-cd69b1708954/resourceGroups/rg-tfstate-co-dev-gwc-01/providers/Microsoft.Storage/storageAccounts/sttfstatecodevgwc01"
    ```
