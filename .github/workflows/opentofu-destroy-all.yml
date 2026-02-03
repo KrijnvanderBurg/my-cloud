@@ -16,6 +16,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # destroy in reverse order of deployment
+  # because of dependencies and remote data objects that otherwise do not exist anymore.
+
   # ===== Platform Landing Zone - Drives (dev) =====
   plz-drives-dev:
     name: plz-drives-dev destroy
