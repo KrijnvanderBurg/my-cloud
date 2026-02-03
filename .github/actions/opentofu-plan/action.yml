@@ -26,9 +26,9 @@ runs:
     - name: Plan OpenTofu changes
       id: plan
       shell: bash
+      working-directory: ${{ inputs.working_directory }}
       run: |
         bash ${{ github.workspace }}/.github/scripts/opentofu-plan.sh \
-          "${{ inputs.working_directory }}" \
           "" \
           "${{ inputs.plan_binary_file }}" \
           "${{ inputs.plan_text_file }}"

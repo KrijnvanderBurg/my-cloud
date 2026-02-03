@@ -1,7 +1,6 @@
 name: OpenTofu Destroy
 description: Destroy OpenTofu-managed infrastructure in a directory
 
-
 inputs:
   working_directory:
     description: Path to the OpenTofu configuration directory
@@ -22,7 +21,7 @@ runs:
     - name: Destroy OpenTofu resources
       id: destroy
       shell: bash
+      working-directory: ${{ inputs.working_directory }}
       run: |
         bash ${{ github.workspace }}/.github/scripts/opentofu-destroy.sh \
-          "${{ inputs.working_directory }}" \
           "${{ inputs.destroy_output_file }}"

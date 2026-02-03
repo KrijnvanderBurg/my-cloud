@@ -5,9 +5,6 @@ inputs:
   working_directory:
     description: Path to the OpenTofu configuration directory
     required: true
-  state_key:
-    description: State file key for backend configuration
-    required: true
   storage_account_name:
     description: Azure Storage Account name for state backend
     required: true
@@ -17,11 +14,14 @@ inputs:
   container_name:
     description: Azure Storage Container name for state backend
     required: true
+  state_key:
+    description: State file key for backend configuration
+    required: true
 
 runs:
   using: composite
   steps:
-    - name: Initialize OpenTofu
+    - name: OpenTofu init
       id: init
       shell: bash
       working-directory: ${{ inputs.working_directory }}

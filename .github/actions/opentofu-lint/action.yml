@@ -11,6 +11,6 @@ runs:
   steps:
     - name: Lint OpenTofu configuration
       shell: bash
+      working-directory: ${{ inputs.working_directory }}
       run: |
-        bash ${{ github.workspace }}/.github/scripts/opentofu-lint.sh \
-          ${{ inputs.working_directory }}
+        bash ${{ github.workspace }}/.github/scripts/opentofu-lint.sh
