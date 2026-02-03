@@ -16,10 +16,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # ===== Platform Management (dev) =====
+  # ===== Platform Management =====
   deploy-management-dev:
-    name: 🔧 Management (dev)
-    if: github.event_name == 'pull_request'
+    name: Management
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./01-platform-management/environments/dev
@@ -31,11 +30,10 @@ jobs:
       state_resource_group: rg-tfstate-co-dev-gwc-01
       state_container: tfstate
 
-  # ===== Platform Identity (dev) =====
+  # ===== Platform Identity =====
   deploy-identity-dev:
-    name: 🔑 Identity (dev)
+    name: Identity
     needs: [deploy-management-dev]
-    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./02-platform-identity/environments/dev
@@ -47,11 +45,10 @@ jobs:
       state_resource_group: rg-tfstate-co-dev-gwc-01
       state_container: tfstate
 
-  # ===== Platform Connectivity West Europe (dev) =====
+  # ===== Platform Connectivity West Europe =====
   deploy-connectivity-weu-dev:
-    name: 🌐 Connectivity WEU (dev)
+    name: Connectivity WEU
     needs: [deploy-identity-dev]
-    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-weu
@@ -63,11 +60,10 @@ jobs:
       state_resource_group: rg-tfstate-co-dev-gwc-01
       state_container: tfstate
 
-  # ===== Platform Connectivity Germany West Central (dev) =====
+  # ===== Platform Connectivity Germany West Central =====
   deploy-connectivity-gwc-dev:
-    name: 🌐 Connectivity GWC (dev)
+    name: Connectivity GWC
     needs: [deploy-connectivity-weu-dev]
-    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-gwc
@@ -79,11 +75,10 @@ jobs:
       state_resource_group: rg-tfstate-co-dev-gwc-01
       state_container: tfstate
 
-  # ===== Platform Connectivity Global (dev) =====
+  # ===== Platform Connectivity Global =====
   deploy-connectivity-glb-dev:
-    name: 🌐 Connectivity GLB (dev)
+    name: Connectivity GLB
     needs: [deploy-connectivity-gwc-dev]
-    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-glb
@@ -95,11 +90,10 @@ jobs:
       state_resource_group: rg-tfstate-co-dev-gwc-01
       state_container: tfstate
 
-  # ===== Platform Landing Zone - Drives (dev) =====
+  # ===== Platform Landing Zone - Drives =====
   deploy-drives-dev:
-    name: 🚀 Landing Zone Drives (dev)
+    name: Landing Zone Drives
     needs: [deploy-connectivity-glb-dev]
-    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./04-platform-landing-zones/environments/drives-dev
