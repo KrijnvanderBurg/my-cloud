@@ -17,8 +17,8 @@ concurrency:
 
 jobs:
   # ===== Platform Management =====
-  deploy-management-dev:
-    name: Management
+  pl-management-dev:
+    name: pl-management-dev
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./01-platform-management/environments/dev
@@ -31,9 +31,9 @@ jobs:
       state_container: tfstate-pl-management
 
   # ===== Platform Identity =====
-  deploy-identity-dev:
-    name: Identity
-    needs: [deploy-management-dev]
+  pl-identity-dev:
+    name: pl-identity-dev
+    needs: [pl-management-dev]
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./02-platform-identity/environments/dev
@@ -45,10 +45,10 @@ jobs:
       state_resource_group: rg-tfstate-co-dev-gwc-01
       state_container: tfstate-pl-identity
 
-  # ===== Platform Connectivity West Europe =====
-  deploy-connectivity-weu-dev:
-    name: Connectivity WEU
-    needs: [deploy-identity-dev]
+  # ===== Platform connectivity West Europe =====
+  pl-connectivity-weu-dev:
+    name: pl-connectivity-weu-dev
+    needs: [pl-identity-dev]
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-weu
@@ -60,10 +60,10 @@ jobs:
       state_resource_group: rg-tfstate-co-dev-gwc-01
       state_container: tfstate-pl-connectivity
 
-  # ===== Platform Connectivity Germany West Central =====
-  deploy-connectivity-gwc-dev:
-    name: Connectivity GWC
-    needs: [deploy-connectivity-weu-dev]
+  # ===== Platform connectivity Germany West Central =====
+  pl-connectivity-gwc-dev:
+    name: pl-connectivity-gwc-dev
+    needs: [pl-identity-dev]
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-gwc
@@ -75,10 +75,10 @@ jobs:
       state_resource_group: rg-tfstate-co-dev-gwc-01
       state_container: tfstate-pl-connectivity
 
-  # ===== Platform Connectivity Global =====
-  deploy-connectivity-glb-dev:
-    name: Connectivity GLB
-    needs: [deploy-connectivity-gwc-dev]
+  # ===== Platform connectivity Global =====
+  pl-connectivity-glb-dev:
+    name: pl-connectivity-glb-dev
+    needs: [pl-connectivity-weu-dev, pl-connectivity-gwc-dev]
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-glb
@@ -91,9 +91,9 @@ jobs:
       state_container: tfstate-pl-connectivity
 
   # ===== Platform Landing Zone - Drives =====
-  deploy-drives-dev:
-    name: Landing Zone Drives
-    needs: [deploy-connectivity-glb-dev]
+  plz-drives-dev:
+    name: plz-drives-dev
+    needs: [pl-connectivity-glb-dev]
     uses: ./.github/workflows/opentofu-deployment-stage.yml
     with:
       working_directory: ./04-platform-landing-zones/environments/drives-dev
