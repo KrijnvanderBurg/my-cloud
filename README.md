@@ -93,3 +93,5 @@ All steps performed to setup initial infrastructure and to current state.
     az role assignment create --assignee $SP_ID --role "Storage Blob Data Contributor" \
       --scope "/subscriptions/e388ddce-c79d-4db0-8a6f-cd69b1708954/resourceGroups/rg-tfstate-co-dev-gwc-01/providers/Microsoft.Storage/storageAccounts/sttfstatecodevgwc01"
     ```
+    **Note:** Admin consent requires Global Administrator or Privileged Role Administrator role. If CLI fails, grant via Portal:
+    Azure AD → App registrations → sp-platform-identity-co-dev-na-01 → API permissions → Grant admin consent
