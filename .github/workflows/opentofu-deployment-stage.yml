@@ -52,6 +52,7 @@ env:
   ARM_CLIENT_ID: ${{ inputs.client_id }}
   ARM_TENANT_ID: ${{ inputs.tenant_id }}
   ARM_USE_OIDC: true
+  ARM_STORAGE_USE_AZUREAD: true
   PLAN_BINARY_FILENAME: tfplan
   PLAN_TEXT_FILENAME: tfplan.txt
   APPLY_OUTPUT_FILENAME: apply-output.txt
