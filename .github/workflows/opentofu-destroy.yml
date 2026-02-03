@@ -74,7 +74,7 @@ jobs:
       - name: Install OpenTofu
         uses: ./.github/actions/opentofu-install
 
-      - name: Initialize OpenTofu
+      - name: OpenTofu init
         uses: ./.github/actions/opentofu-init
         with:
           working_directory: ${{ inputs.working_directory }}
@@ -83,7 +83,7 @@ jobs:
           container_name: ${{ inputs.state_container }}
           state_key: ${{ inputs.state_key }}
 
-      - name: Destroy resources
+      - name: OpenTofu destroy
         id: destroy
         uses: ./.github/actions/opentofu-destroy
         with:
