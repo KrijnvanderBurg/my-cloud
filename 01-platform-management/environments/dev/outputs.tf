@@ -43,33 +43,6 @@ output "platform_management_group" {
   }
 }
 
-output "platform_management_management_group" {
-  description = "Platform Management management group details"
-  value = {
-    id           = module.pl_management.id
-    name         = module.pl_management.name
-    display_name = module.pl_management.display_name
-  }
-}
-
-output "platform_identity_management_group" {
-  description = "Platform Identity management group details"
-  value = {
-    id           = module.pl_identity.id
-    name         = module.pl_identity.name
-    display_name = module.pl_identity.display_name
-  }
-}
-
-output "platform_connectivity_management_group" {
-  description = "Platform Connectivity management group details"
-  value = {
-    id           = module.pl_connectivity.id
-    name         = module.pl_connectivity.name
-    display_name = module.pl_connectivity.display_name
-  }
-}
-
 output "landingzone_management_group" {
   description = "Landing Zone management group details"
   value = {
