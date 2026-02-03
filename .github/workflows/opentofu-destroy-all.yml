@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   # ===== Platform Landing Zone - Drives (dev) =====
-  plz-drives-dev-destroy:
+  plz-drives-dev:
     name: plz-drives-dev destroy
     uses: ./.github/workflows/opentofu-destroy.yml
     with:
@@ -31,8 +31,9 @@ jobs:
       state_container: tfstate-pl-management
 
   # ===== Platform Connectivity (dev-glb) =====
-  pl-connectivity-dev-glb-destroy:
+  pl-connectivity-dev-glb:
     name: pl-connectivity-dev-glb destroy
+    needs: [plz-drives-dev]
     uses: ./.github/workflows/opentofu-destroy.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-glb
@@ -45,8 +46,9 @@ jobs:
       state_container: tfstate-pl-management
 
   # ===== Platform Connectivity (dev-gwc) =====
-  pl-connectivity-dev-gwc-destroy:
+  pl-connectivity-dev-gwc:
     name: pl-connectivity-dev-gwc destroy
+    needs: [pl-connectivity-dev-glb]
     uses: ./.github/workflows/opentofu-destroy.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-gwc
@@ -59,8 +61,9 @@ jobs:
       state_container: tfstate-pl-management
 
   # ===== Platform Connectivity (dev-weu) =====
-  pl-connectivity-dev-weu-destroy:
+  pl-connectivity-dev-weu:
     name: pl-connectivity-dev-weu destroy
+    needs: [pl-connectivity-dev-glb]
     uses: ./.github/workflows/opentofu-destroy.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-weu
@@ -73,8 +76,9 @@ jobs:
       state_container: tfstate-pl-management
 
   # ===== Platform Identity (dev) =====
-  pl-identity-dev-destroy:
+  pl-identity-dev:
     name: pl-identity-dev destroy
+    needs: [pl-connectivity-dev-weu, pl-connectivity-dev-gwc]
     uses: ./.github/workflows/opentofu-destroy.yml
     with:
       working_directory: ./02-platform-identity/environments/dev
@@ -87,8 +91,9 @@ jobs:
       state_container: tfstate-pl-management
 
   # ===== Platform Management (dev) =====
-  pl-management-dev-destroy:
+  pl-management-dev:
     name: pl-management-dev destroy
+    needs: [pl-identity-dev]
     uses: ./.github/workflows/opentofu-destroy.yml
     with:
       working_directory: ./01-platform-management/environments/dev
