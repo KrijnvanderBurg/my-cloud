@@ -28,7 +28,7 @@ jobs:
       environment: dev
       state_storage_account: sttfstatecodevgwc01
       state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate
+      state_container: tfstate-pl-management
 
   # ===== Platform Identity =====
   deploy-identity-dev:
@@ -43,7 +43,7 @@ jobs:
       environment: dev
       state_storage_account: sttfstatecodevgwc01
       state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate
+      state_container: tfstate-pl-identity
 
   # ===== Platform Connectivity West Europe =====
   deploy-connectivity-weu-dev:
@@ -58,7 +58,7 @@ jobs:
       environment: dev
       state_storage_account: sttfstatecodevgwc01
       state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate
+      state_container: tfstate-pl-connectivity
 
   # ===== Platform Connectivity Germany West Central =====
   deploy-connectivity-gwc-dev:
@@ -73,7 +73,7 @@ jobs:
       environment: dev
       state_storage_account: sttfstatecodevgwc01
       state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate
+      state_container: tfstate-pl-connectivity
 
   # ===== Platform Connectivity Global =====
   deploy-connectivity-glb-dev:
@@ -88,7 +88,7 @@ jobs:
       environment: dev
       state_storage_account: sttfstatecodevgwc01
       state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate
+      state_container: tfstate-pl-connectivity
 
   # ===== Platform Landing Zone - Drives =====
   deploy-drives-dev:
@@ -103,4 +103,4 @@ jobs:
       environment: dev
       state_storage_account: sttfstatecodevgwc01
       state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate
+      state_container: tfstate-plz-drives
