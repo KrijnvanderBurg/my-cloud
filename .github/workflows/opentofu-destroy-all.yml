@@ -74,4 +74,4 @@
 #       working_directory: ./01-platform-management/environments/dev
 #       artifact_name: pl-management-dev
 #       state_key: pl-management-dev.tfstate
-#       client_id: "bcba6fb0-afb6-4e1b-9517-dd7ffb35c2c6" # sp-platform-management-on-dev-na-01
+#       client_id: "e7ca86e6-c986-4d07-81c2-7b90f0f856a9" # sp-platform-management-on-dev-na-01
