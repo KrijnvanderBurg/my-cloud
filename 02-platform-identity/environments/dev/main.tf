@@ -1,20 +1,9 @@
 # =============================================================================
 # Service Principals (Federated for GitHub Actions)
 # =============================================================================
-module "sp_platform_management" {
-  source = "../../modules/01-service-principal-federated"
-
-  name = "sp-plmanagement-co-${local.environment}-na-01"
-  subjects = [
-    "repo:KrijnvanderBurg/my-cloud:environment:dev"
-  ]
-}
-
-# =============================================================================
-# Service Principals
-# =============================================================================
-# No SP for platform identity, using manual SP instead to avoid circular dependencies
-# and Identity has elevated permissions that we don't want to automate creation for.
+# No SP for platform management to prevent dependency conflicts
+# No SP for platform identity, also to prevent dependency conflicts and Identity
+# has elevated permissions that we don't want to automate creation for.
 
 module "sp_platform_connectivity" {
   source = "../../modules/01-service-principal-federated"
