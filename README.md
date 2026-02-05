@@ -3,6 +3,54 @@ Terraform/OpenTofu configuration for Levendaal.
 
 - See [docs/naming-convention.md](docs/naming-convention.md) for full naming standards.
 
+## Repository
+
+```
+.
+├── .devcontainer
+├── .github
+│   ├── actions
+│   ├── scripts
+│   └── workflows
+├── docs
+├── 01-platform-management
+│   ├── environments
+│   │   └── dev
+│   └── modules
+│       ├── 01-management-group
+│       └── 02-policy-deny-delete
+├── 02-platform-identity
+│   ├── environments
+│   │   └── dev
+│   └── modules
+│       ├── 01-service-principal-federated
+│       ├── 02a-rbac-pl-connectivity
+│       ├── 02b-rbac-plz
+│       ├── 03-entra-group
+│       └── 04-monitoring-alerts
+├── 03-platform-connectivity
+│   ├── environments
+│   │   ├── dev-glb
+│   │   ├── dev-gwc
+│   │   └── dev-weu
+│   └── modules
+│       ├── 01-hub-vnet
+│       └── 02-hub-peering
+└── 04-platform-landing-zones
+    ├── environments
+    │   └── drives-dev
+    │       └── .terraform
+    │           └── modules
+    └── modules
+        ├── 01-base-package
+        └── 02-aks-package
+
+
+
+52 directories
+```
+
+
 ## Deployment History
 All steps performed to setup initial infrastructure and to current state.
 
