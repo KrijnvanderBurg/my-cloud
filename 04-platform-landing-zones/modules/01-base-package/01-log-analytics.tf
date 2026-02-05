@@ -46,7 +46,6 @@ resource "azurerm_storage_container" "logs" {
   }
 }
 
-# Lifecycle policy: Hot (30d) → Cool (90d) → Archive (indefinite)
 resource "azurerm_storage_management_policy" "logs_lifecycle" {
   storage_account_id = azurerm_storage_account.logs.id
 
@@ -55,7 +54,7 @@ resource "azurerm_storage_management_policy" "logs_lifecycle" {
     enabled = true
 
     filters {
-      prefix_match = ["law-export/"]
+      prefix_match = ["law-export/"] # log analytics (law) export container
       blob_types   = ["blockBlob"]
     }
 
