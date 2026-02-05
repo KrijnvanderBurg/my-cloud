@@ -44,12 +44,7 @@ Terraform/OpenTofu configuration for Levendaal.
     └── modules
         ├── 01-base-package
         └── 02-aks-package
-
-
-
-52 directories
 ```
-
 
 ## Deployment History
 All steps performed to setup initial infrastructure and to current state.
