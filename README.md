@@ -3,6 +3,49 @@ Terraform/OpenTofu configuration for Levendaal.
 
 - See [docs/naming-convention.md](docs/naming-convention.md) for full naming standards.
 
+## Repository
+
+```
+.
+├── .devcontainer
+├── .github
+│   ├── actions
+│   ├── scripts
+│   └── workflows
+├── docs
+├── 01-platform-management
+│   ├── environments
+│   │   └── dev
+│   └── modules
+│       ├── 01-management-group
+│       └── 02-policy-deny-delete
+├── 02-platform-identity
+│   ├── environments
+│   │   └── dev
+│   └── modules
+│       ├── 01-service-principal-federated
+│       ├── 02a-rbac-pl-connectivity
+│       ├── 02b-rbac-plz
+│       ├── 03-entra-group
+│       └── 04-monitoring-alerts
+├── 03-platform-connectivity
+│   ├── environments
+│   │   ├── dev-glb
+│   │   ├── dev-gwc
+│   │   └── dev-weu
+│   └── modules
+│       ├── 01-hub-vnet
+│       └── 02-hub-peering
+└── 04-platform-landing-zones
+    ├── environments
+    │   └── drives-dev
+    │       └── .terraform
+    │           └── modules
+    └── modules
+        ├── 01-base-package
+        └── 02-aks-package
+```
+
 ## Deployment History
 All steps performed to setup initial infrastructure and to current state.
 
@@ -38,92 +81,63 @@ All steps performed to setup initial infrastructure and to current state.
      --subscription "4111975b-f6ca-4e08-b7b6-87d7b6c35840"
    ```
    **Note:** This requires Owner or User Access Administrator on each subscription. Done manually to avoid granting excessive permissions to service principals.
-6. **Created sp-platform-identity Service Principal (Manual - Cannot Manage Itself):**
+
+6. **Created sp-platform-management Service Principal (Manual - Identity deployment comes later):**
+   ```bash
+   # Create app and service principal
+   az ad app create --display-name "sp-pl-management-co-dev-na-01"
+   az ad sp create --id $(az ad app list --display-name "sp-platform-management-co-dev-na-01" --query "[0].appId" -o tsv)
+
+   # Create GitHub federated credential
+   az ad app federated-credential create \
+     --id $(az ad app list --display-name "sp-platform-management-co-dev-na-01" --query "[0].id" -o tsv) \
+     --parameters '{"name":"github-dev","issuer":"https://token.actions.githubusercontent.com","subject":"repo:KrijnvanderBurg/my-cloud:environment:dev","audiences":["api://AzureADTokenExchange"]}'
+
+   # Assign roles
+   SP_ID=$(az ad sp list --display-name "sp-platform-management-co-dev-na-01" --query "[0].id" -o tsv)
+
+   az role assignment create --assignee $SP_ID --role "Management Group Contributor" \
+     --scope "/providers/Microsoft.Management/managementGroups/90d27970-b92c-43dc-9935-1ed557d8e20e"
+
+   az role assignment create --assignee $SP_ID --role "Resource Policy Contributor" \
+     --scope "/providers/Microsoft.Management/managementGroups/90d27970-b92c-43dc-9935-1ed557d8e20e"
+
+   az role assignment create --assignee $SP_ID --role "User Access Administrator" \
+     --scope "/providers/Microsoft.Management/managementGroups/90d27970-b92c-43dc-9935-1ed557d8e20e"
+
+   az role assignment create --assignee $SP_ID --role "Storage Blob Data Contributor" \
+     --scope "/subscriptions/e388ddce-c79d-4db0-8a6f-cd69b1708954/resourceGroups/rg-tfstate-co-dev-gwc-01/providers/Microsoft.Storage/storageAccounts/sttfstatecodevgwc01"
+   ```
+
+7. **Created sp-platform-identity Service Principal (Manual - Cannot Manage Itself):**
     ```bash
-    # 1. Create the app registration
-    az ad app create \
-      --display-name "sp-platform-identity-co-dev-na-01" \
-      --sign-in-audience AzureADMyOrg
+    # Create app and service principal
+    az ad app create --display-name "sp-pl-identity-co-dev-na-01"
+    az ad sp create --id $(az ad app list --display-name "sp-platform-identity-co-dev-na-01" --query "[0].appId" -o tsv)
 
-    # Capture the appId (client ID) - you'll need this
-    APP_ID=$(az ad app list --display-name "sp-platform-identity-co-dev-na-01" --query "[0].appId" -o tsv)
-    echo "App ID: $APP_ID"
-
-    # 2. Create service principal
-    az ad sp create --id $APP_ID
-
-    # Get object IDs for later
-    SP_OBJECT_ID=$(az ad sp show --id $APP_ID --query "id" -o tsv)
-    APP_OBJECT_ID=$(az ad app show --id $APP_ID --query "id" -o tsv)
-    echo "SP Object ID: $SP_OBJECT_ID"
-    echo "App Object ID: $APP_OBJECT_ID"
-
-    # 3. Create federated credential for GitHub Actions
+    # Create GitHub federated credential
     az ad app federated-credential create \
-      --id $APP_OBJECT_ID \
-      --parameters '{
-        "name": "github-federation-0",
-        "issuer": "https://token.actions.githubusercontent.com",
-        "subject": "repo:KrijnvanderBurg/my-cloud:environment:dev",
-        "audiences": ["api://AzureADTokenExchange"]
-      }'
+      --id $(az ad app list --display-name "sp-platform-identity-co-dev-na-01" --query "[0].id" -o tsv) \
+      --parameters '{"name":"github-dev","issuer":"https://token.actions.githubusercontent.com","subject":"repo:KrijnvanderBurg/my-cloud:environment:dev","audiences":["api://AzureADTokenExchange"]}'
 
-    # 4. Assign Graph API permissions
-    # Application.ReadWrite.All
-    az ad app permission add \
-      --id $APP_ID \
-      --api 00000003-0000-0000-c000-000000000000 \
-      --api-permissions 1bfefb4e-e0b5-418b-a88f-73c46d2cc8e9=Role
-
-    # Group.ReadWrite.All
-    az ad app permission add \
-      --id $APP_ID \
-      --api 00000003-0000-0000-c000-000000000000 \
-      --api-permissions 62a82d76-70ea-41e2-9197-370581804d09=Role
-
-    # RoleManagement.ReadWrite.Directory
-    az ad app permission add \
-      --id $APP_ID \
-      --api 00000003-0000-0000-c000-000000000000 \
-      --api-permissions 9e3f62cf-ca93-4989-b6ce-bf83c28f9fe8=Role
-
-    # 5. Grant admin consent (requires Global Admin or Privileged Role Admin)
+    # Add Graph API permissions
+    APP_ID=$(az ad app list --display-name "sp-platform-identity-co-dev-na-01" --query "[0].appId" -o tsv)
+    az ad app permission add --id $APP_ID --api 00000003-0000-0000-c000-000000000000 --api-permissions 1bfefb4e-e0b5-418b-a88f-73c46d2cc8e9=Role
+    az ad app permission add --id $APP_ID --api 00000003-0000-0000-c000-000000000000 --api-permissions 62a82d76-70ea-41e2-9197-370581804d09=Role
+    az ad app permission add --id $APP_ID --api 00000003-0000-0000-c000-000000000000 --api-permissions 9e3f62cf-ca93-4989-b6ce-bf83c28f9fe8=Role
     az ad app permission admin-consent --id $APP_ID
 
-    # 6. Assign Azure RBAC roles
-    MANAGEMENT_SUB_ID="e388ddce-c79d-4db0-8a6f-cd69b1708954"
-    IDENTITY_SUB_ID="9312c5c5-b089-4b62-bb90-0d92d421d66c"
-    CONNECTIVITY_SUB_ID="6018b0fb-7b8c-491f-8abf-375d2c07ef97"
-    ALZ_DRIVES_SUB_ID="4111975b-f6ca-4e08-b7b6-87d7b6c35840"
-    TFSTATE_STORAGE_ID="/subscriptions/e388ddce-c79d-4db0-8a6f-cd69b1708954/resourceGroups/rg-tfstate-co-dev-gwc-01/providers/Microsoft.Storage/storageAccounts/sttfstatecodevgwc01"
+    # Assign roles
+    SP_ID=$(az ad sp list --display-name "sp-platform-identity-co-dev-na-01" --query "[0].id" -o tsv)
 
-    # Contributor on identity subscription (to manage identity resources)
-    az role assignment create \
-      --assignee $SP_OBJECT_ID \
-      --role "Contributor" \
-      --scope "/subscriptions/$IDENTITY_SUB_ID"
+    az role assignment create --assignee $SP_ID --role "Contributor" \
+      --scope "/subscriptions/9312c5c5-b089-4b62-bb90-0d92d421d66c"
 
-    # User Access Administrator on subscriptions (to create role assignments for other SPs)
-    az role assignment create \
-      --assignee $SP_OBJECT_ID \
-      --role "User Access Administrator" \
-      --scope "/subscriptions/$MANAGEMENT_SUB_ID"
+    az role assignment create --assignee "2972657a-4e99-44c6-80f8-1e265595c81b" --role "User Access Administrator" \
+      --scope "/providers/Microsoft.Management/managementGroups/90d27970-b92c-43dc-9935-1ed557d8e20e"
 
-    az role assignment create \
-      --assignee $SP_OBJECT_ID \
-      --role "User Access Administrator" \
-      --scope "/subscriptions/$CONNECTIVITY_SUB_ID"
-
-    az role assignment create \
-      --assignee $SP_OBJECT_ID \
-      --role "User Access Administrator" \
-      --scope "/subscriptions/$ALZ_DRIVES_SUB_ID"
-
-    # Storage Blob Data Contributor on tfstate storage (to read/write state)
-    az role assignment create \
-      --assignee $SP_OBJECT_ID \
-      --role "Storage Blob Data Contributor" \
-      --scope "$TFSTATE_STORAGE_ID"
+    az role assignment create --assignee $SP_ID --role "Storage Blob Data Contributor" \
+      --scope "/subscriptions/e388ddce-c79d-4db0-8a6f-cd69b1708954/resourceGroups/rg-tfstate-co-dev-gwc-01/providers/Microsoft.Storage/storageAccounts/sttfstatecodevgwc01"
     ```
-    **Note:** Step 5 (admin consent) requires Global Administrator or Privileged Role Administrator role. If CLI fails, grant via Portal:
+    **Note:** Admin consent requires Global Administrator or Privileged Role Administrator role. If CLI fails, grant via Portal:
     Azure AD → App registrations → sp-platform-identity-co-dev-na-01 → API permissions → Grant admin consent

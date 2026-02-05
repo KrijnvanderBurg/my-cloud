@@ -15,24 +15,39 @@ resource "azurerm_virtual_network" "this" {
 # Peering
 # =============================================================================
 
+resource "azurerm_virtual_network_peering" "spoke_to_hub" {
+  name                         = "peer-${local.vnet_name}-to-${var.hub_vnet_name}"
+  resource_group_name          = azurerm_resource_group.this.name
+  virtual_network_name         = azurerm_virtual_network.this.name
+  remote_virtual_network_id    = var.hub_vnet_id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  use_remote_gateways          = false
+
+  # Ensure peering is recreated if it becomes disconnected
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
   provider = azurerm.connectivity
 
-  name                      = "peer-${var.hub_vnet_name}-to-${local.vnet_name}"
-  resource_group_name       = var.hub_resource_group_name
-  virtual_network_name      = var.hub_vnet_name
-  remote_virtual_network_id = azurerm_virtual_network.this.id
-  allow_forwarded_traffic   = true
-  use_remote_gateways       = false
-}
+  name                         = "peer-${var.hub_vnet_name}-to-${local.vnet_name}"
+  resource_group_name          = var.hub_resource_group_name
+  virtual_network_name         = var.hub_vnet_name
+  remote_virtual_network_id    = azurerm_virtual_network.this.id
+  allow_virtual_network_access = true
+  allow_forwarded_traffic      = true
+  use_remote_gateways          = false
 
-resource "azurerm_virtual_network_peering" "spoke_to_hub" {
-  name                      = "peer-${local.vnet_name}-to-${var.hub_vnet_name}"
-  resource_group_name       = azurerm_resource_group.this.name
-  virtual_network_name      = azurerm_virtual_network.this.name
-  remote_virtual_network_id = var.hub_vnet_id
-  allow_forwarded_traffic   = true
-  use_remote_gateways       = false
+  # Create spoke-to-hub peering first to avoid disconnected state
+  depends_on = [azurerm_virtual_network_peering.spoke_to_hub]
+
+  # Ensure peering is recreated if it becomes disconnected
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # =============================================================================

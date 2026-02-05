@@ -1,9 +1,17 @@
 resource "azuread_application" "this" {
   display_name = var.name
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "azuread_service_principal" "this" {
   client_id = azuread_application.this.client_id
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "azuread_application_federated_identity_credential" "this" {

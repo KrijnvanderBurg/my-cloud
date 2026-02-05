@@ -56,33 +56,6 @@ module "platform" {
   parent_management_group_id = module.levendaal.id
 }
 
-# Platform management Management Group - for management resources
-module "pl_management" {
-  source = "../../modules/01-management-group"
-
-  name                       = "mg-pl-management-${local.environment}-na-01"
-  display_name               = "mg-pl-management-${local.environment}-na-01"
-  parent_management_group_id = module.platform.id
-}
-
-# Platform identity Management Group - for identity resources
-module "pl_identity" {
-  source = "../../modules/01-management-group"
-
-  name                       = "mg-pl-identity-${local.environment}-na-01"
-  display_name               = "mg-pl-identity-${local.environment}-na-01"
-  parent_management_group_id = module.platform.id
-}
-
-# Platform connectivity Management Group - for networking resources
-module "pl_connectivity" {
-  source = "../../modules/01-management-group"
-
-  name                       = "mg-pl-connectivity-${local.environment}-na-01"
-  display_name               = "mg-pl-connectivity-${local.environment}-na-01"
-  parent_management_group_id = module.platform.id
-}
-
 # Landing Zone Management Group - for application workloads
 module "landingzone" {
   source = "../../modules/01-management-group"

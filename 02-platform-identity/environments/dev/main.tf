@@ -1,20 +1,9 @@
 # =============================================================================
 # Service Principals (Federated for GitHub Actions)
 # =============================================================================
-module "sp_platform_management" {
-  source = "../../modules/01-service-principal-federated"
-
-  name = "sp-plmanagement-co-${local.environment}-na-01"
-  subjects = [
-    "repo:KrijnvanderBurg/my-cloud:environment:dev"
-  ]
-}
-
-# =============================================================================
-# Service Principals
-# =============================================================================
-# No SP for platform identity, using manual SP instead to avoid circular dependencies
-# and Identity has elevated permissions that we don't want to automate creation for.
+# No SP for platform management to prevent dependency conflicts
+# No SP for platform identity, also to prevent dependency conflicts and Identity
+# has elevated permissions that we don't want to automate creation for.
 
 module "sp_platform_connectivity" {
   source = "../../modules/01-service-principal-federated"
@@ -46,18 +35,8 @@ module "sp_plz_drives" {
 # =============================================================================
 # RBAC Role Assignments
 # =============================================================================
-module "rbac_platform_management" {
-  source = "../../modules/02a-rbac-pl-management"
-
-  principal_id                    = module.sp_platform_management.object_id
-  tenant_root_management_group_id = local.tenant_root_management_group_id
-  tfstate_storage_account_id      = local.tfstate_storage_account_id
-
-  depends_on = [module.sp_platform_management]
-}
-
 module "rbac_platform_connectivity" {
-  source = "../../modules/02b-rbac-pl-connectivity"
+  source = "../../modules/02a-rbac-pl-connectivity"
 
   principal_id                       = module.sp_platform_connectivity.object_id
   pl_connectivity_subscription_scope = local.pl_connectivity_subscription_scope
@@ -68,7 +47,7 @@ module "rbac_platform_connectivity" {
 }
 
 module "rbac_plz_drives" {
-  source = "../../modules/02d-rbac-plz"
+  source = "../../modules/02b-rbac-plz"
 
   principal_id                    = module.sp_plz_drives.object_id
   plz_drives_subscription_scope   = local.plz_drives_subscription_scope
