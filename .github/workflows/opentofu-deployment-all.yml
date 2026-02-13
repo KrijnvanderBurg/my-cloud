@@ -19,7 +19,7 @@ jobs:
   # ===== Platform Management =====
   pl-management-dev:
     name: pl-management-dev
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
+    uses: ./.github/workflows/opentofu-deployment-template.yml
     with:
       working_directory: ./01-platform-management/environments/dev
       artifact_name: pl-management-dev
@@ -34,7 +34,7 @@ jobs:
   pl-identity-dev:
     name: pl-identity-dev
     needs: [pl-management-dev]
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
+    uses: ./.github/workflows/opentofu-deployment-template.yml
     with:
       working_directory: ./02-platform-identity/environments/dev
       artifact_name: pl-identity-dev
@@ -49,7 +49,7 @@ jobs:
   pl-connectivity-weu-dev:
     name: pl-connectivity-weu-dev
     needs: [pl-identity-dev]
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
+    uses: ./.github/workflows/opentofu-deployment-template.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-weu
       artifact_name: pl-connectivity-dev-weu
@@ -64,7 +64,7 @@ jobs:
   pl-connectivity-gwc-dev:
     name: pl-connectivity-gwc-dev
     needs: [pl-identity-dev]
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
+    uses: ./.github/workflows/opentofu-deployment-template.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-gwc
       artifact_name: pl-connectivity-dev-gwc
@@ -79,7 +79,7 @@ jobs:
   pl-connectivity-glb-dev:
     name: pl-connectivity-glb-dev
     needs: [pl-connectivity-weu-dev, pl-connectivity-gwc-dev]
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
+    uses: ./.github/workflows/opentofu-deployment-template.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-glb
       artifact_name: pl-connectivity-dev-glb
@@ -94,7 +94,7 @@ jobs:
   plz-drives-dev:
     name: plz-drives-dev
     needs: [pl-connectivity-glb-dev]
-    uses: ./.github/workflows/opentofu-deployment-stage.yml
+    uses: ./.github/workflows/opentofu-deployment-template.yml
     with:
       working_directory: ./04-platform-landing-zones/environments/drives-dev
       artifact_name: plz-drives-dev
