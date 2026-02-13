@@ -22,7 +22,7 @@ jobs:
   # ===== Platform Landing Zone - Drives (dev) =====
   plz-drives-dev:
     name: plz-drives-dev destroy
-    uses: ./.github/workflows/opentofu-destroy.yml
+    uses: ./.github/workflows/opentofu-destroy-template.yml
     with:
       working_directory: ./04-platform-landing-zones/environments/drives-dev
       artifact_name: plz-drives-dev
@@ -37,7 +37,7 @@ jobs:
   pl-connectivity-dev-glb:
     name: pl-connectivity-dev-glb destroy
     needs: [plz-drives-dev]
-    uses: ./.github/workflows/opentofu-destroy.yml
+    uses: ./.github/workflows/opentofu-destroy-template.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-glb
       artifact_name: pl-connectivity-dev-glb
@@ -52,7 +52,7 @@ jobs:
   pl-connectivity-dev-gwc:
     name: pl-connectivity-dev-gwc destroy
     needs: [pl-connectivity-dev-glb]
-    uses: ./.github/workflows/opentofu-destroy.yml
+    uses: ./.github/workflows/opentofu-destroy-template.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-gwc
       artifact_name: pl-connectivity-dev-gwc
@@ -67,7 +67,7 @@ jobs:
   pl-connectivity-dev-weu:
     name: pl-connectivity-dev-weu destroy
     needs: [pl-connectivity-dev-glb]
-    uses: ./.github/workflows/opentofu-destroy.yml
+    uses: ./.github/workflows/opentofu-destroy-template.yml
     with:
       working_directory: ./03-platform-connectivity/environments/dev-weu
       artifact_name: pl-connectivity-dev-weu
@@ -78,32 +78,32 @@ jobs:
       state_container: tfstate-pl-connectivity
       state_key: pl-connectivity-dev-weu.tfstate
 
-  # ===== Platform Identity (dev) =====
-  pl-identity-dev:
-    name: pl-identity-dev destroy
-    needs: [pl-connectivity-dev-weu, pl-connectivity-dev-gwc]
-    uses: ./.github/workflows/opentofu-destroy.yml
-    with:
-      working_directory: ./02-platform-identity/environments/dev
-      artifact_name: pl-identity-dev
-      client_id: "2972657a-4e99-44c6-80f8-1e265595c81b" # sp-pl-identity-on-dev-na-01
-      environment: dev
-      state_storage_account: sttfstatecodevgwc01
-      state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate-pl-identity
-      state_key: pl-identity-dev.tfstate
+  # # ===== Platform Identity (dev) =====
+  # pl-identity-dev:
+  #   name: pl-identity-dev destroy
+  #   needs: [pl-connectivity-dev-weu, pl-connectivity-dev-gwc]
+  #   uses: ./.github/workflows/opentofu-destroy-template.yml
+  #   with:
+  #     working_directory: ./02-platform-identity/environments/dev
+  #     artifact_name: pl-identity-dev
+  #     client_id: "2972657a-4e99-44c6-80f8-1e265595c81b" # sp-pl-identity-on-dev-na-01
+  #     environment: dev
+  #     state_storage_account: sttfstatecodevgwc01
+  #     state_resource_group: rg-tfstate-co-dev-gwc-01
+  #     state_container: tfstate-pl-identity
+  #     state_key: pl-identity-dev.tfstate
 
-  # ===== Platform Management (dev) =====
-  pl-management-dev:
-    name: pl-management-dev destroy
-    needs: [pl-identity-dev]
-    uses: ./.github/workflows/opentofu-destroy.yml
-    with:
-      working_directory: ./01-platform-management/environments/dev
-      artifact_name: pl-management-dev
-      client_id: "e7ca86e6-c986-4d07-81c2-7b90f0f856a9" # sp-pl-management-on-dev-na-01
-      environment: dev
-      state_storage_account: sttfstatecodevgwc01
-      state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate-pl-management
-      state_key: pl-management-dev.tfstate
+  # # ===== Platform Management (dev) =====
+  # pl-management-dev:
+  #   name: pl-management-dev destroy
+  #   needs: [pl-identity-dev]
+  #   uses: ./.github/workflows/opentofu-destroy-template.yml
+  #   with:
+  #     working_directory: ./01-platform-management/environments/dev
+  #     artifact_name: pl-management-dev
+  #     client_id: "e7ca86e6-c986-4d07-81c2-7b90f0f856a9" # sp-pl-management-on-dev-na-01
+  #     environment: dev
+  #     state_storage_account: sttfstatecodevgwc01
+  #     state_resource_group: rg-tfstate-co-dev-gwc-01
+  #     state_container: tfstate-pl-management
+  #     state_key: pl-management-dev.tfstate
