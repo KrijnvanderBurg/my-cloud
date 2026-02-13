@@ -76,7 +76,7 @@ jobs:
       - name: Install OpenTofu
         uses: ./.github/actions/opentofu-install
 
-      - name: Initialize OpenTofu
+      - name: OpenTofu init
         uses: ./.github/actions/opentofu-init
         with:
           working_directory: ${{ inputs.working_directory }}
@@ -85,12 +85,12 @@ jobs:
           container_name: ${{ inputs.state_container }}
           state_key: ${{ inputs.state_key }}
 
-      - name: Lint configuration
+      - name: OpenTofu lint
         uses: ./.github/actions/opentofu-lint
         with:
           working_directory: ${{ inputs.working_directory }}
 
-      - name: Plan changes
+      - name: OpenTofu plan
         id: plan
         uses: ./.github/actions/opentofu-plan
         with:
@@ -106,7 +106,7 @@ jobs:
           environment: ${{ inputs.environment }}
           working_directory: ${{ inputs.working_directory }}
 
-      - name: Apply changes
+      - name: OpenTofu apply
         id: apply
         uses: ./.github/actions/opentofu-apply
         with:
