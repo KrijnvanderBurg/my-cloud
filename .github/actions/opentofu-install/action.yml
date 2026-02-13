@@ -1,22 +1,9 @@
 name: OpenTofu Install
 description: Install OpenTofu CLI tool with caching support
 
-inputs:
-  tofu_version:
-    description: OpenTofu version to install (e.g. 1.8.0)
-    required: false
-    default: 1.8.0
-
-outputs:
-  tofu_version:
-    description: Installed OpenTofu version
-    value: ${{ inputs.tofu_version }}
-
 runs:
   using: composite
   steps:
     - name: Install OpenTofu
       shell: bash
-      env:
-        TOFU_VERSION: ${{ inputs.tofu_version }}
       run: bash ${{ github.action_path }}/../../scripts/opentofu-install.sh

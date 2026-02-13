@@ -1,0 +1,106 @@
+name: OpenTofu Deployment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: opentofu-operations
+  cancel-in-progress: false
+
+jobs:
+  # ===== Platform Management =====
+  pl-management-dev:
+    name: pl-management-dev
+    uses: ./.github/workflows/opentofu-deployment-template.yml
+    with:
+      working_directory: ./01-platform-management/environments/dev
+      artifact_name: pl-management-dev
+      state_key: pl-management-dev.tfstate
+      client_id: e7ca86e6-c986-4d07-81c2-7b90f0f856a9 # sp-pl-management-on-dev-na-01
+      environment: dev
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate-pl-management
+
+  # ===== Platform Identity =====
+  pl-identity-dev:
+    name: pl-identity-dev
+    needs: [pl-management-dev]
+    uses: ./.github/workflows/opentofu-deployment-template.yml
+    with:
+      working_directory: ./02-platform-identity/environments/dev
+      artifact_name: pl-identity-dev
+      state_key: pl-identity-dev.tfstate
+      client_id: 2972657a-4e99-44c6-80f8-1e265595c81b # sp-pl-identity-on-dev-na-01
+      environment: dev
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate-pl-identity
+
+  # ===== Platform connectivity West Europe =====
+  pl-connectivity-weu-dev:
+    name: pl-connectivity-weu-dev
+    needs: [pl-identity-dev]
+    uses: ./.github/workflows/opentofu-deployment-template.yml
+    with:
+      working_directory: ./03-platform-connectivity/environments/dev-weu
+      artifact_name: pl-connectivity-dev-weu
+      state_key: pl-connectivity-dev-weu.tfstate
+      client_id: 400a4e87-119e-4099-87c5-676886a5d2fa # sp-pl-connectivity-on-dev-na-01
+      environment: dev
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate-pl-connectivity
+
+  # ===== Platform connectivity Germany West Central =====
+  pl-connectivity-gwc-dev:
+    name: pl-connectivity-gwc-dev
+    needs: [pl-identity-dev]
+    uses: ./.github/workflows/opentofu-deployment-template.yml
+    with:
+      working_directory: ./03-platform-connectivity/environments/dev-gwc
+      artifact_name: pl-connectivity-dev-gwc
+      state_key: pl-connectivity-dev-gwc.tfstate
+      client_id: 400a4e87-119e-4099-87c5-676886a5d2fa # sp-pl-connectivity-on-dev-na-01
+      environment: dev
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate-pl-connectivity
+
+  # ===== Platform connectivity Global =====
+  pl-connectivity-glb-dev:
+    name: pl-connectivity-glb-dev
+    needs: [pl-connectivity-weu-dev, pl-connectivity-gwc-dev]
+    uses: ./.github/workflows/opentofu-deployment-template.yml
+    with:
+      working_directory: ./03-platform-connectivity/environments/dev-glb
+      artifact_name: pl-connectivity-dev-glb
+      state_key: pl-connectivity-dev-glb.tfstate
+      client_id: 400a4e87-119e-4099-87c5-676886a5d2fa # sp-pl-connectivity-on-dev-na-01
+      environment: dev
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate-pl-connectivity
+
+  # ===== Platform Landing Zone - Drives =====
+  plz-drives-dev:
+    name: plz-drives-dev
+    needs: [pl-connectivity-glb-dev]
+    uses: ./.github/workflows/opentofu-deployment-template.yml
+    with:
+      working_directory: ./04-platform-landing-zones/environments/drives-dev
+      artifact_name: plz-drives-dev
+      state_key: plz-drives-dev.tfstate
+      client_id: ba53c1d5-2dc0-4182-b207-9ed6a477d139 # sp-plz-drives-on-dev-na-01
+      environment: dev
+      state_storage_account: sttfstatecodevgwc01
+      state_resource_group: rg-tfstate-co-dev-gwc-01
+      state_container: tfstate-plz-drives

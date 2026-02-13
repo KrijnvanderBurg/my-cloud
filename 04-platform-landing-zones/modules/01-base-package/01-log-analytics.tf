@@ -30,15 +30,22 @@ resource "azurerm_storage_account" "logs" {
   allow_nested_items_to_be_public = false
 
   tags = var.tags
+
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "azurerm_storage_container" "logs" {
   name                  = "law-export"
   storage_account_id    = azurerm_storage_account.logs.id
   container_access_type = "private"
+
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
-# Lifecycle policy: Hot (30d) → Cool (90d) → Archive (indefinite)
 resource "azurerm_storage_management_policy" "logs_lifecycle" {
   storage_account_id = azurerm_storage_account.logs.id
 
@@ -47,7 +54,7 @@ resource "azurerm_storage_management_policy" "logs_lifecycle" {
     enabled = true
 
     filters {
-      prefix_match = ["law-export/"]
+      prefix_match = ["law-export/"] # log analytics (law) export container
       blob_types   = ["blockBlob"]
     }
 

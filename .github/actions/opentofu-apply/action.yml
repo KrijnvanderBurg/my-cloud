@@ -24,8 +24,8 @@ runs:
     - name: Apply OpenTofu changes
       id: apply
       shell: bash
+      working-directory: ${{ inputs.working_directory }}
       run: |
         bash ${{ github.workspace }}/.github/scripts/opentofu-apply.sh \
-          ${{ inputs.working_directory }} \
           ${{ inputs.plan_binary_file }} \
           "${{ inputs.apply_output_file }}"
