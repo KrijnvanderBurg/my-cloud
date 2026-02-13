@@ -23,11 +23,6 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   use_remote_gateways          = false
-
-  # Ensure peering is recreated if it becomes disconnected
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
@@ -43,11 +38,6 @@ resource "azurerm_virtual_network_peering" "hub_to_spoke" {
 
   # Create spoke-to-hub peering first to avoid disconnected state
   depends_on = [azurerm_virtual_network_peering.spoke_to_hub]
-
-  # Ensure peering is recreated if it becomes disconnected
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 # =============================================================================
