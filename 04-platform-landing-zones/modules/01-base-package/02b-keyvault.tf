@@ -16,9 +16,9 @@ resource "azurerm_key_vault" "this" {
 
   tags = var.tags
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "azurerm_monitor_diagnostic_setting" "key_vault" {
