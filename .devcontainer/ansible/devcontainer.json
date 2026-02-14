@@ -1,0 +1,153 @@
+{
+    "name": "Ansible",
+    "dockerComposeFile": [
+        "./docker-compose.yml"
+    ],
+    "service": "devcontainer",
+    "workspaceFolder": "/workspace",
+    "remoteUser": "vscode",
+    "containerUser": "vscode",
+    //
+    // Features - https://containers.dev/implementors/features.
+    //
+    "features": {
+        "ghcr.io/devcontainers/features/azure-cli:1": {},
+        "ghcr.io/devcontainers/features/python:1": {
+            "toolsToInstall": "pipx"
+        }
+    },
+    //
+    // ContainerEnv
+    //
+    "containerEnv": {},
+    "postCreateCommand": "pipx install pre-commit && pre-commit install",
+    // "postStartCommand": {},
+    // "postAttachCommand": {},
+    // "updateContentCommand": {},
+    // "waitFor": "", // default updateContentCommand
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // Ansible
+                "redhat.ansible", // https://marketplace.visualstudio.com/items?itemName=redhat.ansible
+                // Tools
+                "eamodio.gitlens", // https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
+                "ms-azure-devops.azuredevops", // https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azuredevops
+                // Copilot
+                "GitHub.copilot", // https://marketplace.visualstudio.com/items?itemName=GitHub.copilot
+                "GitHub.copilot-chat" // https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat
+            ],
+            "settings": {
+                "workbench.tree.indent": 24,
+                "testing.alwaysRevealTestOnStateChange": true,
+                "problems.showCurrentInStatus": true,
+                //
+                // Add the extension IDs you want to suppress
+                //
+                "extensions.unwantedRecommendations": [],
+                //
+                // Terminal / zsh customisation
+                //
+                "workbench.startupEditor": "readme",
+                "terminal.integrated.enableVisualBell": true,
+                "terminal.integrated.defaultProfile.linux": "zsh",
+                "terminal.integrated.profiles.linux": {
+                    "zsh": {
+                        "path": "zsh"
+                    }
+                },
+                //
+                // Git - search gitignore in parent monorepo folder
+                //
+                "git.openRepositoryInParentFolders": "always",
+                "search.useIgnoreFiles": true,
+                "search.useParentIgnoreFiles": true,
+                //
+                // Ansible files
+                //
+                "editor.formatOnSave": true,
+                "ansible.python.interpreterPath": "/usr/bin/python3",
+                "files.associations": {
+                    "**/01-onprem/**/tasks/*.yml": "ansible",
+                    "**/01-onprem/**/handlers/*.yml": "ansible",
+                    "**/01-onprem/**/defaults/*.yml": "ansible",
+                    "**/01-onprem/**/vars/*.yml": "ansible",
+                    "**/01-onprem/**/meta/*.yml": "ansible",
+                    "**/01-onprem/**/site.yml": "ansible",
+                    "**/01-onprem/**/hosts.yml": "ansible"
+                },
+                //
+                // VsCode Tasks
+                //
+                "tasks": {
+                    // https://code.visualstudio.com/docs/editor/tasks#vscode
+                    "version": "2.0.0",
+                    "options": {},
+                    "tasks": [
+                        {
+                            "label": "ansible lint",
+                            "type": "shell",
+                            "command": "${workspaceFolder}/.github/scripts/ansible-lint.sh",
+                            "args": [],
+                            "group": "build",
+                            "presentation": {
+                                "reveal": "always",
+                                "panel": "shared"
+                            },
+                            "problemMatcher": []
+                        },
+                        {
+                            "label": "ansible galaxy install",
+                            "type": "shell",
+                            "command": "${workspaceFolder}/.github/scripts/ansible-galaxy-install.sh",
+                            "args": [],
+                            "group": "build",
+                            "presentation": {
+                                "reveal": "always",
+                                "panel": "shared"
+                            },
+                            "problemMatcher": []
+                        },
+                        {
+                            "label": "ansible playbook check",
+                            "type": "shell",
+                            "command": "${workspaceFolder}/.github/scripts/ansible-playbook.sh",
+                            "args": [],
+                            "group": "build",
+                            "options": {
+                                "env": {
+                                    "MODE": "check"
+                                }
+                            },
+                            "dependsOn": [
+                                "ansible galaxy install"
+                            ],
+                            "presentation": {
+                                "reveal": "always",
+                                "panel": "shared"
+                            },
+                            "problemMatcher": []
+                        },
+                        {
+                            "label": "ansible playbook apply",
+                            "type": "shell",
+                            "command": "${workspaceFolder}/.github/scripts/ansible-playbook.sh",
+                            "args": [],
+                            "group": "build",
+                            "options": {
+                                "env": {
+                                    "MODE": "apply"
+                                }
+                            },
+                            "presentation": {
+                                "reveal": "always",
+                                "panel": "shared"
+                            },
+                            "problemMatcher": []
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

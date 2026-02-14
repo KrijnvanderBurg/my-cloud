@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+# OpenClaw application configuration
+
+[server]
+port = {{ openclaw_port }}
+data_dir = {{ openclaw_data_dir }}
+log_level = {{ openclaw_log_level }}
+
+[logging]
+log_dir = {{ openclaw_data_dir }}/logs

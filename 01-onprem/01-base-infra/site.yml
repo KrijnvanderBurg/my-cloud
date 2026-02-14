@@ -1,0 +1,8 @@
+---
+- name: Base infrastructure
+  hosts: all
+  become: true
+  roles:
+    - role: 01-common
+    - role: 02-ssh-hardening
+    - role: 03-firewall

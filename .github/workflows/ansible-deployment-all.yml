@@ -1,0 +1,41 @@
+name: Ansible Deployment
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths: ['01-onprem/**']
+  push:
+    branches: [main]
+    paths: ['01-onprem/**']
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ansible-operations
+  cancel-in-progress: false
+
+jobs:
+  # ===== Base Infrastructure =====
+  op-base-infra-dev:
+    name: op-base-infra-dev
+    uses: ./.github/workflows/ansible-deployment-template.yml
+    with:
+      working_directory: ./01-onprem/01-base-infra
+      inventory: inventories/dev
+      artifact_name: op-base-infra-dev
+      environment: dev
+    secrets: inherit
+
+  # ===== OpenClaw =====
+  op-openclaw-dev:
+    name: op-openclaw-dev
+    needs: [op-base-infra-dev]
+    uses: ./.github/workflows/ansible-deployment-template.yml
+    with:
+      working_directory: ./01-onprem/02-openclaw
+      inventory: inventories/dev
+      artifact_name: op-openclaw-dev
+      environment: dev
+    secrets: inherit

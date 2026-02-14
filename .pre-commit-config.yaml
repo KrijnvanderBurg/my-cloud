@@ -34,3 +34,10 @@ repos:
         language: system
         files: \.tf(vars)?$
         pass_filenames: false
+
+  # Ansible linting
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v24.12.2
+    hooks:
+      - id: ansible-lint
+        files: 01-onprem/.*site\.yml$

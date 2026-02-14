@@ -30,6 +30,11 @@ secret.tfvars
 .env.*
 !.env.example
 
+# Ansible
+*.retry
+**/.vault_pass
+**/vault-password.txt
+
 # IDE
 .vscode/
 .idea/

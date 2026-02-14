@@ -66,3 +66,40 @@ Landing zones use archetypes to define security/network posture:
 |-----------|-------------|----------|
 | `co` | Corp - No direct internet access, internal only | ERP, internal APIs, databases |
 | `on` | Online - Public internet access allowed | Public websites, customer APIs |
+
+---
+
+# On-Premises Naming Convention
+
+## Host Naming
+
+Format: `<type>-<workload>-<env>-<location>-<instance>`
+
+| Component | Description | Examples |
+|-----------|-------------|----------|
+| Type | Resource type | `vm` |
+| Workload | Function or application name | `openclaw`, `base`, `monitoring` |
+| Env | Deployment stage | `dev`, `test`, `accp`, `prod` |
+| Location | Site or location identifier | `onprem`, `dc1`, `dc2` |
+| Instance | Number (2 digits) | `01`, `02` |
+
+**Examples:**
+- `vm-openclaw-dev-onprem-01`
+- `vm-base-prod-dc1-02`
+
+## Layer Naming
+
+On-prem layers use the `op-` prefix in CI/CD job names:
+
+| Prefix | Scope | Examples |
+|--------|-------|---------|
+| `op-` | On-premises workloads | `op-base-infra-dev`, `op-openclaw-dev` |
+
+## Inventory Group Naming
+
+Groups use lowercase with hyphens, matching the workload name:
+
+| Group | Purpose |
+|-------|---------|
+| `base_infra` | All servers managed by the base infrastructure layer |
+| `openclaw` | Servers running the OpenClaw application |

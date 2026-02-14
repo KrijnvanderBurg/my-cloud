@@ -1,0 +1,5 @@
+---
+# Encrypt this file with: ansible-vault encrypt inventories/dev/group_vars/all/vault.yml
+# All secrets use the vault_ prefix so variable names stay visible in vars.yml
+
+# vault_ssh_deploy_key: "REPLACE_ME"

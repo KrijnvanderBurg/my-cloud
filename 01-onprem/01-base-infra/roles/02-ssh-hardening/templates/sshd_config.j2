@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+# SSH daemon configuration - hardened
+
+Port {{ ssh_port }}
+Protocol 2
+PermitRootLogin {{ ssh_permit_root_login }}
+PasswordAuthentication {{ ssh_password_authentication }}
+X11Forwarding {{ ssh_x11_forwarding }}
+MaxAuthTries {{ ssh_max_auth_tries }}
+ClientAliveInterval {{ ssh_client_alive_interval }}
+ClientAliveCountMax {{ ssh_client_alive_count_max }}
+UsePAM yes
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server

@@ -1,0 +1,20 @@
+---
+# Environment
+environment: dev
+managed_by: ansible
+project: levendaal
+layer: openclaw
+
+# Naming convention: <role>-<workload>-<env>-<location>-<instance>
+naming_prefix: "openclaw-dev-onprem"
+
+# Application configuration
+openclaw_version: "latest"
+openclaw_install_dir: /opt/openclaw
+openclaw_data_dir: /var/lib/openclaw
+openclaw_user: openclaw
+openclaw_group: openclaw
+
+# Secrets (referenced from vault.yml)
+# openclaw_api_key: "{{ vault_openclaw_api_key }}"
+# openclaw_db_password: "{{ vault_openclaw_db_password }}"

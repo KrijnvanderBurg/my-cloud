@@ -1,0 +1,6 @@
+---
+# Encrypt this file with: ansible-vault encrypt inventories/dev/group_vars/all/vault.yml
+# All secrets use the vault_ prefix so variable names stay visible in vars.yml
+
+# vault_openclaw_api_key: "REPLACE_ME"
+# vault_openclaw_db_password: "REPLACE_ME"

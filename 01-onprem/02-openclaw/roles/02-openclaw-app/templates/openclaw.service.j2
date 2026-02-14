@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+# OpenClaw systemd service
+
+[Unit]
+Description=OpenClaw Application
+After=network.target
+
+[Service]
+Type=simple
+User={{ openclaw_user }}
+Group={{ openclaw_group }}
+WorkingDirectory={{ openclaw_install_dir }}
+ExecStart={{ openclaw_install_dir }}/openclaw --config {{ openclaw_install_dir }}/openclaw.conf
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:{{ openclaw_data_dir }}/logs/openclaw.log
+StandardError=append:{{ openclaw_data_dir }}/logs/openclaw-error.log
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,35 @@
+---
+# 01-prerequisites: OS-level prerequisites for OpenClaw
+
+- name: Install prerequisite packages
+  ansible.builtin.package:
+    name: "{{ openclaw_prereq_packages }}"
+    state: present
+
+- name: Create OpenClaw group
+  ansible.builtin.group:
+    name: "{{ openclaw_group }}"
+    state: present
+    system: true
+
+- name: Create OpenClaw user
+  ansible.builtin.user:
+    name: "{{ openclaw_user }}"
+    group: "{{ openclaw_group }}"
+    system: true
+    shell: /usr/sbin/nologin
+    home: "{{ openclaw_install_dir }}"
+    create_home: false
+    state: present
+
+- name: Create OpenClaw directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ openclaw_user }}"
+    group: "{{ openclaw_group }}"
+    mode: "0755"
+  loop:
+    - "{{ openclaw_install_dir }}"
+    - "{{ openclaw_data_dir }}"
+    - "{{ openclaw_data_dir }}/logs"

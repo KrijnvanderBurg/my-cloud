@@ -1,0 +1,7 @@
+---
+- name: OpenClaw deployment
+  hosts: openclaw
+  become: true
+  roles:
+    - role: 01-prerequisites
+    - role: 02-openclaw-app

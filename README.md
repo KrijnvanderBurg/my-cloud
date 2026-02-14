@@ -1,5 +1,5 @@
 # Azure - Levendaal
-Terraform/OpenTofu configuration for Levendaal.
+Terraform/OpenTofu and Ansible configuration for Levendaal.
 
 - See [docs/naming-convention.md](docs/naming-convention.md) for full naming standards.
 
@@ -8,12 +8,35 @@ Terraform/OpenTofu configuration for Levendaal.
 ```
 .
 ├── .devcontainer
+│   ├── ansible
+│   └── opentofu
 ├── .github
 │   ├── actions
 │   ├── scripts
 │   └── workflows
 ├── docs
-├── 01-platform-management
+├── 01-onprem
+│   ├── 01-base-infra                    # Ansible - OS hardening, SSH, firewall
+│   │   ├── ansible.cfg
+│   │   ├── site.yml
+│   │   ├── requirements.yml
+│   │   ├── inventories
+│   │   │   └── dev
+│   │   └── roles
+│   │       ├── 01-common
+│   │       ├── 02-ssh-hardening
+│   │       └── 03-firewall
+│   └── 02-openclaw                      # Ansible - OpenClaw application
+│       ├── ansible.cfg
+│       ├── site.yml
+│       ├── requirements.yml
+│       ├── inventories
+│       │   └── dev
+│       └── roles
+│           ├── 01-prerequisites
+│           └── 02-openclaw-app
+├── 02-azure
+│   ├── 01-platform-management
 │   ├── environments
 │   │   └── dev
 │   └── modules

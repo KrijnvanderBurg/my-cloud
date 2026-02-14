@@ -1,0 +1,13 @@
+---
+common_packages:
+  - curl
+  - wget
+  - vim
+  - htop
+  - net-tools
+  - ntp
+  - unzip
+  - jq
+
+common_timezone: "Europe/Amsterdam"
+common_ntp_enabled: true

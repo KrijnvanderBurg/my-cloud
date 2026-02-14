@@ -1,0 +1,22 @@
+---
+# Environment
+environment: dev
+managed_by: ansible
+project: levendaal
+layer: base-infra
+
+# Naming convention: <role>-<workload>-<env>-<location>-<instance>
+naming_prefix: "base-infra-dev-onprem"
+
+# NTP
+ntp_servers:
+  - 0.pool.ntp.org
+  - 1.pool.ntp.org
+
+# SSH
+ssh_port: 22
+ssh_permit_root_login: "no"
+ssh_password_authentication: "no"
+
+# Secrets (referenced from vault.yml)
+# ssh_deploy_key: "{{ vault_ssh_deploy_key }}"

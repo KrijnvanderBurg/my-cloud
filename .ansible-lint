@@ -1,0 +1,29 @@
+---
+# ansible-lint configuration
+# https://ansible.readthedocs.io/projects/lint/configuring/
+
+profile: production
+
+exclude_paths:
+  - 02-azure/
+  - .github/
+  - docs/
+  - .devcontainer/
+
+skip_list:
+  - name[template]  # Allow Jinja2 in task names if needed
+
+enable_list:
+  - fqcn
+  - yaml
+
+# Match .editorconfig rules
+yaml:
+  config:
+    rules:
+      indentation:
+        spaces: 2
+      line-length:
+        max: 200
+      truthy:
+        allowed-values: ['true', 'false', 'yes', 'no']
