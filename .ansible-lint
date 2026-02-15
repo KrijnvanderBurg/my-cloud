@@ -11,19 +11,7 @@ exclude_paths:
   - .devcontainer/
 
 skip_list:
-  - name[template]  # Allow Jinja2 in task names if needed
+  - name[template] # Allow Jinja2 in task names if needed
 
 enable_list:
   - fqcn
-  - yaml
-
-# Match .editorconfig rules
-yaml:
-  config:
-    rules:
-      indentation:
-        spaces: 2
-      line-length:
-        max: 200
-      truthy:
-        allowed-values: ['true', 'false', 'yes', 'no']

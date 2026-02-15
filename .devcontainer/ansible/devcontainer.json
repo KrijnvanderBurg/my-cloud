@@ -1,17 +1,12 @@
 {
     "name": "Ansible",
-    "dockerComposeFile": [
-        "./docker-compose.yml"
-    ],
-    "service": "devcontainer",
-    "workspaceFolder": "/workspace",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
     "remoteUser": "vscode",
     "containerUser": "vscode",
     //
     // Features - https://containers.dev/implementors/features.
     //
     "features": {
-        "ghcr.io/devcontainers/features/azure-cli:1": {},
         "ghcr.io/devcontainers/features/python:1": {
             "toolsToInstall": "pipx"
         }
@@ -20,7 +15,11 @@
     // ContainerEnv
     //
     "containerEnv": {},
-    "postCreateCommand": "pipx install pre-commit && pre-commit install",
+    "onCreateCommand": {
+        "pre-commit-install": "pipx install pre-commit && pre-commit install",
+        "ansible-install": "bash .github/scripts/ansible-install.sh"
+    },
+    // "postCreateCommand": {},
     // "postStartCommand": {},
     // "postAttachCommand": {},
     // "updateContentCommand": {},
@@ -35,27 +34,16 @@
                 "ms-azure-devops.azuredevops", // https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azuredevops
                 // Copilot
                 "GitHub.copilot", // https://marketplace.visualstudio.com/items?itemName=GitHub.copilot
-                "GitHub.copilot-chat" // https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat
+                "GitHub.copilot-chat", // https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat
+                // Docker
+                "ms-azuretools.vscode-docker",
+                "ms-azuretools.vscode-containers"
             ],
             "settings": {
-                "workbench.tree.indent": 24,
-                "testing.alwaysRevealTestOnStateChange": true,
-                "problems.showCurrentInStatus": true,
                 //
                 // Add the extension IDs you want to suppress
                 //
                 "extensions.unwantedRecommendations": [],
-                //
-                // Terminal / zsh customisation
-                //
-                "workbench.startupEditor": "readme",
-                "terminal.integrated.enableVisualBell": true,
-                "terminal.integrated.defaultProfile.linux": "zsh",
-                "terminal.integrated.profiles.linux": {
-                    "zsh": {
-                        "path": "zsh"
-                    }
-                },
                 //
                 // Git - search gitignore in parent monorepo folder
                 //
@@ -65,16 +53,9 @@
                 //
                 // Ansible files
                 //
-                "editor.formatOnSave": true,
                 "ansible.python.interpreterPath": "/usr/bin/python3",
                 "files.associations": {
-                    "**/01-onprem/**/tasks/*.yml": "ansible",
-                    "**/01-onprem/**/handlers/*.yml": "ansible",
-                    "**/01-onprem/**/defaults/*.yml": "ansible",
-                    "**/01-onprem/**/vars/*.yml": "ansible",
-                    "**/01-onprem/**/meta/*.yml": "ansible",
-                    "**/01-onprem/**/site.yml": "ansible",
-                    "**/01-onprem/**/hosts.yml": "ansible"
+                    "**/01-onprem/**/*.yml": "ansible"
                 },
                 //
                 // VsCode Tasks
@@ -84,6 +65,9 @@
                     "version": "2.0.0",
                     "options": {},
                     "tasks": [
+                        //
+                        // Ansible tasks
+                        //
                         {
                             "label": "ansible lint",
                             "type": "shell",

@@ -1,10 +1,6 @@
 {
     "name": "Full (OpenTofu + Ansible)",
-    "dockerComposeFile": [
-        "./docker-compose.yml"
-    ],
-    "service": "devcontainer",
-    "workspaceFolder": "/workspace",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
     "remoteUser": "vscode",
     "containerUser": "vscode",
     //
@@ -20,7 +16,12 @@
     // ContainerEnv
     //
     "containerEnv": {},
-    "postCreateCommand": "pipx install pre-commit && pre-commit install",
+    "onCreateCommand": {
+        "pre-commit-install": "pipx install pre-commit && pre-commit install",
+        "opentofu-install": "bash .github/scripts/opentofu-install.sh",
+        "ansible-install": "bash .github/scripts/ansible-install.sh"
+    },
+    // "postCreateCommand": {},
     // "postStartCommand": {},
     // "postAttachCommand": {},
     // "updateContentCommand": {},
@@ -37,27 +38,16 @@
                 "ms-azure-devops.azuredevops", // https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azuredevops
                 // Copilot
                 "GitHub.copilot", // https://marketplace.visualstudio.com/items?itemName=GitHub.copilot
-                "GitHub.copilot-chat" // https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat
+                "GitHub.copilot-chat", // https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat
+                // Docker
+                "ms-azuretools.vscode-docker",
+                "ms-azuretools.vscode-containers"
             ],
             "settings": {
-                "workbench.tree.indent": 24,
-                "testing.alwaysRevealTestOnStateChange": true,
-                "problems.showCurrentInStatus": true,
                 //
                 // Add the extension IDs you want to suppress
                 //
                 "extensions.unwantedRecommendations": [],
-                //
-                // Terminal / zsh customisation
-                //
-                "workbench.startupEditor": "readme", // doesnt seem to consistently work in devcontainer
-                "terminal.integrated.enableVisualBell": true,
-                "terminal.integrated.defaultProfile.linux": "zsh",
-                "terminal.integrated.profiles.linux": {
-                    "zsh": {
-                        "path": "zsh"
-                    }
-                },
                 //
                 // Git - search gitignore in parent monorepo folder
                 //
@@ -67,11 +57,9 @@
                 //
                 // tf files
                 //
-                "editor.formatOnSave": true,
-                // doesnt work currently because terraform isnt installed in devcontainer, only opentofu is
                 "[terraform]": {
                     "editor.defaultFormatter": "hashicorp.terraform",
-                    "editor.formatOnSave": false,
+                    "editor.formatOnSave": true,
                     "editor.codeActionsOnSave": {
                         "source.formatAll.terraform": "explicit"
                     }
@@ -81,13 +69,7 @@
                 //
                 "ansible.python.interpreterPath": "/usr/bin/python3",
                 "files.associations": {
-                    "**/01-onprem/**/tasks/*.yml": "ansible",
-                    "**/01-onprem/**/handlers/*.yml": "ansible",
-                    "**/01-onprem/**/defaults/*.yml": "ansible",
-                    "**/01-onprem/**/vars/*.yml": "ansible",
-                    "**/01-onprem/**/meta/*.yml": "ansible",
-                    "**/01-onprem/**/site.yml": "ansible",
-                    "**/01-onprem/**/hosts.yml": "ansible"
+                    "**/01-onprem/**/*.yml": "ansible"
                 },
                 //
                 // VsCode Tasks

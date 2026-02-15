@@ -1,10 +1,6 @@
 {
     "name": "OpenTofu",
-    "dockerComposeFile": [
-        "./docker-compose.yml"
-    ],
-    "service": "devcontainer",
-    "workspaceFolder": "/workspace",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
     "remoteUser": "vscode",
     "containerUser": "vscode",
     //
@@ -20,7 +16,11 @@
     // ContainerEnv
     //
     "containerEnv": {},
-    "postCreateCommand": "pipx install pre-commit && pre-commit install",
+    "onCreateCommand": {
+        "pre-commit-install": "pipx install pre-commit && pre-commit install",
+        "opentofu-install": "bash .github/scripts/opentofu-install.sh"
+    },
+    // "postCreateCommand": {},
     // "postStartCommand": {},
     // "postAttachCommand": {},
     // "updateContentCommand": {},
@@ -35,27 +35,16 @@
                 "ms-azure-devops.azuredevops", // https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azuredevops
                 // Copilot
                 "GitHub.copilot", // https://marketplace.visualstudio.com/items?itemName=GitHub.copilot
-                "GitHub.copilot-chat" // https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat
+                "GitHub.copilot-chat", // https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat
+                // Docker
+                "ms-azuretools.vscode-docker",
+                "ms-azuretools.vscode-containers"
             ],
             "settings": {
-                "workbench.tree.indent": 24,
-                "testing.alwaysRevealTestOnStateChange": true,
-                "problems.showCurrentInStatus": true,
                 //
                 // Add the extension IDs you want to suppress
                 //
                 "extensions.unwantedRecommendations": [],
-                //
-                // Terminal / zsh customisation
-                //
-                "workbench.startupEditor": "readme", // doesnt seem to consistently work in devcontainer
-                "terminal.integrated.enableVisualBell": true,
-                "terminal.integrated.defaultProfile.linux": "zsh",
-                "terminal.integrated.profiles.linux": {
-                    "zsh": {
-                        "path": "zsh"
-                    }
-                },
                 //
                 // Git - search gitignore in parent monorepo folder
                 //
@@ -65,11 +54,9 @@
                 //
                 // tf files
                 //
-                "editor.formatOnSave": true,
-                // doesnt work currently because terraform isnt installed in devcontainer, only opentofu is
                 "[terraform]": {
                     "editor.defaultFormatter": "hashicorp.terraform",
-                    "editor.formatOnSave": false,
+                    "editor.formatOnSave": true,
                     "editor.codeActionsOnSave": {
                         "source.formatAll.terraform": "explicit"
                     }
@@ -82,6 +69,9 @@
                     "version": "2.0.0",
                     "options": {},
                     "tasks": [
+                        //
+                        // OpenTofu tasks
+                        //
                         {
                             "label": "opentofu init",
                             "type": "shell",
@@ -139,20 +129,3 @@
         }
     }
 }
-//
-// Predefined Variables
-//
-// ${cwd} - the task runner's current working directory on startup
-// ${workspaceFolder} - the path of the folder opened in VS Code
-// ${workspaceRootFolderName} - the name of the folder opened in VS Code without any slashes (/)
-// ${workspaceFolderBasename} - the name of the folder opened in VS Code without any slashes (/)
-// ${file} - the current opened file
-// ${relativeFile} - the current opened file relative to workspaceFolder
-// ${relativeFileDirname} - the current opened file's dirname relative to workspaceFolder
-// ${fileBasename} - the current opened file's basename
-// ${fileBasenameNoExtension} - the current opened file's basename with no file extension
-// ${fileDirname} - the current opened file's dirname
-// ${fileExtname} - the current opened file's extension
-// ${lineNumber} - the current selected line number in the active file
-// ${selectedText} - the current selected text in the active file
-// ${execPath} - the path to the running VS Code executable
