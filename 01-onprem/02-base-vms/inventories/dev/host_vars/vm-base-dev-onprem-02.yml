@@ -1,0 +1,5 @@
+---
+ansible_host: 192.168.122.12
+vm_vcpus: 2
+vm_memory_mb: 2048
+vm_disk_gb: 20

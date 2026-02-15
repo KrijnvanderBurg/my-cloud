@@ -1,0 +1,89 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+  tags: [hypervisor]
+
+- name: Install hypervisor packages
+  ansible.builtin.package:
+    name: "{{ libvirt_packages | default(hypervisor_packages) }}"
+    state: present
+  tags: [hypervisor]
+
+- name: Ensure libvirtd is running
+  ansible.builtin.service:
+    name: libvirtd
+    state: started
+    enabled: true
+  tags: [hypervisor]
+
+- name: Add current user to libvirt group
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups: libvirt
+    append: true
+  when: ansible_user_id != "root"
+  tags: [hypervisor]
+
+- name: Check if storage pool exists
+  ansible.builtin.command:
+    cmd: "virsh pool-info {{ libvirt_pool_name | default(hypervisor_pool_name) }}"
+  register: _pool_info
+  changed_when: false
+  failed_when: false
+  tags: [hypervisor]
+
+- name: Create storage pool directory
+  ansible.builtin.file:
+    path: "{{ libvirt_pool_path | default(hypervisor_pool_path) }}"
+    state: directory
+    mode: "0711"
+  when: _pool_info.rc != 0
+  tags: [hypervisor]
+
+- name: Define and start storage pool
+  ansible.builtin.shell:
+    cmd: >-
+      virsh pool-define-as {{ libvirt_pool_name | default(hypervisor_pool_name) }}
+      dir --target {{ libvirt_pool_path | default(hypervisor_pool_path) }} &&
+      virsh pool-start {{ libvirt_pool_name | default(hypervisor_pool_name) }} &&
+      virsh pool-autostart {{ libvirt_pool_name | default(hypervisor_pool_name) }}
+  when: _pool_info.rc != 0
+  changed_when: true
+  tags: [hypervisor]
+
+- name: Ensure default network is active and autostarted
+  ansible.builtin.shell:
+    cmd: >-
+      virsh net-start {{ libvirt_network_name | default(hypervisor_network_name) }} 2>/dev/null || true &&
+      virsh net-autostart {{ libvirt_network_name | default(hypervisor_network_name) }}
+  changed_when: false
+  tags: [hypervisor]
+
+- name: Ensure SSH key directory exists
+  ansible.builtin.file:
+    path: "{{ vm_ssh_key_dir }}"
+    state: directory
+    mode: "0700"
+  become: false
+  tags: [hypervisor]
+
+- name: Generate Ed25519 SSH keypair
+  community.crypto.openssh_keypair:
+    path: "{{ vm_ssh_key_dir }}/{{ vm_ssh_key_name }}"
+    type: "{{ hypervisor_ssh_key_type }}"
+    comment: "ansible-{{ layer }}-{{ environment }}"
+    state: present
+    force: false
+  become: false
+  tags: [hypervisor]
+
+- name: Download Ubuntu cloud image
+  ansible.builtin.get_url:
+    url: "{{ ubuntu_cloud_image_url | default(hypervisor_ubuntu_cloud_image_url) }}"
+    dest: "{{ libvirt_pool_path | default(hypervisor_pool_path) }}/{{ ubuntu_cloud_image_name | default(hypervisor_ubuntu_cloud_image_name) }}"
+    mode: "0644"
+    timeout: 300
+  tags: [hypervisor]

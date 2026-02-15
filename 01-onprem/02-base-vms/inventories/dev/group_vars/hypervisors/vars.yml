@@ -1,0 +1,6 @@
+---
+libvirt_pool_name: "default"
+libvirt_pool_path: "/var/lib/libvirt/images"
+libvirt_network_name: "default"
+
+ubuntu_cloud_image_name: "noble-server-cloudimg-amd64.img"

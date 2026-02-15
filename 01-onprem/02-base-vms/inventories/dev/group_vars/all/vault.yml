@@ -1,0 +1,5 @@
+---
+# Encrypt this file with: ansible-vault encrypt inventories/dev/group_vars/all/vault.yml
+# Hashed password for the deploy user
+# Generate with: mkpasswd --method=SHA-512
+# vault_vm_deploy_password: "REPLACE_ME"

@@ -1,0 +1,93 @@
+---
+- name: "{{ _current_vm }} | Set VM variables"
+  ansible.builtin.set_fact:
+    _vm_ip: "{{ hostvars[_current_vm]['ansible_host'] }}"
+    _vm_vcpus: "{{ hostvars[_current_vm]['vm_vcpus'] | default(vm_default_vcpus) }}"
+    _vm_memory: "{{ hostvars[_current_vm]['vm_memory_mb'] | default(vm_default_memory_mb) }}"
+    _vm_disk_gb: "{{ hostvars[_current_vm]['vm_disk_gb'] | default(vm_default_disk_gb) }}"
+    _vm_os_variant: "{{ hostvars[_current_vm]['vm_os_variant'] | default(vm_default_os_variant) }}"
+    _vm_disk: "{{ libvirt_pool_path }}/{{ _current_vm }}.qcow2"
+    _vm_base_image: "{{ libvirt_pool_path }}/{{ ubuntu_cloud_image_name }}"
+
+- name: "{{ _current_vm }} | Copy base image for VM"
+  ansible.builtin.copy:
+    src: "{{ _vm_base_image }}"
+    dest: "{{ _vm_disk }}"
+    remote_src: true
+    force: false
+    mode: "0644"
+
+- name: "{{ _current_vm }} | Resize VM disk"
+  ansible.builtin.command:
+    cmd: "qemu-img resize {{ _vm_disk }} {{ _vm_disk_gb }}G"
+  changed_when: true
+
+- name: "{{ _current_vm }} | Generate netplan configuration"
+  ansible.builtin.set_fact:
+    _netplan_content: |
+      network:
+        version: 2
+        ethernets:
+          enp1s0:
+            addresses:
+              - {{ _vm_ip }}/{{ hostvars[_current_vm]['vm_netmask'] | default(vm_netmask) }}
+            routes:
+              - to: default
+                via: {{ hostvars[_current_vm]['vm_gateway'] | default(vm_gateway) }}
+            nameservers:
+              addresses: {{ hostvars[_current_vm]['vm_nameservers'] | default(vm_nameservers) | to_json }}
+
+- name: "{{ _current_vm }} | Create temporary netplan file"
+  ansible.builtin.copy:
+    content: "{{ _netplan_content }}"
+    dest: "/tmp/{{ _current_vm }}-netplan.yaml"
+    mode: "0644"
+
+- name: "{{ _current_vm }} | Customize VM image"
+  ansible.builtin.shell:
+    cmd: |
+      set -e
+      virt-customize -a {{ _vm_disk }} \
+        --hostname {{ _current_vm }} \
+        --run-command 'id {{ vm_deploy_user }} &>/dev/null || \
+          useradd -m -s {{ vm_deploy_shell }} -G sudo {{ vm_deploy_user }}' \
+        --run-command 'mkdir -p /home/{{ vm_deploy_user }}/.ssh && \
+          chmod 700 /home/{{ vm_deploy_user }}/.ssh' \
+        --write '/home/{{ vm_deploy_user }}/.ssh/authorized_keys:{{ vm_ssh_public_key }}' \
+        --run-command 'chmod 600 /home/{{ vm_deploy_user }}/.ssh/authorized_keys' \
+        --run-command 'chown -R {{ vm_deploy_user }}:{{ vm_deploy_user }} \
+          /home/{{ vm_deploy_user }}/.ssh' \
+        --run-command 'echo "{{ vm_deploy_user }} ALL=(ALL) NOPASSWD:ALL" \
+          > /etc/sudoers.d/{{ vm_deploy_user }} && \
+          chmod 440 /etc/sudoers.d/{{ vm_deploy_user }}' \
+        --run-command 'rm -f /etc/netplan/*.yaml /etc/netplan/*.yml' \
+        --copy-in /tmp/{{ _current_vm }}-netplan.yaml:/etc/netplan/ \
+        --run-command 'mv /etc/netplan/{{ _current_vm }}-netplan.yaml \
+          /etc/netplan/01-static.yaml' \
+        --run-command 'apt-get -y purge cloud-init cloud-guest-utils && \
+          apt-get -y autoremove && rm -rf /etc/cloud /var/lib/cloud' \
+        --install {{ vm_base_packages | join(',') }} \
+        --run-command 'systemctl enable qemu-guest-agent' \
+        --run-command 'systemctl enable ssh' \
+        --timezone {{ vm_timezone }}
+  changed_when: true
+
+- name: "{{ _current_vm }} | Remove temporary netplan file"
+  ansible.builtin.file:
+    path: "/tmp/{{ _current_vm }}-netplan.yaml"
+    state: absent
+
+- name: "{{ _current_vm }} | Create VM with virt-install"
+  ansible.builtin.command:
+    cmd: >-
+      virt-install
+      --name {{ _current_vm }}
+      --vcpus {{ _vm_vcpus }}
+      --memory {{ _vm_memory }}
+      --disk path={{ _vm_disk }},format=qcow2
+      --os-variant {{ _vm_os_variant }}
+      --network network={{ libvirt_network_name }}
+      --graphics none
+      --noautoconsole
+      --import
+  changed_when: true

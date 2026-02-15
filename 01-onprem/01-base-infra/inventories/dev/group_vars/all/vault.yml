@@ -1,7 +1,0 @@
----
-# Encrypt this file with: ansible-vault encrypt inventories/dev/group_vars/all/vault.yml
-# All secrets use the vault_ prefix so variable names stay visible in vars.yml
-
-# Hashed password for the deploy user created by cloud-init
-# Generate with: python3 -c "import crypt; print(crypt.crypt('changeme', crypt.mksalt(crypt.METHOD_SHA512)))"
-# vault_vm_deploy_password: "REPLACE_ME"
