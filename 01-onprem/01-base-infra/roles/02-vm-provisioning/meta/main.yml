@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  author: levendaal
+  description: Provision KVM VMs using Ubuntu cloud images and cloud-init
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions: [jammy, noble]
+    - name: Debian
+      versions: [bookworm]
+dependencies: []

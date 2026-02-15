@@ -1,0 +1,44 @@
+---
+# ---------------------------------------------------------------------------
+# VM group variables (applied to all provisioned VMs)
+# ---------------------------------------------------------------------------
+
+# SSH connection settings for Ansible to reach VMs
+ansible_user: deploy
+ansible_python_interpreter: /usr/bin/python3
+ansible_ssh_private_key_file: "{{ vm_ssh_key_dir }}/{{ vm_ssh_key_name }}"
+ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+# Default VM specifications (override per-host in host_vars)
+vm_vcpus: 2
+vm_memory_mb: 2048
+vm_disk_gb: 20
+vm_os_variant: "ubuntu24.04"
+
+# Cloud-init defaults
+vm_deploy_user: deploy
+vm_timezone: "Europe/Amsterdam"
+vm_nameservers:
+  - "1.1.1.1"
+  - "8.8.8.8"
+vm_search_domains:
+  - "local"
+vm_network_mode: "dhcp"
+
+# ---------------------------------------------------------------------------
+# Hardening variables (consumed by roles 03-common, 04-ssh-hardening, 05-firewall)
+# ---------------------------------------------------------------------------
+
+# 03-common
+ntp_servers:
+  - 0.pool.ntp.org
+  - 1.pool.ntp.org
+
+# 04-ssh-hardening
+ssh_port: 22
+ssh_permit_root_login: "no"
+ssh_password_authentication: "no"
+
+# 05-firewall
+firewall_allowed_tcp_ports:
+  - 22

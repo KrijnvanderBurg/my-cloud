@@ -1,0 +1,15 @@
+---
+hypervisor_packages:
+  - qemu-kvm
+  - libvirt-daemon-system
+  - libvirt-clients
+  - virtinst
+  - cloud-image-utils
+  - genisoimage
+  - python3-libvirt
+  - python3-lxml
+
+hypervisor_pool_name: "default"
+hypervisor_pool_path: "/var/lib/libvirt/images"
+hypervisor_network_name: "default"
+hypervisor_ssh_key_type: "ed25519"

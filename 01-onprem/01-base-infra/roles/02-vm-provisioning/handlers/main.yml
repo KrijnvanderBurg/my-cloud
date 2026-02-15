@@ -1,0 +1,3 @@
+---
+# Handlers for 02-vm-provisioning
+# (no handlers needed – VMs are fire-and-forget via virt-install)

@@ -1,0 +1,19 @@
+---
+vm_default_vcpus: 2
+vm_default_memory_mb: 2048
+vm_default_disk_gb: 20
+vm_default_os_variant: "ubuntu24.04"
+
+vm_deploy_user: deploy
+vm_deploy_shell: "/bin/bash"
+vm_timezone: "Europe/Amsterdam"
+
+vm_image_cache_dir: "/var/lib/libvirt/images"
+vm_cloud_init_dir: "/tmp/cloud-init"
+
+vm_cloud_init_packages:
+  - python3
+  - python3-apt
+  - qemu-guest-agent
+  - sudo
+  - openssh-server

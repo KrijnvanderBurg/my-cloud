@@ -1,0 +1,32 @@
+---
+# ---------------------------------------------------------------------------
+# Hypervisor-specific variables (applied only to the KVM host)
+# ---------------------------------------------------------------------------
+
+# Libvirt storage pool
+libvirt_pool_name: "default"
+libvirt_pool_path: "/var/lib/libvirt/images"
+
+# Libvirt network (NAT)
+libvirt_network_name: "default"
+
+# Ubuntu 24.04 LTS (Noble Numbat) cloud image
+cloud_image_name: "noble-server-cloudimg-amd64.img"
+cloud_image_url: >-
+  https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+cloud_image_checksum: ""
+
+# Temporary directory for cloud-init artifacts
+cloud_init_dir: "/tmp/cloud-init-{{ environment }}"
+
+# KVM / libvirt packages
+libvirt_packages:
+  - qemu-kvm
+  - libvirt-daemon-system
+  - libvirt-clients
+  - virtinst
+  - cloud-image-utils
+  - genisoimage
+  - libguestfs-tools
+  - python3-libvirt
+  - python3-lxml
