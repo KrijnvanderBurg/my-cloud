@@ -1,9 +1,0 @@
----
-environment: dev
-managed_by: ansible
-project: levendaal
-layer: hypervisor-setup
-naming_prefix: "hypervisor-setup-dev-onprem"
-
-vm_ssh_key_dir: "~/.ssh/base-infra-{{ environment }}"
-vm_ssh_key_name: "id_ed25519"

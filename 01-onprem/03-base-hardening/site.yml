@@ -1,0 +1,60 @@
+---
+- name: Harden base VMs
+  hosts: base_vms
+  gather_facts: true
+  strategy: linear
+  vars:
+    # Set SSH key dynamically based on inventory hostname
+    ansible_ssh_private_key_file: "{{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
+  pre_tasks:
+    - name: Determine deployment user on localhost
+      ansible.builtin.set_fact:
+        deployment_user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER')) }}"
+      delegate_to: localhost
+      become: false
+      run_once: true
+
+    - name: Set VM keys directory path globally
+      ansible.builtin.set_fact:
+        vm_keys_dir: "{{ vm_keys_base_dir }}/{{ deployment_user }}/.ssh/vm-keys-{{ env }}"
+      run_once: true
+
+    - name: Display hardening information
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Starting VM Hardening"
+          - "=========================================="
+          - "Target: {{ inventory_hostname }}"
+          - "IP: {{ ansible_host }}"
+          - "SSH Key: {{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
+          - "Admin User: {{ admin_user }}"
+          - "=========================================="
+
+  roles:
+    - role: admin-user
+      tags: ['admin-user']
+    - role: ssh-hardening
+      tags: ['ssh-hardening']
+    - role: os-hardening
+      tags: ['os-hardening']
+
+  post_tasks:
+    - name: Display final hardening summary
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "VM Hardening Complete: {{ inventory_hostname }}"
+          - "=========================================="
+          - "Admin user '{{ admin_user }}' created with sudo access"
+          - "SSH access (key-only, root disabled):"
+          - "  ssh -i {{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519 {{ admin_user }}@{{ ansible_host }}"
+          - ""
+          - "Security measures applied:"
+          - "  ✓ SSH hardening (CIS/STIG-aligned)"
+          - "  ✓ OS hardening (kernel, filesystem, users)"
+          - "  ✓ Firewall enabled (UFW)"
+          - "  ✓ Automatic security updates enabled"
+          - "  ✓ Audit logging enabled"
+          - "  ✓ Root account locked"
+          - "=========================================="

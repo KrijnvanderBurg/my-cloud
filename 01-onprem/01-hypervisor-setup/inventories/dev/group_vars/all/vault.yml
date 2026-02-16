@@ -1,3 +1,0 @@
----
-# Encrypt this file with: ansible-vault encrypt inventories/dev/group_vars/all/vault.yml
-# No secrets required for hypervisor setup at this time.

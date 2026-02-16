@@ -1,0 +1,206 @@
+---
+# Base VMs provisioning tasks
+
+# ============================================================================
+# Phase 1: Prepare dependencies
+# ============================================================================
+
+- name: Debug environment variable
+  ansible.builtin.debug:
+    msg: "Environment is: {{ env }}"
+  tags:
+    - always
+
+- name: Determine actual user running deployment
+  ansible.builtin.set_fact:
+    actual_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+  tags:
+    - always
+
+- name: Set permanent SSH key directory path
+  ansible.builtin.set_fact:
+    vm_keys_dir: "{{ vm_keys_base_dir }}/{{ actual_user }}/.ssh/vm-keys-{{ env }}"
+  tags:
+    - always
+
+- name: Download Ubuntu cloud image
+  ansible.builtin.get_url:
+    url: "{{ cloud_image_url }}"
+    dest: "{{ base_image_path }}"
+    mode: "0644"
+    timeout: 300
+  tags:
+    - provision
+
+- name: Create permanent SSH keys directory
+  ansible.builtin.file:
+    path: "{{ vm_keys_dir }}"
+    state: directory
+    mode: "0700"
+    owner: "{{ actual_user }}"
+    group: "{{ actual_user }}"
+  become: false
+  tags:
+    - provision
+
+- name: Generate per-VM permanent SSH keypairs
+  community.crypto.openssh_keypair:
+    path: "{{ vm_keys_dir }}/{{ item.name }}_id_ed25519"
+    type: ed25519
+    comment: "permanent-{{ item.name }}"
+    state: present
+    force: false
+    owner: "{{ actual_user }}"
+    group: "{{ actual_user }}"
+  loop: "{{ base_vms }}"
+  become: false
+  tags:
+    - provision
+
+- name: Display permanent keys location
+  ansible.builtin.debug:
+    msg: "Permanent SSH key for {{ item.name }}: {{ vm_keys_dir }}/{{ item.name }}_id_ed25519"
+  loop: "{{ base_vms }}"
+  tags:
+    - provision
+
+# ============================================================================
+# Phase 2: Create and customize VM images
+# ============================================================================
+
+- name: Create VM disk images from base cloud image
+  ansible.builtin.copy:
+    src: "{{ base_image_path }}"
+    dest: "{{ vm_images_path }}/{{ item.name }}.qcow2"
+    remote_src: yes
+    force: no
+  loop: "{{ base_vms }}"
+  tags:
+    - provision
+
+- name: Customize VM images with virt-customize
+  ansible.builtin.command:
+    cmd: >
+      virt-customize -a {{ vm_images_path }}/{{ item.name }}.qcow2
+      --hostname {{ item.name }}
+      --ssh-inject root:file:{{ vm_keys_dir }}/{{ item.name }}_id_ed25519.pub
+      --install qemu-guest-agent
+      --timezone UTC
+      --run-command 'systemctl enable qemu-guest-agent'
+    creates: "{{ vm_images_path }}/{{ item.name }}.qcow2.customized"
+  loop: "{{ base_vms }}"
+  tags:
+    - provision
+
+- name: Mark images as customized
+  ansible.builtin.file:
+    path: "{{ vm_images_path }}/{{ item.name }}.qcow2.customized"
+    state: touch
+    mode: '0644'
+  loop: "{{ base_vms }}"
+  tags:
+    - provision
+
+- name: Create cloud-init network-config for static IP
+  ansible.builtin.copy:
+    dest: "{{ vm_images_path }}/{{ item.name }}-network-config.yml"
+    mode: '0644'
+    content: |
+      version: 2
+      ethernets:
+        enp1s0:
+          dhcp4: false
+          addresses:
+            - {{ item.ip }}/24
+          gateway4: {{ network_gateway }}
+          nameservers:
+            addresses:
+              - {{ network_dns }}
+  loop: "{{ base_vms }}"
+  tags:
+    - provision
+
+# ============================================================================
+# Phase 3: Provision VMs
+# ============================================================================
+
+- name: Check if VM already exists
+  ansible.builtin.command:
+    cmd: virsh dominfo {{ item.name }}
+  register: vm_exists
+  failed_when: false
+  changed_when: false
+  loop: "{{ base_vms }}"
+  tags:
+    - provision
+
+- name: Provision VMs with virt-install
+  ansible.builtin.command:
+    cmd: >
+      virt-install
+      --name {{ item.item.name }}
+      --memory {{ vm_memory_mb }}
+      --vcpus {{ vm_vcpus }}
+      --disk {{ vm_images_path }}/{{ item.item.name }}.qcow2,device=disk,bus=virtio
+      --import
+      --os-variant {{ vm_os_variant }}
+      --network network={{ libvirt_network }},model=virtio
+      --graphics none
+      --console pty,target_type=serial
+      --cloud-init network-config={{ vm_images_path }}/{{ item.item.name }}-network-config.yml
+      --noautoconsole
+  loop: "{{ vm_exists.results }}"
+  when: item.rc != 0
+  tags:
+    - provision
+
+- name: Ensure VMs are started
+  community.libvirt.virt:
+    name: "{{ item.name }}"
+    state: running
+  loop: "{{ base_vms }}"
+  tags:
+    - provision
+
+- name: Enable VM autostart
+  community.libvirt.virt:
+    name: "{{ item.name }}"
+    autostart: yes
+  loop: "{{ base_vms }}"
+  tags:
+    - provision
+
+- name: Wait for VMs to be accessible via SSH
+  ansible.builtin.wait_for:
+    host: "{{ item.ip }}"
+    port: 22
+    delay: 10
+    timeout: 120
+  loop: "{{ base_vms }}"
+  tags:
+    - provision
+
+# ============================================================================
+# Phase 4: Display results
+# ============================================================================
+
+- name: Display VM provisioning summary
+  ansible.builtin.debug:
+    msg:
+      - "=========================================="
+      - "VM Provisioning Complete"
+      - "=========================================="
+      - "VM: {{ item.name }}"
+      - "IP: {{ item.ip }}"
+      - "Status: Running"
+      - "SSH Key: {{ vm_keys_dir }}/{{ item.name }}_id_ed25519"
+      - ""
+      - "Access this VM:"
+      - "  ssh -i {{ vm_keys_dir }}/{{ item.name }}_id_ed25519 root@{{ item.ip }}"
+      - ""
+      - "NEXT STEP: Run 03-base-hardening to secure this VM"
+      - "=========================================="
+  loop: "{{ base_vms }}"
+  tags:
+    - provision
+

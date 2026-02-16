@@ -1,0 +1,36 @@
+---
+# Environment metadata
+env: dev
+project: levendaal
+layer: base-vms
+
+# VM specifications
+vm_vcpus: 2
+vm_memory_mb: 2048
+vm_disk_gb: 20
+vm_os_variant: ubuntu24.04
+
+# Paths
+vm_images_path: /var/lib/libvirt/images
+cloud_image_name: noble-server-cloudimg-amd64.img
+cloud_image_url: https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+base_image_path: "{{ vm_images_path }}/{{ cloud_image_name }}"
+
+# Permanent SSH keys for VMs (per-VM unique keys)
+vm_keys_base_dir: /home  # Base directory for user homes
+
+# Libvirt configuration
+libvirt_network: default
+libvirt_pool: default
+
+# Network configuration
+network_gateway: 192.168.122.1
+network_dns: 192.168.122.1
+network_netmask: 255.255.255.0
+
+# VM definitions
+base_vms:
+  - name: vm-base-dev-onprem-01
+    ip: 192.168.122.101
+  - name: vm-base-dev-onprem-02
+    ip: 192.168.122.102

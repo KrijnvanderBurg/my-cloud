@@ -1,8 +1,0 @@
----
-openclaw_version: "latest"
-openclaw_install_dir: /opt/openclaw
-openclaw_data_dir: /var/lib/openclaw
-openclaw_user: openclaw
-openclaw_group: openclaw
-openclaw_port: 8080
-openclaw_log_level: info

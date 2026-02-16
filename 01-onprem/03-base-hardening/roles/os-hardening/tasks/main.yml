@@ -1,0 +1,119 @@
+---
+# Operating system hardening tasks
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  tags:
+    - os-hardening
+
+- name: Install security packages
+  ansible.builtin.apt:
+    name:
+      - ufw
+      - unattended-upgrades
+      - apt-listchanges
+      - auditd
+      - audispd-plugins
+    state: present
+  tags:
+    - os-hardening
+
+- name: Configure unattended upgrades
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    content: |
+      Unattended-Upgrade::Allowed-Origins {
+          "${distro_id}:${distro_codename}";
+          "${distro_id}:${distro_codename}-security";
+          "${distro_id}ESMApps:${distro_codename}-apps-security";
+          "${distro_id}ESM:${distro_codename}-infra-security";
+      };
+      Unattended-Upgrade::AutoFixInterruptedDpkg "true";
+      Unattended-Upgrade::MinimalSteps "true";
+      Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+      Unattended-Upgrade::Remove-Unused-Dependencies "true";
+      Unattended-Upgrade::Automatic-Reboot "{{ unattended_upgrades_automatic_reboot | lower }}";
+    mode: '0644'
+  tags:
+    - os-hardening
+
+- name: Enable unattended upgrades
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+      APT::Periodic::Download-Upgradeable-Packages "1";
+      APT::Periodic::AutocleanInterval "7";
+    mode: '0644'
+  tags:
+    - os-hardening
+
+- name: Configure UFW defaults
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+    state: enabled
+  loop:
+    - { direction: 'incoming', policy: 'deny' }
+    - { direction: 'outgoing', policy: 'allow' }
+  tags:
+    - os-hardening
+    - firewall
+
+- name: Configure UFW rules
+  community.general.ufw:
+    rule: "{{ item.rule }}"
+    port: "{{ item.port | default(omit) }}"
+    proto: "{{ item.proto | default(omit) }}"
+    comment: "{{ item.comment | default(omit) }}"
+  loop: "{{ ufw_rules }}"
+  tags:
+    - os-hardening
+    - firewall
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+  tags:
+    - os-hardening
+    - firewall
+
+- name: Apply OS hardening with devsec.hardening
+  ansible.builtin.include_role:
+    name: devsec.hardening.os_hardening
+  tags:
+    - os-hardening
+
+- name: Ensure auditd service is enabled and started
+  ansible.builtin.service:
+    name: auditd
+    state: started
+    enabled: true
+  tags:
+    - os-hardening
+
+- name: Lock root account password
+  ansible.builtin.command:
+    cmd: passwd -l root
+  register: root_lock
+  changed_when: "'password expiry information changed' in root_lock.stdout or 'passwd: password expiry information changed' in root_lock.stdout"
+  failed_when: false
+  tags:
+    - os-hardening
+
+- name: Display OS hardening summary
+  ansible.builtin.debug:
+    msg:
+      - "OS hardening complete:"
+      - "  - Automatic security updates: enabled"
+      - "  - UFW firewall: enabled (deny incoming, allow outgoing)"
+      - "  - SSH allowed through firewall"
+      - "  - Audit daemon: enabled"
+      - "  - Root password: locked"
+      - "  - Kernel hardening: applied"
+      - "  - File permissions: hardened"
+  tags:
+    - os-hardening

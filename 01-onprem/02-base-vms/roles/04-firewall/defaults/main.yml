@@ -1,5 +1,0 @@
----
-firewall_allowed_tcp_ports:
-  - 22
-firewall_allowed_udp_ports: []
-firewall_log_dropped: true

@@ -6,3 +6,5 @@ collections:
     version: ">=9.0.0"
   - name: community.crypto
     version: ">=2.18.0"
+  - name: devsec.hardening
+    version: ">=9.0.0"

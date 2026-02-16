@@ -1,0 +1,28 @@
+---
+# SSH hardening tasks
+
+- name: Apply SSH hardening with devsec.hardening
+  ansible.builtin.include_role:
+    name: devsec.hardening.ssh_hardening
+  tags:
+    - ssh-hardening
+
+- name: Ensure SSH service is enabled and started
+  ansible.builtin.service:
+    name: ssh
+    state: started
+    enabled: true
+  tags:
+    - ssh-hardening
+
+- name: Display SSH hardening summary
+  ansible.builtin.debug:
+    msg:
+      - "SSH hardening complete:"
+      - "  - Root login: disabled"
+      - "  - Password authentication: disabled"
+      - "  - Key-only authentication: enabled"
+      - "  - Strong ciphers/MACs configured"
+      - "  - Connection limits enforced"
+  tags:
+    - ssh-hardening

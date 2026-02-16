@@ -1,0 +1,59 @@
+---
+# Environment metadata
+env: dev
+project: levendaal
+layer: base-hardening
+
+# SSH connection settings (initial connection as root)
+ansible_user: root
+ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+
+# VM keys location (set dynamically in playbook based on current user)
+vm_keys_base_dir: /home
+
+# Administrative user to create
+admin_user: ansible
+admin_user_groups:
+  - sudo
+
+# SSH hardening configuration (devsec.hardening.ssh_hardening variables)
+ssh_server_enabled: true
+ssh_client_hardening_enabled: false
+ssh_permit_root_login: 'no'
+ssh_password_authentication: false
+ssh_pubkey_authentication: true
+ssh_challenge_response_authentication: false
+ssh_max_auth_tries: 3
+ssh_login_grace_time: 30
+ssh_allow_tcp_forwarding: 'no'
+ssh_x11_forwarding: false
+ssh_allow_agent_forwarding: false
+ssh_client_alive_interval: 300
+ssh_client_alive_count_max: 2
+ssh_log_level: VERBOSE
+ssh_print_last_log: true
+ssh_use_pam: true
+ssh_use_dns: false
+
+# OS hardening configuration (devsec.hardening.os_hardening variables)
+os_security_kernel_enable_core_dump: false
+os_security_suid_sgid_enforce_whitelist: true
+os_auth_pw_max_age: 60
+os_auth_pw_min_age: 7
+os_auth_retries: 5
+os_auth_lockout_time: 600
+os_security_users_allow: []
+os_security_kernel_enable_module_loading: true
+os_security_kernel_enable_sysrq: false
+os_filesystem_whitelist: []
+
+# Firewall configuration
+ufw_rules:
+  - rule: allow
+    port: 22
+    proto: tcp
+    comment: 'SSH access'
+
+# Unattended upgrades
+unattended_upgrades_enabled: true
+unattended_upgrades_automatic_reboot: false

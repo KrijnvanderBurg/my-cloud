@@ -2,8 +2,6 @@
 - name: Configure KVM hypervisor
   hosts: hypervisors
   become: true
-  gather_facts: true
-  tags:
-    - hypervisor
   roles:
-    - role: hypervisor-setup
+    - hypervisor-setup
+

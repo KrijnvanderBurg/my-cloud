@@ -1,8 +1,0 @@
-# {{ ansible_managed }}
-# NTP configuration
-
-{% for server in ntp_servers %}
-server {{ server }} iburst
-{% endfor %}
-
-driftfile /var/lib/ntp/ntp.drift
