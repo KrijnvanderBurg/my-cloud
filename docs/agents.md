@@ -6,10 +6,14 @@
 
 ## Structure
 - `01-onprem/` — On-premises infrastructure managed with Ansible
+  - `01-hypervisor-setup/` — KVM/libvirt hypervisor configuration and SSH keypair generation
+  - `02-base-vms/` — VM provisioning (virt-customize + virt-install) and base hardening
+  - `03-openclaw/` — OpenClaw application deployment
   - Each numbered directory is an independent Ansible project (layer)
   - One `site.yml` per layer, inventories per environment under `inventories/`
   - Roles under `roles/` follow standard Ansible role structure
   - CI/CD via `.github/workflows/ansible-deployment-all.yml`
+  - Deployment chain: `op-hypervisor-setup-dev` → `op-base-vms-dev` → `op-openclaw-dev`
 - `02-azure/` — Azure Landing Zone managed with OpenTofu
   - Each numbered directory is an independent OpenTofu deployment (layer)
   - Environments under `environments/`, modules under `modules/`
