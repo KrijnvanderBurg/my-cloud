@@ -18,3 +18,7 @@ ssh_log_level: VERBOSE
 ssh_print_last_log: true
 ssh_use_pam: true
 ssh_use_dns: false
+
+# Banner configuration
+ssh_banner: true
+ssh_banner_path: '/etc/issue.net'

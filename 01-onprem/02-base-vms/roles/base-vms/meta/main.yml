@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  role_name: base-vms
+  author: x0r
+  description: Provision and manage KVM virtual machines with cloud-init
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+  galaxy_tags:
+    - kvm
+    - libvirt
+    - cloud-init
+    - provisioning
+dependencies: []
+# Collection dependencies (community.libvirt, community.crypto) are in requirements.yml

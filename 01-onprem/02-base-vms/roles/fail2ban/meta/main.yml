@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  role_name: fail2ban
+  author: x0r
+  description: Fail2ban installation and configuration with SSH and recidive jails
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+  galaxy_tags:
+    - fail2ban
+    - security
+    - intrusion-prevention
+dependencies: []

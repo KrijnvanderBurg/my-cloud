@@ -83,6 +83,7 @@
     direction: in
     port: "{{ item.port | default(omit) }}"
     proto: "{{ item.proto | default(omit) }}"
+    from_ip: "{{ item.from_ip | default(omit) }}"
     comment: "{{ item.comment | default(omit) }}"
   loop: "{{ ufw_rules }}"
   tags:
@@ -128,15 +129,8 @@
   tags:
     - os-hardening
 
-- name: Configure SSH to display banner
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    regexp: '^#?Banner'
-    line: 'Banner /etc/issue.net'
-    state: present
-  notify: restart sshd
-  tags:
-    - os-hardening
+# Banner directive in sshd_config is managed by devsec.hardening.ssh_hardening
+# via ssh_banner and ssh_banner_path variables in the ssh-hardening role.
 
 # ==============================================================================
 # Kernel module blacklisting (USB storage, firewire, thunderbolt)
@@ -216,11 +210,16 @@
   tags:
     - os-hardening
 
-- name: Initialize AIDE database
+# aideinit scans the entire filesystem — takes 10-30 min on a fresh VM.
+# Fire-and-forget: runs in background, doesn't block the playbook.
+# The database will be ready well before the first daily cron check.
+- name: Initialize AIDE database (fire-and-forget — runs in background)
   ansible.builtin.command:
     cmd: aideinit
   when: not aide_db.stat.exists
   changed_when: true
+  async: 1800
+  poll: 0
   tags:
     - os-hardening
 

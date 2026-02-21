@@ -1,15 +1,11 @@
 ---
 # Base VMs provisioning tasks
+# Derives VM list from inventory group 'base_vms' — single source of truth.
+# Adding a VM: add one entry to inventories/<env>/hosts.yml, then run this playbook.
 
 # ============================================================================
 # Phase 1: Prepare dependencies
 # ============================================================================
-
-- name: Debug environment variable
-  ansible.builtin.debug:
-    msg: "Environment is: {{ env }}"
-  tags:
-    - always
 
 - name: Determine actual user running deployment
   ansible.builtin.set_fact:
@@ -23,10 +19,17 @@
   tags:
     - always
 
+- name: Set target VMs from inventory (override with -e target_vms)
+  ansible.builtin.set_fact:
+    provision_vms: "{{ target_vms | default(groups['base_vms']) }}"
+  tags:
+    - always
+
 - name: Download Ubuntu cloud image
   ansible.builtin.get_url:
     url: "{{ cloud_image_url }}"
     dest: "{{ base_image_path }}"
+    checksum: "{{ ('sha256:' + cloud_image_checksum) if cloud_image_checksum | default('') | length > 0 else omit }}"
     mode: "0644"
     timeout: 300
   tags:
@@ -45,80 +48,96 @@
 
 - name: Generate per-VM permanent SSH keypairs
   community.crypto.openssh_keypair:
-    path: "{{ vm_keys_dir }}/{{ item.name }}_id_ed25519"
+    path: "{{ vm_keys_dir }}/{{ item }}_id_ed25519"
     type: ed25519
-    comment: "permanent-{{ item.name }}"
+    comment: "{{ admin_user }}@{{ item }}"
     mode: '0600'
     state: present
     force: false
     owner: "{{ actual_user }}"
     group: "{{ actual_user }}"
-  loop: "{{ base_vms }}"
+  loop: "{{ provision_vms }}"
   become: false
   tags:
     - provision
 
-- name: Display permanent keys location
-  ansible.builtin.debug:
-    msg: "Permanent SSH key for {{ item.name }}: {{ vm_keys_dir }}/{{ item.name }}_id_ed25519"
-  loop: "{{ base_vms }}"
-  tags:
-    - provision
-
 # ============================================================================
-# Phase 2: Create and customize VM images
+# Phase 2: Create VM disk images and cloud-init configs
 # ============================================================================
 
 - name: Create VM disk images from base cloud image
   ansible.builtin.copy:
     src: "{{ base_image_path }}"
-    dest: "{{ vm_images_path }}/{{ item.name }}.qcow2"
-    remote_src: yes
-    force: no
-  loop: "{{ base_vms }}"
+    dest: "{{ vm_images_path }}/{{ item }}.qcow2"
+    remote_src: true
+    force: false
+  loop: "{{ provision_vms }}"
   register: vm_disk_copy
   tags:
     - provision
 
-- name: Remove stale customization markers for freshly copied images
-  ansible.builtin.file:
-    path: "{{ vm_images_path }}/{{ item.item.name }}.qcow2.customized"
-    state: absent
+- name: Resize VM disk images to {{ vm_disk_gb }}G
+  ansible.builtin.command:
+    cmd: "qemu-img resize {{ vm_images_path }}/{{ item.item }}.qcow2 {{ vm_disk_gb }}G"
   loop: "{{ vm_disk_copy.results }}"
   when: item.changed
-  tags:
-    - provision
-
-- name: Customize VM images with virt-customize
-  ansible.builtin.command:
-    cmd: >
-      virt-customize -a {{ vm_images_path }}/{{ item.name }}.qcow2
-      --hostname {{ item.name }}
-      --ssh-inject root:file:{{ vm_keys_dir }}/{{ item.name }}_id_ed25519.pub
-      --install qemu-guest-agent
-      --timezone UTC
-      --run-command 'systemctl enable qemu-guest-agent'
-    creates: "{{ vm_images_path }}/{{ item.name }}.qcow2.customized"
-  loop: "{{ base_vms }}"
-  register: virt_customize_result
-  tags:
-    - provision
-
-- name: Mark images as customized
-  ansible.builtin.file:
-    path: "{{ vm_images_path }}/{{ item.item.name }}.qcow2.customized"
-    state: touch
-    mode: '0644'
-  loop: "{{ virt_customize_result.results }}"
-  when: item.changed
   loop_control:
-    label: "{{ item.item.name }}"
+    label: "{{ item.item }}"
   tags:
     - provision
 
-- name: Create cloud-init network-config for static IP
+- name: Create cloud-init user-data
   ansible.builtin.copy:
-    dest: "{{ vm_images_path }}/{{ item.name }}-network-config.yml"
+    dest: "{{ vm_images_path }}/{{ item }}-user-data.yml"
+    mode: '0600'
+    content: |
+      #cloud-config
+      hostname: {{ item }}
+      manage_etc_hosts: true
+      timezone: UTC
+
+      users:
+        - name: {{ admin_user }}
+          groups: {{ admin_user_groups | join(',') }}
+          shell: /bin/bash
+          sudo: ALL=(ALL) NOPASSWD:ALL
+          lock_passwd: true
+          ssh_authorized_keys:
+            - {{ lookup('file', vm_keys_dir + '/' + item + '_id_ed25519.pub') }}
+
+      # Security: no root SSH, no password auth, unique host keys
+      disable_root: true
+      ssh_pwauth: false
+      ssh_deletekeys: true
+      ssh_genkeytypes: ['ed25519', 'rsa']
+
+      packages:
+        - qemu-guest-agent
+
+      runcmd:
+        - systemctl enable --now qemu-guest-agent
+
+      growpart:
+        mode: auto
+        devices: ['/']
+  loop: "{{ provision_vms }}"
+  tags:
+    - provision
+
+- name: Create cloud-init meta-data
+  ansible.builtin.copy:
+    dest: "{{ vm_images_path }}/{{ item }}-meta-data.yml"
+    mode: '0644'
+    content: |
+      instance-id: {{ item }}
+      local-hostname: {{ item }}
+  loop: "{{ provision_vms }}"
+  tags:
+    - provision
+
+- name: Create cloud-init network-config
+  ansible.builtin.copy:
+    dest: "{{ vm_images_path }}/{{ item }}-network-config.yml"
     mode: '0644'
     content: |
       version: 2
@@ -126,14 +145,14 @@
         enp1s0:
           dhcp4: false
           addresses:
-            - {{ item.ip }}/24
+            - {{ hostvars[item]['ansible_host'] }}/24
           routes:
             - to: default
               via: {{ network_gateway }}
           nameservers:
             addresses:
               - {{ network_dns }}
-  loop: "{{ base_vms }}"
+  loop: "{{ provision_vms }}"
   tags:
     - provision
 
@@ -143,11 +162,11 @@
 
 - name: Check if VM already exists
   ansible.builtin.command:
-    cmd: virsh dominfo {{ item.name }}
+    cmd: "virsh dominfo {{ item }}"
   register: vm_exists
   failed_when: false
   changed_when: false
-  loop: "{{ base_vms }}"
+  loop: "{{ provision_vms }}"
   tags:
     - provision
 
@@ -155,45 +174,47 @@
   ansible.builtin.command:
     cmd: >
       virt-install
-      --name {{ item.item.name }}
-      --memory {{ vm_memory_mb }}
-      --vcpus {{ vm_vcpus }}
-      --disk {{ vm_images_path }}/{{ item.item.name }}.qcow2,device=disk,bus=virtio
+      --name {{ item.item }}
+      --memory {{ hostvars[item.item]['vm_memory_mb'] | default(vm_memory_mb) }}
+      --vcpus {{ hostvars[item.item]['vm_vcpus'] | default(vm_vcpus) }}
+      --disk {{ vm_images_path }}/{{ item.item }}.qcow2,device=disk,bus=virtio
       --import
       --os-variant {{ vm_os_variant }}
       --network network={{ libvirt_network }},model=virtio
       --graphics none
       --console pty,target_type=serial
-      --cloud-init network-config={{ vm_images_path }}/{{ item.item.name }}-network-config.yml
+      --cloud-init user-data={{ vm_images_path }}/{{ item.item }}-user-data.yml,meta-data={{ vm_images_path }}/{{ item.item }}-meta-data.yml,network-config={{ vm_images_path }}/{{ item.item }}-network-config.yml
       --noautoconsole
   loop: "{{ vm_exists.results }}"
   when: item.rc != 0
+  loop_control:
+    label: "{{ item.item }}"
   tags:
     - provision
 
 - name: Ensure VMs are started
   community.libvirt.virt:
-    name: "{{ item.name }}"
+    name: "{{ item }}"
     state: running
-  loop: "{{ base_vms }}"
+  loop: "{{ provision_vms }}"
   tags:
     - provision
 
 - name: Enable VM autostart
   community.libvirt.virt:
-    name: "{{ item.name }}"
-    autostart: yes
-  loop: "{{ base_vms }}"
+    name: "{{ item }}"
+    autostart: true
+  loop: "{{ provision_vms }}"
   tags:
     - provision
 
 - name: Wait for VMs to be accessible via SSH
   ansible.builtin.wait_for:
-    host: "{{ item.ip }}"
+    host: "{{ hostvars[item]['ansible_host'] }}"
     port: 22
     delay: 10
-    timeout: 120
-  loop: "{{ base_vms }}"
+    timeout: 180
+  loop: "{{ provision_vms }}"
   tags:
     - provision
 
@@ -205,17 +226,12 @@
   ansible.builtin.debug:
     msg:
       - "=========================================="
-      - "VM Provisioning Complete"
+      - "VM Provisioned: {{ item }}"
       - "=========================================="
-      - "VM: {{ item.name }}"
-      - "IP: {{ item.ip }}"
-      - "Status: Running"
-      - "SSH Key: {{ vm_keys_dir }}/{{ item.name }}_id_ed25519"
-      - ""
-      - "Access this VM (root - pre-hardening):"
-      - "  ssh -i {{ vm_keys_dir }}/{{ item.name }}_id_ed25519 root@{{ item.ip }}"
+      - "IP: {{ hostvars[item]['ansible_host'] }}"
+      - "Disk: {{ vm_disk_gb }}G"
+      - "SSH: ssh -i {{ vm_keys_dir }}/{{ item }}_id_ed25519 {{ admin_user }}@{{ hostvars[item]['ansible_host'] }}"
       - "=========================================="
-  loop: "{{ base_vms }}"
+  loop: "{{ provision_vms }}"
   tags:
     - provision
-

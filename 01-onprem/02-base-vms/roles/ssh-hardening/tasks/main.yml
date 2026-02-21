@@ -7,13 +7,11 @@
   tags:
     - ssh-hardening
 
-- name: Ensure SSH service is enabled and started
-  ansible.builtin.service:
-    name: ssh
-    state: started
-    enabled: true
-  tags:
-    - ssh-hardening
+# NOTE: We deliberately do NOT have a "ensure ssh started" task here.
+# devsec's reload handler keeps the running sshd intact with updated config.
+# Attempting state=started after a reload causes systemd to try launching a
+# second sshd instance, which fails with "Address already in use".
+# The service is already enabled by devsec.
 
 - name: Display SSH hardening summary
   ansible.builtin.debug:

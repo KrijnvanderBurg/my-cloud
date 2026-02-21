@@ -11,101 +11,45 @@
     - base-vms
 
 # ==============================================================================
-# Play 2: Bootstrap admin user on VMs (root access — first run only)
-# ==============================================================================
-- name: Bootstrap admin user on base VMs
-  hosts: base_vms
-  gather_facts: false
-  become: true
-  tags:
-    - hardening
-    - bootstrap
-    - admin-user
-  vars:
-    ansible_user: root
-    vm_keys_dir: "{{ hostvars['localhost']['vm_keys_dir'] }}"
-    ansible_ssh_private_key_file: "{{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
-
-  pre_tasks:
-    - name: Check if root SSH access is available
-      ansible.builtin.command:
-        argv:
-          - ssh
-          - -o
-          - StrictHostKeyChecking=no
-          - -o
-          - UserKnownHostsFile=/dev/null
-          - -o
-          - ConnectTimeout=5
-          - -o
-          - BatchMode=yes
-          - -i
-          - "{{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
-          - "root@{{ ansible_host }}"
-          - /bin/true
-      delegate_to: localhost
-      become: false
-      register: root_ssh_probe
-      failed_when: false
-      changed_when: false
-      tags:
-        - always
-
-    - name: Skip bootstrap — root SSH is no longer available (already hardened)
-      ansible.builtin.meta: end_host
-      when: root_ssh_probe.rc != 0
-      tags:
-        - always
-
-    - name: Gather facts
-      ansible.builtin.setup:
-      tags:
-        - always
-
-    - name: Display bootstrap information
-      ansible.builtin.debug:
-        msg:
-          - "=========================================="
-          - "Bootstrapping admin user (root access)"
-          - "=========================================="
-          - "Target: {{ inventory_hostname }}"
-          - "IP: {{ ansible_host }}"
-          - "=========================================="
-      tags:
-        - always
-
-  roles:
-    - role: admin-user
-      tags: ['admin-user']
-
-# ==============================================================================
-# Play 3: Harden base VMs (admin user access — idempotent re-runs)
+# Play 2: Harden base VMs (connects as admin user — fully idempotent)
 # ==============================================================================
 - name: Harden base VMs
   hosts: base_vms
   gather_facts: true
   become: true
+  serial: 1
   tags:
     - hardening
   vars:
+    _deployer: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
+    vm_keys_dir: "{{ vm_keys_base_dir }}/{{ _deployer }}/.ssh/vm-keys-{{ env }}"
     ansible_user: "{{ admin_user }}"
-    vm_keys_dir: "{{ hostvars['localhost']['vm_keys_dir'] }}"
     ansible_ssh_private_key_file: "{{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=accept-new'
 
   pre_tasks:
+    - name: Wait for cloud-init to complete
+      ansible.builtin.command:
+        cmd: cloud-init status --wait
+      register: cloud_init_result
+      changed_when: false
+      failed_when: cloud_init_result.rc not in [0, 2]
+      timeout: 300
+
+    - name: Remove root SSH authorized keys (defense-in-depth)
+      ansible.builtin.file:
+        path: /root/.ssh/authorized_keys
+        state: absent
+
     - name: Display hardening information
       ansible.builtin.debug:
         msg:
           - "=========================================="
-          - "Starting VM Hardening"
+          - "Hardening: {{ inventory_hostname }}"
           - "=========================================="
-          - "Target: {{ inventory_hostname }}"
           - "IP: {{ ansible_host }}"
-          - "SSH User: {{ admin_user }}"
-          - "SSH Key: {{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
+          - "User: {{ admin_user }}"
           - "=========================================="
-      tags:
-        - always
 
   roles:
     - role: ssh-hardening
@@ -116,27 +60,57 @@
       tags: ['fail2ban']
 
   post_tasks:
-    - name: Display final hardening summary
+    - name: Display hardening summary
       ansible.builtin.debug:
         msg:
           - "=========================================="
-          - "VM Hardening Complete: {{ inventory_hostname }}"
+          - "Hardening Complete: {{ inventory_hostname }}"
           - "=========================================="
-          - "Admin user '{{ admin_user }}' created with sudo access"
-          - "SSH access (key-only, root disabled):"
-          - "  ssh -i {{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519 {{ admin_user }}@{{ ansible_host }}"
+          - "SSH: ssh -i {{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519 {{ admin_user }}@{{ ansible_host }}"
           - ""
-          - "Security measures applied:"
+          - "Applied:"
           - "  - SSH hardening (CIS/STIG-aligned, root login disabled)"
           - "  - OS hardening (kernel, filesystem, users)"
-          - "  - Firewall enabled (UFW, deny ingress + egress)"
-          - "  - Fail2ban active (SSH brute-force protection)"
-          - "  - AIDE file integrity monitoring initialized"
-          - "  - Automatic security updates enabled"
-          - "  - Audit logging enabled (CIS rules)"
-          - "  - Login banners deployed"
-          - "  - USB/firewire/thunderbolt modules blacklisted"
+          - "  - Firewall (UFW, deny-all ingress + egress)"
+          - "  - Fail2ban (SSH brute-force + recidive)"
+          - "  - AIDE file integrity monitoring"
+          - "  - Automatic security updates"
+          - "  - Audit logging (CIS rules)"
           - "  - Root account locked"
           - "=========================================="
-      tags:
-        - always
+
+# ==============================================================================
+# Play 3: Destroy VMs (only runs with --tags destroy)
+# ==============================================================================
+- name: Destroy base VMs
+  hosts: hypervisors
+  become: true
+  tags:
+    - never
+    - destroy
+
+  pre_tasks:
+    - name: Determine actual user
+      ansible.builtin.set_fact:
+        actual_user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
+
+    - name: Set SSH key directory
+      ansible.builtin.set_fact:
+        vm_keys_dir: "{{ vm_keys_base_dir }}/{{ actual_user }}/.ssh/vm-keys-{{ env }}"
+
+    - name: Set target VMs for destruction
+      ansible.builtin.set_fact:
+        destroy_vms: "{{ target_vms | default([]) }}"
+
+    - name: Fail if no target VMs specified
+      ansible.builtin.fail:
+        msg: >
+          Specify target_vms to destroy.
+          Example: -e 'target_vms=["vm-base-dev-onprem-01"]'
+      when: destroy_vms | length == 0
+
+  tasks:
+    - name: Include destroy tasks
+      ansible.builtin.include_role:
+        name: base-vms
+        tasks_from: destroy

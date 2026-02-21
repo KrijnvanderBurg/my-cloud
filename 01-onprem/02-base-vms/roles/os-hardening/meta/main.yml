@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  role_name: os-hardening
+  author: x0r
+  description: OS hardening with UFW, auditd, AIDE, and devsec.hardening.os_hardening
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+  galaxy_tags:
+    - hardening
+    - security
+    - firewall
+    - cis
+dependencies: []

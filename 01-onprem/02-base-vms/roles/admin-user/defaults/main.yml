@@ -1,9 +1,0 @@
----
-# admin-user defaults
-
-# Administrative user to create on VMs
-admin_user: ansible
-
-# Groups to add the admin user to
-admin_user_groups:
-  - sudo

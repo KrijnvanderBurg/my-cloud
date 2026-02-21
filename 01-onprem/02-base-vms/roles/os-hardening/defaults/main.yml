@@ -5,6 +5,12 @@
 unattended_upgrades_enabled: true
 unattended_upgrades_automatic_reboot: false
 
+# Override devsec UFW defaults to enforce deny-all
+ufw_manage_defaults: true
+ufw_default_input_policy: DROP
+ufw_default_output_policy: DROP
+ufw_default_forward_policy: DROP
+
 # Firewall ingress rules
 ufw_rules:
   - rule: allow

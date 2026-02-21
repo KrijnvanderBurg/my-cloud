@@ -7,19 +7,28 @@ vm_memory_mb: 2048
 vm_disk_gb: 20
 vm_os_variant: ubuntu24.04
 
-# Paths
+# Cloud image
 vm_images_path: /var/lib/libvirt/images
 cloud_image_name: noble-server-cloudimg-amd64.img
 cloud_image_url: https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+base_image_path: "{{ vm_images_path }}/{{ cloud_image_name }}"
 
-# Permanent SSH keys for VMs
+# SHA256 checksum (empty = skip verification)
+cloud_image_checksum: ""
+
+# SSH key storage
 vm_keys_base_dir: /home
 
-# Libvirt configuration
+# Libvirt
 libvirt_network: default
 libvirt_pool: default
 
-# Network configuration
+# Network
 network_gateway: 192.168.122.1
 network_dns: 192.168.122.1
 network_netmask: 255.255.255.0
+
+# Administrative user created by cloud-init
+admin_user: ansible
+admin_user_groups:
+  - sudo

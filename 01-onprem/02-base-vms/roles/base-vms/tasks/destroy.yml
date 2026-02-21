@@ -1,0 +1,60 @@
+---
+# Destroy and clean up VMs
+# Usage: ansible-playbook site.yml --tags destroy -e 'target_vms=["vm-name"]'
+
+- name: Shut down VM
+  community.libvirt.virt:
+    name: "{{ item }}"
+    state: destroyed
+  loop: "{{ destroy_vms }}"
+  failed_when: false
+  tags:
+    - destroy
+
+- name: Undefine VM and remove storage
+  ansible.builtin.command:
+    cmd: "virsh undefine {{ item }} --remove-all-storage"
+  loop: "{{ destroy_vms }}"
+  register: undefine_result
+  failed_when: false
+  changed_when: undefine_result.rc == 0
+  tags:
+    - destroy
+
+- name: Remove cloud-init files
+  ansible.builtin.file:
+    path: "{{ vm_images_path }}/{{ item.0 }}{{ item.1 }}"
+    state: absent
+  loop: "{{ destroy_vms | product(['-user-data.yml', '-meta-data.yml', '-network-config.yml']) | list }}"
+  loop_control:
+    label: "{{ item.0 }}{{ item.1 }}"
+  tags:
+    - destroy
+
+- name: Remove SSH keypairs
+  ansible.builtin.file:
+    path: "{{ vm_keys_dir }}/{{ item.0 }}{{ item.1 }}"
+    state: absent
+  loop: "{{ destroy_vms | product(['_id_ed25519', '_id_ed25519.pub']) | list }}"
+  loop_control:
+    label: "{{ item.0 }}{{ item.1 }}"
+  become: false
+  tags:
+    - destroy
+
+- name: Remove host keys from known_hosts
+  ansible.builtin.command:
+    cmd: "ssh-keygen -R {{ hostvars[item]['ansible_host'] }}"
+  loop: "{{ destroy_vms }}"
+  failed_when: false
+  changed_when: true
+  become: false
+  tags:
+    - destroy
+
+- name: Display destruction summary
+  ansible.builtin.debug:
+    msg: "Destroyed: {{ item }} ({{ hostvars[item]['ansible_host'] | default('unknown') }})"
+  loop: "{{ destroy_vms }}"
+  tags:
+    - destroy
