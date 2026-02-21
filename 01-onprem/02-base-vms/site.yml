@@ -1,6 +1,142 @@
 ---
+# ==============================================================================
+# Play 1: Provision base VMs on KVM hypervisor
+# ==============================================================================
 - name: Provision base VMs on KVM hypervisor
   hosts: hypervisors
   become: true
+  tags:
+    - provision
   roles:
     - base-vms
+
+# ==============================================================================
+# Play 2: Bootstrap admin user on VMs (root access — first run only)
+# ==============================================================================
+- name: Bootstrap admin user on base VMs
+  hosts: base_vms
+  gather_facts: false
+  become: true
+  tags:
+    - hardening
+    - bootstrap
+    - admin-user
+  vars:
+    ansible_user: root
+    vm_keys_dir: "{{ hostvars['localhost']['vm_keys_dir'] }}"
+    ansible_ssh_private_key_file: "{{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
+
+  pre_tasks:
+    - name: Check if root SSH access is available
+      ansible.builtin.command:
+        argv:
+          - ssh
+          - -o
+          - StrictHostKeyChecking=no
+          - -o
+          - UserKnownHostsFile=/dev/null
+          - -o
+          - ConnectTimeout=5
+          - -o
+          - BatchMode=yes
+          - -i
+          - "{{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
+          - "root@{{ ansible_host }}"
+          - /bin/true
+      delegate_to: localhost
+      become: false
+      register: root_ssh_probe
+      failed_when: false
+      changed_when: false
+      tags:
+        - always
+
+    - name: Skip bootstrap — root SSH is no longer available (already hardened)
+      ansible.builtin.meta: end_host
+      when: root_ssh_probe.rc != 0
+      tags:
+        - always
+
+    - name: Gather facts
+      ansible.builtin.setup:
+      tags:
+        - always
+
+    - name: Display bootstrap information
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Bootstrapping admin user (root access)"
+          - "=========================================="
+          - "Target: {{ inventory_hostname }}"
+          - "IP: {{ ansible_host }}"
+          - "=========================================="
+      tags:
+        - always
+
+  roles:
+    - role: admin-user
+      tags: ['admin-user']
+
+# ==============================================================================
+# Play 3: Harden base VMs (admin user access — idempotent re-runs)
+# ==============================================================================
+- name: Harden base VMs
+  hosts: base_vms
+  gather_facts: true
+  become: true
+  tags:
+    - hardening
+  vars:
+    ansible_user: "{{ admin_user }}"
+    vm_keys_dir: "{{ hostvars['localhost']['vm_keys_dir'] }}"
+    ansible_ssh_private_key_file: "{{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
+
+  pre_tasks:
+    - name: Display hardening information
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "Starting VM Hardening"
+          - "=========================================="
+          - "Target: {{ inventory_hostname }}"
+          - "IP: {{ ansible_host }}"
+          - "SSH User: {{ admin_user }}"
+          - "SSH Key: {{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
+          - "=========================================="
+      tags:
+        - always
+
+  roles:
+    - role: ssh-hardening
+      tags: ['ssh-hardening']
+    - role: os-hardening
+      tags: ['os-hardening']
+    - role: fail2ban
+      tags: ['fail2ban']
+
+  post_tasks:
+    - name: Display final hardening summary
+      ansible.builtin.debug:
+        msg:
+          - "=========================================="
+          - "VM Hardening Complete: {{ inventory_hostname }}"
+          - "=========================================="
+          - "Admin user '{{ admin_user }}' created with sudo access"
+          - "SSH access (key-only, root disabled):"
+          - "  ssh -i {{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519 {{ admin_user }}@{{ ansible_host }}"
+          - ""
+          - "Security measures applied:"
+          - "  - SSH hardening (CIS/STIG-aligned, root login disabled)"
+          - "  - OS hardening (kernel, filesystem, users)"
+          - "  - Firewall enabled (UFW, deny ingress + egress)"
+          - "  - Fail2ban active (SSH brute-force protection)"
+          - "  - AIDE file integrity monitoring initialized"
+          - "  - Automatic security updates enabled"
+          - "  - Audit logging enabled (CIS rules)"
+          - "  - Login banners deployed"
+          - "  - USB/firewire/thunderbolt modules blacklisted"
+          - "  - Root account locked"
+          - "=========================================="
+      tags:
+        - always

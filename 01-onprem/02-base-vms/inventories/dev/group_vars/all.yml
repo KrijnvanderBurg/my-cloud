@@ -4,6 +4,10 @@ env: dev
 project: levendaal
 layer: base-vms
 
+# ==============================================================================
+# VM Provisioning
+# ==============================================================================
+
 # VM specifications
 vm_vcpus: 2
 vm_memory_mb: 2048
@@ -28,9 +32,104 @@ network_gateway: 192.168.122.1
 network_dns: 192.168.122.1
 network_netmask: 255.255.255.0
 
-# VM definitions
+# VM definitions (keep in sync with base_vms group in inventories/dev/hosts.yml)
 base_vms:
   - name: vm-base-dev-onprem-01
     ip: 192.168.122.101
   - name: vm-base-dev-onprem-02
     ip: 192.168.122.102
+
+# ==============================================================================
+# VM Hardening
+# ==============================================================================
+
+# SSH connection settings (initial connection as root for hardening)
+ansible_ssh_common_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+
+# Administrative user to create
+admin_user: ansible
+admin_user_groups:
+  - sudo
+
+# SSH hardening configuration (devsec.hardening.ssh_hardening variables)
+ssh_server_enabled: true
+ssh_client_hardening_enabled: false
+ssh_permit_root_login: 'no'
+ssh_password_authentication: false
+ssh_pubkey_authentication: true
+ssh_max_auth_tries: 3
+ssh_login_grace_time: 30
+ssh_allow_tcp_forwarding: 'no'
+ssh_x11_forwarding: false
+ssh_allow_agent_forwarding: false
+ssh_client_alive_interval: 300
+ssh_client_alive_count_max: 2
+ssh_log_level: VERBOSE
+ssh_print_last_log: true
+ssh_use_pam: true
+ssh_use_dns: false
+
+# OS hardening configuration (devsec.hardening.os_hardening variables)
+os_security_kernel_enable_core_dump: false
+os_security_suid_sgid_enforce_whitelist: true
+os_auth_pw_max_age: 60
+os_auth_pw_min_age: 7
+os_auth_retries: 5
+os_auth_lockout_time: 600
+os_security_users_allow: []
+os_security_kernel_enable_module_loading: false
+os_security_kernel_enable_sysrq: false
+os_filesystem_whitelist: []
+
+# Override devsec.hardening UFW defaults to enforce deny-all egress
+ufw_manage_defaults: true
+ufw_default_input_policy: DROP
+ufw_default_output_policy: DROP
+ufw_default_forward_policy: DROP
+
+# Firewall configuration
+ufw_rules:
+  - rule: allow
+    port: 22
+    proto: tcp
+    comment: 'SSH access'
+
+ufw_egress_rules:
+  - rule: allow
+    port: 53
+    proto: udp
+    comment: 'DNS'
+  - rule: allow
+    port: 53
+    proto: tcp
+    comment: 'DNS over TCP'
+  - rule: allow
+    port: 123
+    proto: udp
+    comment: 'NTP'
+  - rule: allow
+    port: 80
+    proto: tcp
+    comment: 'HTTP (apt updates)'
+  - rule: allow
+    port: 443
+    proto: tcp
+    comment: 'HTTPS (apt updates)'
+
+# Login banner
+login_banner: |
+  ************************************************************
+  * AUTHORIZED ACCESS ONLY                                   *
+  * All connections are monitored and recorded.               *
+  * Disconnect IMMEDIATELY if you are not an authorized user. *
+  ************************************************************
+
+# Kernel module blacklist
+blacklist_kernel_modules:
+  - usb-storage
+  - firewire-core
+  - thunderbolt
+
+# Unattended upgrades
+unattended_upgrades_enabled: true
+unattended_upgrades_automatic_reboot: false

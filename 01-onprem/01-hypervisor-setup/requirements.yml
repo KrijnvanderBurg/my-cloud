@@ -1,8 +1,4 @@
 ---
-collections:
-  - name: ansible.posix
-    version: ">=1.5.0"
-  - name: community.general
-    version: ">=9.0.0"
-  - name: community.crypto
-    version: ">=2.18.0"
+# No external collections required
+# This playbook only uses ansible.builtin modules
+collections: []

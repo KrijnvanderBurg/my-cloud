@@ -19,10 +19,12 @@
   ansible.builtin.debug:
     msg:
       - "SSH hardening complete:"
-      - "  - Root login: disabled"
+      - "  - Root login: disabled (PermitRootLogin no)"
       - "  - Password authentication: disabled"
       - "  - Key-only authentication: enabled"
       - "  - Strong ciphers/MACs configured"
       - "  - Connection limits enforced"
+      - "  - TCP/agent forwarding: disabled"
+      - "  - X11 forwarding: disabled"
   tags:
     - ssh-hardening

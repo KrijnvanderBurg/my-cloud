@@ -16,17 +16,26 @@ Terraform/OpenTofu and Ansible configuration for Levendaal.
 │   └── workflows
 ├── docs
 ├── 01-onprem
-│   ├── 01-base-infra                    # Ansible - OS hardening, SSH, firewall
+│   ├── 01-hypervisor-setup                  # Ansible - KVM/libvirt hypervisor setup
 │   │   ├── ansible.cfg
 │   │   ├── site.yml
 │   │   ├── requirements.yml
 │   │   ├── inventories
 │   │   │   └── dev
 │   │   └── roles
-│   │       ├── 01-common
-│   │       ├── 02-ssh-hardening
-│   │       └── 03-firewall
-│   └── 02-openclaw                      # Ansible - OpenClaw application
+│   │       └── hypervisor-setup
+│   ├── 02-base-vms                          # Ansible - VM provisioning + hardening
+│   │   ├── ansible.cfg
+│   │   ├── site.yml
+│   │   ├── requirements.yml
+│   │   ├── inventories
+│   │   │   └── dev
+│   │   └── roles
+│   │       ├── base-vms
+│   │       ├── admin-user
+│   │       ├── ssh-hardening
+│   │       └── os-hardening
+│   └── 03-openclaw                          # Ansible - OpenClaw application
 │       ├── ansible.cfg
 │       ├── site.yml
 │       ├── requirements.yml

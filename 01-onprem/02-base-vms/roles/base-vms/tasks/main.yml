@@ -13,7 +13,7 @@
 
 - name: Determine actual user running deployment
   ansible.builtin.set_fact:
-    actual_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+    actual_user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
   tags:
     - always
 
@@ -48,6 +48,7 @@
     path: "{{ vm_keys_dir }}/{{ item.name }}_id_ed25519"
     type: ed25519
     comment: "permanent-{{ item.name }}"
+    mode: '0600'
     state: present
     force: false
     owner: "{{ actual_user }}"
@@ -75,6 +76,16 @@
     remote_src: yes
     force: no
   loop: "{{ base_vms }}"
+  register: vm_disk_copy
+  tags:
+    - provision
+
+- name: Remove stale customization markers for freshly copied images
+  ansible.builtin.file:
+    path: "{{ vm_images_path }}/{{ item.item.name }}.qcow2.customized"
+    state: absent
+  loop: "{{ vm_disk_copy.results }}"
+  when: item.changed
   tags:
     - provision
 
@@ -89,15 +100,19 @@
       --run-command 'systemctl enable qemu-guest-agent'
     creates: "{{ vm_images_path }}/{{ item.name }}.qcow2.customized"
   loop: "{{ base_vms }}"
+  register: virt_customize_result
   tags:
     - provision
 
 - name: Mark images as customized
   ansible.builtin.file:
-    path: "{{ vm_images_path }}/{{ item.name }}.qcow2.customized"
+    path: "{{ vm_images_path }}/{{ item.item.name }}.qcow2.customized"
     state: touch
     mode: '0644'
-  loop: "{{ base_vms }}"
+  loop: "{{ virt_customize_result.results }}"
+  when: item.changed
+  loop_control:
+    label: "{{ item.item.name }}"
   tags:
     - provision
 
@@ -112,7 +127,9 @@
           dhcp4: false
           addresses:
             - {{ item.ip }}/24
-          gateway4: {{ network_gateway }}
+          routes:
+            - to: default
+              via: {{ network_gateway }}
           nameservers:
             addresses:
               - {{ network_dns }}
@@ -195,10 +212,8 @@
       - "Status: Running"
       - "SSH Key: {{ vm_keys_dir }}/{{ item.name }}_id_ed25519"
       - ""
-      - "Access this VM:"
+      - "Access this VM (root - pre-hardening):"
       - "  ssh -i {{ vm_keys_dir }}/{{ item.name }}_id_ed25519 root@{{ item.ip }}"
-      - ""
-      - "NEXT STEP: Run 03-base-hardening to secure this VM"
       - "=========================================="
   loop: "{{ base_vms }}"
   tags:

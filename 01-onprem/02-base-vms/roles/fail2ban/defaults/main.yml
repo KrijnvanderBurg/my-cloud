@@ -1,0 +1,21 @@
+---
+# fail2ban defaults
+
+# IPs/CIDRs to never ban (space-separated)
+# Always whitelist localhost and the management network
+fail2ban_ignoreip: '127.0.0.1/8 ::1 192.168.122.0/24'
+
+# SSH jail configuration
+fail2ban_ssh_enabled: true
+fail2ban_ssh_port: 22
+fail2ban_ssh_maxretry: 5
+fail2ban_ssh_findtime: 600
+fail2ban_ssh_bantime: 3600
+
+# Progressive ban (recidive jail) — bans repeat offenders for 7 days
+fail2ban_recidive_enabled: true
+fail2ban_recidive_bantime: 604800
+fail2ban_recidive_findtime: 86400
+
+# Ban action
+fail2ban_ban_action: ufw

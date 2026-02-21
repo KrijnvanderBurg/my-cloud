@@ -1,0 +1,62 @@
+---
+# os-hardening defaults
+
+# Unattended upgrades
+unattended_upgrades_enabled: true
+unattended_upgrades_automatic_reboot: false
+
+# Firewall ingress rules
+ufw_rules:
+  - rule: allow
+    port: 22
+    proto: tcp
+    comment: 'SSH access'
+
+# Firewall egress rules
+ufw_egress_rules:
+  - rule: allow
+    port: 53
+    proto: udp
+    comment: 'DNS'
+  - rule: allow
+    port: 53
+    proto: tcp
+    comment: 'DNS over TCP'
+  - rule: allow
+    port: 123
+    proto: udp
+    comment: 'NTP'
+  - rule: allow
+    port: 80
+    proto: tcp
+    comment: 'HTTP (apt updates)'
+  - rule: allow
+    port: 443
+    proto: tcp
+    comment: 'HTTPS (apt updates)'
+
+# Login banner text
+login_banner: |
+  ************************************************************
+  * AUTHORIZED ACCESS ONLY                                   *
+  * All connections are monitored and recorded.               *
+  * Disconnect IMMEDIATELY if you are not an authorized user. *
+  ************************************************************
+
+# Kernel modules to blacklist
+blacklist_kernel_modules:
+  - usb-storage
+  - firewire-core
+  - thunderbolt
+
+# OS hardening (devsec.hardening.os_hardening variables)
+os_security_kernel_enable_core_dump: false
+os_security_suid_sgid_enforce_whitelist: true
+os_auth_pw_max_age: 60
+os_auth_pw_min_age: 7
+os_auth_retries: 5
+os_auth_lockout_time: 600
+os_security_users_allow: []
+os_security_kernel_enable_module_loading: false
+os_security_kernel_enable_sysrq: false
+os_filesystem_whitelist: []

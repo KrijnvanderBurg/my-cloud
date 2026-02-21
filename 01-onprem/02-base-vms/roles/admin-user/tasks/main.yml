@@ -1,21 +1,6 @@
 ---
 # Administrative user management tasks
 
-- name: Determine deployment user
-  ansible.builtin.set_fact:
-    deployment_user: "{{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
-  delegate_to: localhost
-  become: false
-  run_once: true
-  tags:
-    - admin-user
-
-- name: Set VM keys directory path
-  ansible.builtin.set_fact:
-    vm_keys_dir: "{{ vm_keys_base_dir }}/{{ deployment_user }}/.ssh/vm-keys-{{ env }}"
-  tags:
-    - admin-user
-
 - name: Set VM-specific SSH key path
   ansible.builtin.set_fact:
     vm_ssh_key: "{{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
@@ -65,6 +50,15 @@
     owner: "{{ admin_user }}"
     group: "{{ admin_user }}"
     mode: '0600'
+  tags:
+    - admin-user
+
+- name: Configure passwordless sudo for administrative user
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ admin_user }}"
+    content: "{{ admin_user }} ALL=(ALL) NOPASSWD:ALL\n"
+    mode: '0440'
+    validate: '/usr/sbin/visudo -cf %s'
   tags:
     - admin-user
 

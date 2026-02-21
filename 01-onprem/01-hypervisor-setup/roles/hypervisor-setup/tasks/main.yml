@@ -2,13 +2,18 @@
 - name: Update apt cache
   ansible.builtin.apt:
     update_cache: true
+    cache_valid_time: 3600
   changed_when: false
-  failed_when: false
 
 - name: Install KVM and libvirt packages
   ansible.builtin.apt:
     name: "{{ kvm_packages }}"
     state: present
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+  changed_when: false
 
 - name: Start and enable libvirtd service
   ansible.builtin.service:
@@ -23,23 +28,37 @@
     append: true
   when: ansible_user_id != "root"
 
+- name: Get storage pool info
+  ansible.builtin.command: virsh pool-info {{ pool_name }}
+  register: pool_info
+  changed_when: false
+  failed_when: false
+
 - name: Start default storage pool
   ansible.builtin.command: virsh pool-start {{ pool_name }}
-  register: pool_start
-  changed_when: pool_start.rc == 0
-  failed_when: false
+  changed_when: true
+  when: pool_info.rc != 0 or 'running' not in pool_info.stdout
 
 - name: Enable storage pool autostart
   ansible.builtin.command: virsh pool-autostart {{ pool_name }}
+  register: pool_autostart
+  changed_when: "'has already' not in pool_autostart.stdout"
+  failed_when: pool_autostart.rc != 0
+
+- name: Get network info
+  ansible.builtin.command: virsh net-info {{ network_name }}
+  register: net_info
   changed_when: false
+  failed_when: false
 
 - name: Start default network
   ansible.builtin.command: virsh net-start {{ network_name }}
-  register: net_start
-  changed_when: net_start.rc == 0
-  failed_when: false
+  changed_when: true
+  when: net_info.rc != 0 or 'yes' not in net_info.stdout
 
 - name: Enable network autostart
   ansible.builtin.command: virsh net-autostart {{ network_name }}
-  changed_when: false
+  register: net_autostart
+  changed_when: "'has already' not in net_autostart.stdout"
+  failed_when: net_autostart.rc != 0
 
