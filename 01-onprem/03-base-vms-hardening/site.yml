@@ -1,23 +1,13 @@
 ---
 # ==============================================================================
-# Play 1: Provision base VMs on KVM hypervisor
-# ==============================================================================
-- name: Provision base VMs on KVM hypervisor
-  hosts: hypervisors
-  become: true
-  tags:
-    - provision
-  roles:
-    - base-vms
-
-# ==============================================================================
-# Play 2: Harden base VMs (connects as admin user — fully idempotent)
+# Harden base VMs (connects as admin user — fully idempotent)
 # ==============================================================================
 - name: Harden base VMs
   hosts: base_vms
   gather_facts: true
   become: true
-  serial: 1
+  serial: "30%"
+  max_fail_percentage: 10
   tags:
     - hardening
   vars:
@@ -25,7 +15,6 @@
     vm_keys_dir: "{{ vm_keys_base_dir }}/{{ _deployer }}/.ssh/vm-keys-{{ env }}"
     ansible_user: "{{ admin_user }}"
     ansible_ssh_private_key_file: "{{ vm_keys_dir }}/{{ inventory_hostname }}_id_ed25519"
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=accept-new'
 
   pre_tasks:
     - name: Wait for cloud-init to complete
@@ -78,39 +67,3 @@
           - "  - Audit logging (CIS rules)"
           - "  - Root account locked"
           - "=========================================="
-
-# ==============================================================================
-# Play 3: Destroy VMs (only runs with --tags destroy)
-# ==============================================================================
-- name: Destroy base VMs
-  hosts: hypervisors
-  become: true
-  tags:
-    - never
-    - destroy
-
-  pre_tasks:
-    - name: Determine actual user
-      ansible.builtin.set_fact:
-        actual_user: "{{ lookup('env', 'SUDO_USER') | default(lookup('env', 'USER'), true) }}"
-
-    - name: Set SSH key directory
-      ansible.builtin.set_fact:
-        vm_keys_dir: "{{ vm_keys_base_dir }}/{{ actual_user }}/.ssh/vm-keys-{{ env }}"
-
-    - name: Set target VMs for destruction
-      ansible.builtin.set_fact:
-        destroy_vms: "{{ target_vms | default([]) }}"
-
-    - name: Fail if no target VMs specified
-      ansible.builtin.fail:
-        msg: >
-          Specify target_vms to destroy.
-          Example: -e 'target_vms=["vm-base-dev-onprem-01"]'
-      when: destroy_vms | length == 0
-
-  tasks:
-    - name: Include destroy tasks
-      ansible.builtin.include_role:
-        name: base-vms
-        tasks_from: destroy

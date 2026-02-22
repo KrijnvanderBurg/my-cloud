@@ -4,49 +4,21 @@
 # ==============================================================================
 env: dev
 project: levendaal
-layer: base-vms
+layer: base-vms-hardening
 
 # ==============================================================================
-# VM Provisioning
+# VM Hardening
 # ==============================================================================
-
-# VM specifications
-vm_vcpus: 2
-vm_memory_mb: 2048
-vm_disk_gb: 20
-vm_os_variant: ubuntu24.04
-
-# Cloud image
-vm_images_path: /var/lib/libvirt/images
-cloud_image_name: noble-server-cloudimg-amd64.img
-cloud_image_url: https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
-base_image_path: "{{ vm_images_path }}/{{ cloud_image_name }}"
-
-# SHA256 checksum for cloud image integrity verification
-# Get from: https://cloud-images.ubuntu.com/noble/current/SHA256SUMS
-# Leave empty to skip verification (not recommended for production)
-cloud_image_checksum: ""
 
 # SSH key storage base directory
 vm_keys_base_dir: /home
-
-# Libvirt
-libvirt_network: default
-libvirt_pool: default
-
-# Network
-network_gateway: 192.168.122.1
-network_dns: 192.168.122.1
-network_netmask: 255.255.255.0
 
 # Management network CIDR (used for SSH firewall source restriction)
 management_network: 192.168.122.0/24
 
 # ==============================================================================
-# VM Hardening — environment-specific overrides
-# ==============================================================================
-
 # Administrative user (created via cloud-init during provisioning)
+# ==============================================================================
 admin_user: ansible
 admin_user_groups:
   - sudo
@@ -54,7 +26,9 @@ admin_user_groups:
 # Restrict SSH login to admin user only (overrides ssh-hardening role default)
 ssh_allow_users: "{{ admin_user }}"
 
-# Restrict SSH firewall rule to management network (overrides os-hardening default)
+# ==============================================================================
+# Firewall — restrict SSH to management network (overrides os-hardening default)
+# ==============================================================================
 ufw_rules:
   - rule: allow
     port: 22
