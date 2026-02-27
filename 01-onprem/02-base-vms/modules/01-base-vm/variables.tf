@@ -7,11 +7,6 @@ variable "name" {
   type        = string
 }
 
-variable "ip_address" {
-  description = "Static IP address for the VM"
-  type        = string
-}
-
 variable "vcpus" {
   description = "Number of virtual CPUs"
   type        = number
@@ -62,14 +57,4 @@ variable "network_name" {
   description = "Libvirt network name"
   type        = string
   default     = "default"
-}
-
-variable "gateway" {
-  description = "Default gateway IP"
-  type        = string
-}
-
-variable "dns" {
-  description = "DNS server IP"
-  type        = string
 }
