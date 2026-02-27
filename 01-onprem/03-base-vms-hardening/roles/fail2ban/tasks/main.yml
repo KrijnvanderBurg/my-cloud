@@ -1,0 +1,52 @@
+---
+# Fail2ban installation and configuration
+
+- name: Install fail2ban
+  ansible.builtin.apt:
+    name: fail2ban
+    state: present
+  tags:
+    - fail2ban
+
+- name: Configure fail2ban SSH jail
+  ansible.builtin.copy:
+    dest: /etc/fail2ban/jail.d/sshd.conf
+    content: |
+      [sshd]
+      enabled = {{ fail2ban_ssh_enabled | lower }}
+      port = {{ fail2ban_ssh_port }}
+      filter = sshd
+      logpath = /var/log/auth.log
+      maxretry = {{ fail2ban_ssh_maxretry }}
+      findtime = {{ fail2ban_ssh_findtime }}
+      bantime = {{ fail2ban_ssh_bantime }}
+      banaction = {{ fail2ban_ban_action }}
+      ignoreip = {{ fail2ban_ignoreip }}
+    mode: '0644'
+  notify: restart fail2ban
+  tags:
+    - fail2ban
+
+- name: Configure fail2ban recidive jail
+  ansible.builtin.copy:
+    dest: /etc/fail2ban/jail.d/recidive.conf
+    content: |
+      [recidive]
+      enabled = {{ fail2ban_recidive_enabled | lower }}
+      logpath = /var/log/fail2ban.log
+      banaction = %(banaction_allports)s
+      bantime = {{ fail2ban_recidive_bantime }}
+      findtime = {{ fail2ban_recidive_findtime }}
+      maxretry = 3
+    mode: '0644'
+  notify: restart fail2ban
+  tags:
+    - fail2ban
+
+- name: Ensure fail2ban service is enabled and started
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: true
+  tags:
+    - fail2ban

@@ -1,0 +1,19 @@
+---
+# Environment metadata
+env: dev
+
+# KVM/libvirt packages
+kvm_packages:
+  - qemu-kvm
+  - libvirt-daemon-system
+  - libvirt-clients
+  - virtinst
+  - libguestfs-tools
+  - python3-libvirt
+  - python3-lxml
+
+# Storage pool configuration
+pool_name: default
+
+# Network configuration
+network_name: default

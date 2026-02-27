@@ -1,0 +1,6 @@
+---
+- name: Configure KVM hypervisor
+  hosts: hypervisors
+  become: true
+  roles:
+    - hypervisor-setup

@@ -1,0 +1,28 @@
+---
+# SSH hardening tasks
+
+- name: Apply SSH hardening with devsec.hardening
+  ansible.builtin.include_role:
+    name: devsec.hardening.ssh_hardening
+  tags:
+    - ssh-hardening
+
+# NOTE: We deliberately do NOT have a "ensure ssh started" task here.
+# devsec's reload handler keeps the running sshd intact with updated config.
+# Attempting state=started after a reload causes systemd to try launching a
+# second sshd instance, which fails with "Address already in use".
+# The service is already enabled by devsec.
+
+- name: Display SSH hardening summary
+  ansible.builtin.debug:
+    msg:
+      - "SSH hardening complete:"
+      - "  - Root login: disabled (PermitRootLogin no)"
+      - "  - Password authentication: disabled"
+      - "  - Key-only authentication: enabled"
+      - "  - Strong ciphers/MACs configured"
+      - "  - Connection limits enforced"
+      - "  - TCP/agent forwarding: disabled"
+      - "  - X11 forwarding: disabled"
+  tags:
+    - ssh-hardening

@@ -34,3 +34,12 @@ repos:
         language: system
         files: \.tf(vars)?$
         pass_filenames: false
+
+  # Ansible linting - use system `ansible-lint` to avoid isolated venv import issues
+  - repo: local
+    hooks:
+      - id: ansible-lint-system
+        name: Ansible Lint (system)
+        entry: ansible-lint
+        language: system
+        files: 01-onprem/.*site\.yml$

@@ -1,0 +1,17 @@
+---
+# ansible-lint configuration
+# https://ansible.readthedocs.io/projects/lint/configuring/
+
+profile: production
+
+exclude_paths:
+  - 02-azure/
+  - .github/
+  - docs/
+  - .devcontainer/
+
+skip_list:
+  - name[template] # Allow Jinja2 in task names if needed
+
+enable_list:
+  - fqcn

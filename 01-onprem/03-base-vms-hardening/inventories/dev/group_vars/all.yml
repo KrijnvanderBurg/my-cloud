@@ -1,0 +1,37 @@
+---
+# ==============================================================================
+# Environment metadata
+# ==============================================================================
+env: dev
+project: levendaal
+layer: base-vms-hardening
+
+# ==============================================================================
+# VM Hardening
+# ==============================================================================
+
+# SSH key storage base directory
+vm_keys_base_dir: /home
+
+# Management network CIDR (used for SSH firewall source restriction)
+management_network: 192.168.122.0/24
+
+# ==============================================================================
+# Administrative user (created via cloud-init during provisioning)
+# ==============================================================================
+admin_user: ansible
+admin_user_groups:
+  - sudo
+
+# Restrict SSH login to admin user only (overrides ssh-hardening role default)
+ssh_allow_users: "{{ admin_user }}"
+
+# ==============================================================================
+# Firewall — restrict SSH to management network (overrides os-hardening default)
+# ==============================================================================
+ufw_rules:
+  - rule: allow
+    port: 22
+    proto: tcp
+    from_ip: "{{ management_network }}"
+    comment: 'SSH access (management network only)'

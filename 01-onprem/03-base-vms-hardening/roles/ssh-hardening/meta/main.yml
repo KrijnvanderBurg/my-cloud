@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  role_name: ssh-hardening
+  author: x0r
+  description: SSH hardening wrapper around devsec.hardening.ssh_hardening
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+  galaxy_tags:
+    - ssh
+    - hardening
+    - security
+    - cis
+dependencies: []
