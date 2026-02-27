@@ -5,6 +5,14 @@
 # per-VM SSH keypair, and static networking.
 # =============================================================================
 
+terraform {
+  required_providers {
+    libvirt = {
+      source = "dmacvicar/libvirt"
+    }
+  }
+}
+
 # =============================================================================
 # SSH Keypair
 # =============================================================================
@@ -82,7 +90,7 @@ resource "libvirt_domain" "this" {
   network_interface {
     network_name   = var.network_name
     addresses      = [var.ip_address]
-    wait_for_lease = true
+    wait_for_lease = false
   }
 
   console {
