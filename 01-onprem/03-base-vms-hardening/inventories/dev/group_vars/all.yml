@@ -26,6 +26,11 @@ admin_user_groups:
 # Restrict SSH login to admin user only (overrides ssh-hardening role default)
 ssh_allow_users: "{{ admin_user }}"
 
+# Only ed25519 + rsa host keys exist (cloud-init doesn't generate ecdsa)
+ssh_host_key_files:
+  - /etc/ssh/ssh_host_rsa_key
+  - /etc/ssh/ssh_host_ed25519_key
+
 # ==============================================================================
 # Firewall — restrict SSH to management network (overrides os-hardening default)
 # ==============================================================================
@@ -35,3 +40,25 @@ ufw_rules:
     proto: tcp
     from_ip: "{{ management_network }}"
     comment: 'SSH access (management network only)'
+
+ufw_egress_rules:
+  - rule: allow
+    port: 53
+    proto: udp
+    comment: 'DNS'
+  - rule: allow
+    port: 53
+    proto: tcp
+    comment: 'DNS over TCP'
+  - rule: allow
+    port: 123
+    proto: udp
+    comment: 'NTP'
+  - rule: allow
+    port: 80
+    proto: tcp
+    comment: 'HTTP (apt updates)'
+  - rule: allow
+    port: 443
+    proto: tcp
+    comment: 'HTTPS (apt updates)'

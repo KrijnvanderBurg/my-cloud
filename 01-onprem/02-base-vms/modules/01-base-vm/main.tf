@@ -2,8 +2,16 @@
 # Base VM Module
 # =============================================================================
 # Creates a single KVM virtual machine with cloud-init configuration,
-# per-VM SSH keypair, and static networking.
+# per-VM SSH keypair, and static IP networking.
 # =============================================================================
+
+terraform {
+  required_providers {
+    libvirt = {
+      source = "dmacvicar/libvirt"
+    }
+  }
+}
 
 # =============================================================================
 # SSH Keypair
@@ -52,15 +60,11 @@ resource "libvirt_cloudinit_disk" "this" {
     ssh_pubkey = trimspace(tls_private_key.this.public_key_openssh)
   })
 
-  meta_data = templatefile("${path.module}/templates/meta-data.yml.tftpl", {
-    instance_id    = var.name
-    local_hostname = var.name
-  })
-
   network_config = templatefile("${path.module}/templates/network-config.yml.tftpl", {
-    address = var.ip_address
-    gateway = var.gateway
-    dns     = var.dns
+    ip_address    = var.ip_address
+    prefix_length = var.prefix_length
+    gateway       = var.gateway
+    dns           = var.dns
   })
 }
 
@@ -80,9 +84,7 @@ resource "libvirt_domain" "this" {
   }
 
   network_interface {
-    network_name   = var.network_name
-    addresses      = [var.ip_address]
-    wait_for_lease = true
+    network_name = var.network_name
   }
 
   console {

@@ -32,7 +32,6 @@ module "vm" {
   for_each = local.vms
 
   name           = each.key
-  ip_address     = each.value.ip_address
   vcpus          = lookup(each.value, "vcpus", local.vm_types[each.value.type].vcpus)
   memory_mb      = lookup(each.value, "memory_mb", local.vm_types[each.value.type].memory_mb)
   disk_gb        = lookup(each.value, "disk_gb", local.vm_types[each.value.type].disk_gb)
@@ -42,8 +41,10 @@ module "vm" {
   base_volume_id = libvirt_volume.base_image.id
   pool_name      = local.libvirt_pool
   network_name   = local.libvirt_network
+  ip_address     = each.value.ip_address
   gateway        = local.network_gateway
   dns            = local.network_dns
+  prefix_length  = local.network_prefix_length
 
   depends_on = [null_resource.vm_keys_dir]
 }
