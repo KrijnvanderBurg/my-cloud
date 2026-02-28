@@ -41,6 +41,10 @@ module "vm" {
   base_volume_id = libvirt_volume.base_image.id
   pool_name      = local.libvirt_pool
   network_name   = local.libvirt_network
+  ip_address     = each.value.ip_address
+  gateway        = local.network_gateway
+  dns            = local.network_dns
+  prefix_length  = local.network_prefix_length
 
   depends_on = [null_resource.vm_keys_dir]
 }

@@ -58,3 +58,24 @@ variable "network_name" {
   type        = string
   default     = "default"
 }
+
+variable "ip_address" {
+  description = "Static IP address for the VM"
+  type        = string
+}
+
+variable "gateway" {
+  description = "Default gateway IP"
+  type        = string
+}
+
+variable "dns" {
+  description = "List of DNS server IPs"
+  type        = list(string)
+}
+
+variable "prefix_length" {
+  description = "Network prefix length (e.g. 24 for /24)"
+  type        = number
+  default     = 24
+}

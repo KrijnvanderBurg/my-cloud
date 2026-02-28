@@ -1,0 +1,17 @@
+network:
+  version: 2
+  ethernets:
+    net0:
+      match:
+        name: "en*"
+      dhcp4: false
+      addresses:
+        - ${ip_address}/${prefix_length}
+      routes:
+        - to: default
+          via: ${gateway}
+      nameservers:
+        addresses:
+%{ for server in dns ~}
+          - ${server}
+%{ endfor ~}

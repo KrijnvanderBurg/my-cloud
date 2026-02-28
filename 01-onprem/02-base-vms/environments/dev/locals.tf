@@ -30,6 +30,13 @@ locals {
   libvirt_network = "default"
 
   # ---------------------------------------------------------------------------
+  # Network — static IP settings (libvirt default NAT network)
+  # ---------------------------------------------------------------------------
+  network_gateway       = "192.168.122.1"
+  network_dns           = ["192.168.122.1"]
+  network_prefix_length = 24
+
+  # ---------------------------------------------------------------------------
   # Admin User (created by cloud-init)
   # ---------------------------------------------------------------------------
   admin_user   = "ansible"
@@ -67,9 +74,11 @@ locals {
   vms = {
     vm-base-dev-onprem-01 = {
       type       = "small"
+      ip_address = "192.168.122.10"
     }
     vm-base-dev-onprem-02 = {
       type       = "small"
+      ip_address = "192.168.122.11"
     }
   }
 }

@@ -41,7 +41,6 @@ ufw_rules:
     from_ip: "{{ management_network }}"
     comment: 'SSH access (management network only)'
 
-# DHCP egress needed since VMs use DHCP (override os-hardening default)
 ufw_egress_rules:
   - rule: allow
     port: 53
@@ -63,7 +62,3 @@ ufw_egress_rules:
     port: 443
     proto: tcp
     comment: 'HTTPS (apt updates)'
-  - rule: allow
-    port: 67
-    proto: udp
-    comment: 'DHCP'

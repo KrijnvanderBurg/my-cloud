@@ -13,8 +13,8 @@ output "id" {
 }
 
 output "ip_address" {
-  description = "DHCP-assigned IP address of the VM"
-  value       = libvirt_domain.this.network_interface[0].addresses[0]
+  description = "Static IP address of the VM"
+  value       = var.ip_address
 }
 
 output "ssh_private_key_path" {
@@ -24,5 +24,5 @@ output "ssh_private_key_path" {
 
 output "ssh_command" {
   description = "SSH command to connect to the VM"
-  value       = "ssh -i ${local_sensitive_file.private_key.filename} ${var.admin_user}@${libvirt_domain.this.network_interface[0].addresses[0]}"
+  value       = "ssh -i ${local_sensitive_file.private_key.filename} ${var.admin_user}@${var.ip_address}"
 }
