@@ -4,7 +4,7 @@ terraform {
     region = "par"
 
     endpoints = {
-      s3 = "https://s3.par.io.cloud.ovh.net"
+      s3 = "https://s3.eu-west-par.io.cloud.ovh.net/"
     }
 
     use_path_style              = true
