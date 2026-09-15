@@ -15,7 +15,7 @@ with reusable `NN-<stack>/modules`.
 ## Remote State
 
 State is stored in the OVHcloud Object Storage (S3) bucket
-`rg-tfstate-co-dev-par-01` (region `par`), in the Public Cloud project
+`rg-tfstate-co-dev-par-01` (region `eu-west-par`), in the Public Cloud project
 `ovh-pl-management-co-dev-na-01` (`f350cf3e972b41fca80eb0a0a1b69dbf`).
 
 The static backend settings (bucket, region, endpoint) live in each stack's
