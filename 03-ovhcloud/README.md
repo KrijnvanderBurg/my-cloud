@@ -6,13 +6,62 @@ with reusable `NN-<stack>/modules`.
 
 ```
 03-ovhcloud
-└── 01-platform-management
+├── 01-platform-management
+│   ├── environments
+│   │   └── dev
+│   └── modules
+│       ├── 01-iam                  # IAM resource group + optional policy
+│       └── 02-project-s3-user      # Project user + S3 credential + S3 policy
+└── 02-platform-identity            # IAM foundation (users, groups, SA, policies)
     ├── environments
     │   └── dev
     └── modules
-        ├── 01-iam                  # IAM resource group + optional policy
-        └── 02-project-s3-user      # Project user + S3 credential + S3 policy
+        ├── 01-identity-group       # ovh_me_identity_group
+        ├── 02-identity-user        # ovh_me_identity_user (+ generated password)
+        ├── 03-service-account      # ovh_me_api_oauth2_client (CLIENT_CREDENTIALS)
+        └── 04-iam-policy           # ovh_iam_policy
 ```
+
+## IAM foundation (`02-platform-identity`)
+
+A reusable, OVHcloud-native IAM foundation that mirrors the layout of
+`02-azure/02-platform-identity`:
+
+- **Human users** are data-driven through the `users` variable in
+  `environments/dev/variables.tf`.
+- **Groups** `platform-admins`, `developers` and `read-only` are defined in
+  `locals.tf`; permissions are granted to groups (not individual users) via IAM
+  policies.
+- **One service account** (`terraform`) is created as an OAuth2 client using the
+  `CLIENT_CREDENTIALS` flow — OVHcloud's native machine identity.
+- **IAM policies** `iam-human-platform-admin`, `iam-human-developer`,
+  `iam-human-read-only` and `iam-terraform` bind identities to account-scoped
+  actions.
+
+### OVHcloud limitations (by design)
+
+- **One group per user.** An `ovh_me_identity_user` belongs to exactly one
+  identity group, so the user's `group` is a single string rather than a set.
+- **User passwords.** OVHcloud requires a password at user creation. No secret is
+  stored in source: a `random_password` is generated (and ignored on later
+  applies) so each user is created in a valid state and then sets their own
+  password through the OVHcloud "forgotten password" flow.
+- **Service-account secret.** The OAuth2 `client_secret` is only returned at
+  creation and lives in state; it is never exposed through outputs. Retrieve it
+  once from state during bootstrap, then store it in a secret manager:
+
+  ```sh
+  tofu state pull \
+    | jq -r '.resources[]
+        | select(.module=="module.service_account[\"terraform\"]" and .type=="ovh_me_api_oauth2_client")
+        | .instances[0].attributes | "client_id="+.client_id, "client_secret="+.client_secret'
+  ```
+
+  Service accounts are data-driven via the `service_accounts` variable, so extra
+  automation identities can be added without code changes.
+- **Root / break-glass account.** The root account is not managed by Terraform
+  and is not used for automation; the dedicated `terraform` service account is
+  used for normal operations.
 
 ## Remote State
 
