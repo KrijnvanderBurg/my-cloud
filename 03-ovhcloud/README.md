@@ -21,8 +21,7 @@ State is stored in the OVHcloud Object Storage (S3) bucket
 `ovh-pl-management-co-dev-na-01` (`f350cf3e972b41fca80eb0a0a1b69dbf`).
 
 The static backend settings (bucket, region, endpoint) live in each stack's
-`backend.tf`; only the per-stack `key` is supplied at init. The Public Cloud
-project ID is set in each stack's `locals.tf`.
+`backend.tf`; only the per-stack `key` is supplied at init.
 
 ## Local usage
 
