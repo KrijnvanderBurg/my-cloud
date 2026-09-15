@@ -19,10 +19,6 @@ on:
         description: GitHub environment for deployments (dev, prod)
         required: true
         type: string
-      project_id:
-        description: OVHcloud Public Cloud project ID for this environment
-        required: true
-        type: string
       ovh_endpoint:
         description: OVH API endpoint
         required: false
