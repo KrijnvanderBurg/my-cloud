@@ -13,11 +13,8 @@ terraform {
   }
 }
 
-# Non-secret config is set in code; the secrets are supplied through environment
-# variables (never hard-coded): OVH_APPLICATION_SECRET, OVH_CONSUMER_KEY
-provider "ovh" {
-  endpoint        = "ovh-eu"
-  application_key = "REPLACE_WITH_OVH_APPLICATION_KEY"
-}
+# Credentials are supplied through environment variables (never hard-coded):
+#   OVH_ENDPOINT, OVH_APPLICATION_KEY, OVH_APPLICATION_SECRET, OVH_CONSUMER_KEY
+provider "ovh" {}
 
 provider "random" {}
