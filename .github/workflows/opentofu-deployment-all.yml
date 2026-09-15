@@ -115,3 +115,14 @@ jobs:
       artifact_name: ovh-pl-management-dev
       state_key: ovh/pl-management/dev.tfstate
       environment: dev
+
+  # ===== OVHcloud Platform Identity =====
+  ovh-pl-identity-dev:
+    name: ovh-pl-identity-dev
+    uses: ./.github/workflows/opentofu-deployment-ovh-template.yml
+    secrets: inherit
+    with:
+      working_directory: ./03-ovhcloud/02-platform-identity/environments/dev
+      artifact_name: ovh-pl-identity-dev
+      state_key: ovh/pl-identity/dev.tfstate
+      environment: dev
