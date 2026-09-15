@@ -14,6 +14,44 @@ locals {
   }
 
   # ---------------------------------------------------------------------------
+  # Human Users (data-driven)
+  # ---------------------------------------------------------------------------
+  # OVHcloud identity users belong to exactly ONE identity group, so `group` is a
+  # single string rather than a set. It must reference one of the group keys
+  # defined below in locals.groups.
+  users = {
+    alice = {
+      email       = "alice@example.com"
+      description = "Platform administrator"
+      group       = "platform-admins"
+    }
+
+    bob = {
+      email       = "bob@example.com"
+      description = "Developer"
+      group       = "developers"
+    }
+
+    carol = {
+      email       = "carol@example.com"
+      description = "Read-only user"
+      group       = "read-only"
+    }
+  }
+
+  # ---------------------------------------------------------------------------
+  # Service Accounts (data-driven)
+  # ---------------------------------------------------------------------------
+  # OVHcloud service accounts are OAuth2 clients using the CLIENT_CREDENTIALS flow.
+  # The `terraform` entry is required by this stack's iam-terraform policy; add
+  # more entries for additional automation identities (each gets its own policy).
+  service_accounts = {
+    terraform = {
+      description = "Service account for Terraform automation (platform-identity)"
+    }
+  }
+
+  # ---------------------------------------------------------------------------
   # User Groups
   # ---------------------------------------------------------------------------
   # Permissions are granted through IAM policies (see main.tf), so groups use the

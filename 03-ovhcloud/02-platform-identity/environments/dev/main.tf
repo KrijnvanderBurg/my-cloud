@@ -22,7 +22,7 @@ module "group" {
 # =============================================================================
 module "user" {
   source   = "../../modules/02-identity-user"
-  for_each = var.users
+  for_each = local.users
 
   login       = each.key
   email       = each.value.email
@@ -38,7 +38,7 @@ module "user" {
 # =============================================================================
 module "service_account" {
   source   = "../../modules/03-service-account"
-  for_each = var.service_accounts
+  for_each = local.service_accounts
 
   name        = each.key
   description = each.value.description
