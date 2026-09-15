@@ -1,5 +1,7 @@
 # Custom
 .devcontainer/**/devcontainer-lock.json
+**/.terraform.lock.hcl
+**/.terraform/
 
 # Terraform / OpenTofu
 **/.terraform/*
