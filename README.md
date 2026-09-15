@@ -173,3 +173,29 @@ All steps performed to setup initial infrastructure and to current state.
     ```
     **Note:** Admin consent requires Global Administrator or Privileged Role Administrator role. If CLI fails, grant via Portal:
     Azure AD → App registrations → sp-platform-identity-co-dev-na-01 → API permissions → Grant admin consent
+
+
+# OVHcloud - Levendaal
+
+The OVHcloud Terraform setup is in `03-ovhcloud`. See its README for the
+one-time remote state bootstrap and local/CI authentication configuration.
+
+1. Create OVHcloud account.
+2. Create the Public Cloud project used for remote state
+   (`ovh-pl-management-co-dev-na-01` / `f350cf3e972b41fca80eb0a0a1b69dbf`).
+3. Create an Object Storage user with S3 credentials on the
+   `rg-tfstate-co-dev-par-01` bucket.
+4. Create an OVH API application (key / secret / consumer key).
+
+All credentials are provided to CI through GitHub Secrets on the `dev`
+environment (never commit them):
+
+| Purpose                 | GitHub Secret                |
+| ----------------------- | ---------------------------- |
+| OVH API secret          | `OVH_APPLICATION_SECRET`     |
+| OVH API consumer key    | `OVH_CONSUMER_KEY`           |
+| Object Storage S3 key   | `OVH_S3_ACCESS_KEY_ID`       |
+| Object Storage S3 secret| `OVH_S3_SECRET_ACCESS_KEY`   |
+
+The OVH application key (`OVH_APPLICATION_KEY`) and endpoint (`OVH_ENDPOINT`)
+are non-secret workflow inputs on the OVH deployment template.

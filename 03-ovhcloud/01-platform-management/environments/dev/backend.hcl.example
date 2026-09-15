@@ -1,0 +1,3 @@
+# Per-stack state file path. Bucket/region/endpoint are fixed in backend.tf.
+# Copy to backend.hcl and run: tofu init -backend-config=backend.hcl
+key = "ovh/pl-management/dev.tfstate"

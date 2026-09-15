@@ -1,0 +1,22 @@
+name: OpenTofu Init (OVH)
+description: Initialize OpenTofu working directory against the OVH S3 state backend
+
+inputs:
+  working_directory:
+    description: Path to the OpenTofu configuration directory
+    required: true
+  state_key:
+    description: State file key for backend configuration
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: OpenTofu init
+      id: init
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      env:
+        STATE_KEY: ${{ inputs.state_key }}
+      run: |
+        bash ${{ github.workspace }}/.github/scripts/opentofu-init-ovh.sh
