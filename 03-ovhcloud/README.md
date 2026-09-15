@@ -10,6 +10,8 @@ with reusable `NN-<stack>/modules`.
     ├── environments
     │   └── dev
     └── modules
+        ├── 01-iam                  # IAM resource group + optional policy
+        └── 02-project-s3-user      # Project user + S3 credential + S3 policy
 ```
 
 ## Remote State
@@ -19,7 +21,8 @@ State is stored in the OVHcloud Object Storage (S3) bucket
 `ovh-pl-management-co-dev-na-01` (`f350cf3e972b41fca80eb0a0a1b69dbf`).
 
 The static backend settings (bucket, region, endpoint) live in each stack's
-`backend.tf`; only the per-stack `key` is supplied at init.
+`backend.tf`; only the per-stack `key` is supplied at init. The Public Cloud
+project ID is set in each stack's `locals.tf`.
 
 ## Local usage
 
@@ -39,13 +42,11 @@ The static backend settings (bucket, region, endpoint) live in each stack's
    export OVH_CONSUMER_KEY="<OVH_CONSUMER_KEY>"
    ```
 
-3. Copy the examples and initialize:
+3. Initialize with the stack's state key and plan:
 
    ```sh
    cd 01-platform-management/environments/dev
-   cp backend.hcl.example backend.hcl
-   cp terraform.tfvars.example terraform.tfvars
-   tofu init -backend-config=backend.hcl
+   tofu init -backend-config="key=ovh/pl-management/dev.tfstate"
    tofu plan
    ```
 

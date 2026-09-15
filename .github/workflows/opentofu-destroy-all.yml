@@ -29,7 +29,6 @@ jobs:
       artifact_name: ovh-pl-management-dev
       state_key: ovh/pl-management/dev.tfstate
       environment: dev
-      project_id: f350cf3e972b41fca80eb0a0a1b69dbf # ovh-pl-management-co-dev-na-01
 
   # ===== Platform Landing Zone - Drives (dev) =====
   plz-drives-dev:
