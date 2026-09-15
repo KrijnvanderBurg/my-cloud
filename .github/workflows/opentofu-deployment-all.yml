@@ -1,4 +1,4 @@
-name: OpenTofu Deployment
+name: OpenTofu Deployment All
 
 on:
   pull_request:
