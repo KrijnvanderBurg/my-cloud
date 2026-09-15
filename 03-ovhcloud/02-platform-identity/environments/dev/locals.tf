@@ -69,16 +69,14 @@ locals {
       deny   = []
     }
 
-    # The terraform service account manages identity resources for this stack.
-    # It is granted account-scoped management but explicitly denied deleting the
-    # account and managing OAuth2 service accounts (including its own).
+    # The terraform service account manages the identity resources in this stack
+    # (users, groups, policies, service accounts), which all live under the
+    # account:apiovh namespace. Tighten this with verified action names from the
+    # ovh_iam_reference_actions data source (type = "account") as needed.
     terraform = {
       allow  = ["account:apiovh:*"]
       except = []
-      deny = [
-        "account:apiovh:me/delete",
-        "account:apiovh:me/api/oauth2/client/*",
-      ]
+      deny   = []
     }
   }
 }
