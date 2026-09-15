@@ -61,4 +61,3 @@
   register: net_autostart
   changed_when: "'has already' not in net_autostart.stdout"
   failed_when: net_autostart.rc != 0
-

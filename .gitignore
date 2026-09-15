@@ -1,3 +1,6 @@
+# Custom
+.devcontainer/**/devcontainer-lock.json
+
 # Terraform / OpenTofu
 **/.terraform/*
 *.tfstate

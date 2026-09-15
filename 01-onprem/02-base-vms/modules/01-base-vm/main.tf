@@ -38,11 +38,11 @@ resource "local_file" "public_key" {
 # =============================================================================
 
 resource "libvirt_volume" "this" {
-  name             = "${var.name}.qcow2"
-  pool             = var.pool_name
-  base_volume_id   = var.base_volume_id
-  size             = var.disk_gb * 1073741824 # GB to bytes
-  format           = "qcow2"
+  name           = "${var.name}.qcow2"
+  pool           = var.pool_name
+  base_volume_id = var.base_volume_id
+  size           = var.disk_gb * 1073741824 # GB to bytes
+  format         = "qcow2"
 }
 
 # =============================================================================
