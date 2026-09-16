@@ -25,7 +25,6 @@ jobs:
   # ===== Platform Landing Zone - Drives (dev) =====
   plz-drives-dev:
     name: plz-drives-dev destroy
-    needs: [ovh-pl-management-dev]
     uses: ./.github/workflows/opentofu-destroy-azure-template.yml
     with:
       working_directory: ./02-azure/04-platform-landing-zones/environments/drives-dev
