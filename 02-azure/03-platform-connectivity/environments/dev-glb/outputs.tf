@@ -1,19 +1,5 @@
 # =============================================================================
-# Environment outputs
-# =============================================================================
-# Forward baseline outputs and add environment-specific outputs.
-
-# =============================================================================
-# Hub Network Outputs (from baseline)
-# =============================================================================
-
-output "hub" {
-  description = "Hub VNet details"
-  value       = module.baseline.hub
-}
-
-# =============================================================================
-# Hub Peering Outputs (dev-glb specific)
+# Hub Peering Outputs (dev-glb coordination)
 # =============================================================================
 
 output "hub_peerings" {
