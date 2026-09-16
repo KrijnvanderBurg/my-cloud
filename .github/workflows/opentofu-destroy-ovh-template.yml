@@ -76,17 +76,17 @@ jobs:
 
       - name: OpenTofu destroy
         id: destroy
-        uses: ./.github/actions/opentofu-destroy
+        uses: ./.github/actions/opentofu-apply
         with:
           working_directory: ${{ inputs.working_directory }}
-          destroy_output_file: ${{ runner.temp }}/destroy-${{ inputs.artifact_name }}-${{ env.DESTROY_OUTPUT_FILENAME }}
           plan_binary_file: ${{ steps.plan.outputs.plan_binary_file }}
+          apply_output_file: ${{ runner.temp }}/destroy-${{ inputs.artifact_name }}-${{ env.DESTROY_OUTPUT_FILENAME }}
 
       - name: Post Destroy Result to PR
         if: always() && github.event_name == 'pull_request' && steps.plan.outputs.has_changes == 'true'
         uses: ./.github/actions/opentofu-apply-comment
         with:
-          apply_output_file: ${{ steps.destroy.outputs.destroy_output_file }}
+          apply_output_file: ${{ steps.destroy.outputs.apply_output_file }}
           environment: ${{ inputs.artifact_name }}
           working_directory: ${{ inputs.working_directory }}
           apply_status: ${{ steps.destroy.outcome }}
