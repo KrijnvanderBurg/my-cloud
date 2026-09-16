@@ -106,20 +106,20 @@ jobs:
           environment: ${{ inputs.environment }}
           working_directory: ${{ inputs.working_directory }}
 
-      - name: OpenTofu apply
-        id: apply
-        uses: ./.github/actions/opentofu-apply
-        with:
-          working_directory: ${{ inputs.working_directory }}
-          plan_binary_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.PLAN_BINARY_FILENAME }}
-          apply_output_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.APPLY_OUTPUT_FILENAME }}
+      # - name: OpenTofu apply
+      #   id: apply
+      #   uses: ./.github/actions/opentofu-apply
+      #   with:
+      #     working_directory: ${{ inputs.working_directory }}
+      #     plan_binary_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.PLAN_BINARY_FILENAME }}
+      #     apply_output_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.APPLY_OUTPUT_FILENAME }}
 
-      - name: Post Apply Result to PR
-        if: always() && github.event_name == 'pull_request'
-        uses: ./.github/actions/opentofu-apply-comment
-        with:
-          environment: ${{ inputs.environment }}
-          apply_output_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.APPLY_OUTPUT_FILENAME }}
-          working_directory: ${{ inputs.working_directory }}
-          apply_status: ${{ steps.apply.outcome }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Post Apply Result to PR
+      #   if: always() && github.event_name == 'pull_request'
+      #   uses: ./.github/actions/opentofu-apply-comment
+      #   with:
+      #     environment: ${{ inputs.environment }}
+      #     apply_output_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.APPLY_OUTPUT_FILENAME }}
+      #     working_directory: ${{ inputs.working_directory }}
+      #     apply_status: ${{ steps.apply.outcome }}
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
