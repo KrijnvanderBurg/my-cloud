@@ -46,7 +46,7 @@ jobs:
     with:
       working_directory: ./02-azure/03-platform-connectivity/environments/dev-weu
       artifact_name: pl-connectivity-dev-weu
-      client_id: 400a4e87-119e-4099-87c5-676886a5d2fa # sp-pl-connectivity-on-dev-na-01
+      client_id: a93be571-33e9-40d6-8b0f-549c3cf2d0d7 # sp-pl-connectivity-on-dev-na-01
       environment: dev
 
   # ===== Platform connectivity Germany West Central =====
@@ -57,7 +57,7 @@ jobs:
     with:
       working_directory: ./02-azure/03-platform-connectivity/environments/dev-gwc
       artifact_name: pl-connectivity-dev-gwc
-      client_id: 400a4e87-119e-4099-87c5-676886a5d2fa # sp-pl-connectivity-on-dev-na-01
+      client_id: a93be571-33e9-40d6-8b0f-549c3cf2d0d7 # sp-pl-connectivity-on-dev-na-01
       environment: dev
 
   # ===== Platform connectivity Global =====
@@ -68,7 +68,7 @@ jobs:
     with:
       working_directory: ./02-azure/03-platform-connectivity/environments/dev-glb
       artifact_name: pl-connectivity-dev-glb
-      client_id: 400a4e87-119e-4099-87c5-676886a5d2fa # sp-pl-connectivity-on-dev-na-01
+      client_id: a93be571-33e9-40d6-8b0f-549c3cf2d0d7 # sp-pl-connectivity-on-dev-na-01
       environment: dev
 
   # ===== Platform Landing Zone - Drives =====
@@ -79,7 +79,7 @@ jobs:
     with:
       working_directory: ./02-azure/04-platform-landing-zones/environments/drives-dev
       artifact_name: plz-drives-dev
-      client_id: ba53c1d5-2dc0-4182-b207-9ed6a477d139 # sp-plz-drives-on-dev-na-01
+      client_id: 75f6a811-1aac-41f2-a225-3ba6cd43b489 # sp-plz-drives-on-dev-na-01
       environment: dev
 
   # ===== OVHcloud Platform Management =====
