@@ -1,8 +1,8 @@
 name: OpenTofu Deployment All
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
+  # pull_request:
+  #   types: [opened, synchronize, reopened, closed]
   push:
     branches: [main]
   workflow_dispatch:
@@ -17,6 +17,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Azure
+
   # # ===== Platform Management =====
   # pl-management-dev:
   #   name: pl-management-dev
@@ -81,6 +83,8 @@ jobs:
       artifact_name: plz-drives-dev
       client_id: 75f6a811-1aac-41f2-a225-3ba6cd43b489 # sp-plz-drives-on-dev-na-01
       environment: dev
+
+  # OVH Cloud
 
   # # ===== OVHcloud Platform Management =====
   # ovh-pl-management-dev:
