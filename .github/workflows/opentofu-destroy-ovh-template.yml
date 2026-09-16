@@ -11,10 +11,6 @@ on:
         description: Name for artifacts and display
         required: true
         type: string
-      state_key:
-        description: State file key for the S3 backend configuration
-        required: true
-        type: string
       environment:
         description: GitHub environment for deployments (dev, prod)
         required: true
@@ -59,7 +55,6 @@ jobs:
         uses: ./.github/actions/opentofu-init-ovh
         with:
           working_directory: ${{ inputs.working_directory }}
-          state_key: ${{ inputs.state_key }}
 
       - name: OpenTofu destroy
         id: destroy

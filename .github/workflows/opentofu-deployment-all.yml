@@ -89,7 +89,6 @@ jobs:
     with:
       working_directory: ./03-ovhcloud/01-platform-management/environments/dev
       artifact_name: ovh-pl-management-dev
-      state_key: ovh/pl-management/dev.tfstate
       environment: dev
 
   # ===== OVHcloud Platform Identity =====
@@ -101,5 +100,4 @@ jobs:
     with:
       working_directory: ./03-ovhcloud/02-platform-identity/environments/dev
       artifact_name: ovh-pl-identity-dev
-      state_key: ovh/pl-identity/dev.tfstate
       environment: dev
