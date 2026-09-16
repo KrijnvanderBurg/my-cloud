@@ -110,35 +110,35 @@ resource "azurerm_subnet_network_security_group_association" "lz_managed" {
   network_security_group_id = azurerm_network_security_group.lz_managed[each.key].id
 }
 
-resource "azurerm_monitor_diagnostic_setting" "vnet" {
-  name                       = "diag-${local.vnet_name}"
-  target_resource_id         = azurerm_virtual_network.this.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.this.id
+# resource "azurerm_monitor_diagnostic_setting" "vnet" {
+#   name                       = "diag-${local.vnet_name}"
+#   target_resource_id         = azurerm_virtual_network.this.id
+#   log_analytics_workspace_id = azurerm_log_analytics_workspace.this.id
 
-  enabled_log {
-    category = "VMProtectionAlerts"
-  }
+#   enabled_log {
+#     category = "VMProtectionAlerts"
+#   }
 
-  enabled_metric {
-    category = "AllMetrics"
-  }
-}
+#   enabled_metric {
+#     category = "AllMetrics"
+#   }
+# }
 
-resource "azurerm_monitor_diagnostic_setting" "nsg" {
-  for_each = var.lz_managed_subnets
+# resource "azurerm_monitor_diagnostic_setting" "nsg" {
+#   for_each = var.lz_managed_subnets
 
-  name                       = "diag-nsg-${each.key}"
-  target_resource_id         = azurerm_network_security_group.lz_managed[each.key].id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.this.id
+#   name                       = "diag-nsg-${each.key}"
+#   target_resource_id         = azurerm_network_security_group.lz_managed[each.key].id
+#   log_analytics_workspace_id = azurerm_log_analytics_workspace.this.id
 
-  enabled_log {
-    category = "NetworkSecurityGroupEvent"
-  }
+#   enabled_log {
+#     category = "NetworkSecurityGroupEvent"
+#   }
 
-  enabled_log {
-    category = "NetworkSecurityGroupRuleCounter"
-  }
-}
+#   enabled_log {
+#     category = "NetworkSecurityGroupRuleCounter"
+#   }
+# }
 
 # -----------------------------------------------------------------------------
 # Route Tables (Explicit Route Control)
