@@ -1,5 +1,6 @@
-# Azure - Levendaal
-Terraform/OpenTofu and Ansible configuration for Levendaal.
+# Levendaal - Multi-Cloud Infrastructure
+
+Terraform/OpenTofu and Ansible configuration for Levendaal's multi-cloud infrastructure.
 
 - See [docs/naming-convention.md](docs/naming-convention.md) for full naming standards.
 
@@ -16,66 +17,50 @@ Terraform/OpenTofu and Ansible configuration for Levendaal.
 │   └── workflows
 ├── docs
 ├── 01-onprem
-│   ├── 01-hypervisor-setup                  # Ansible - KVM/libvirt hypervisor setup
-│   │   ├── ansible.cfg
-│   │   ├── site.yml
-│   │   ├── requirements.yml
-│   │   ├── inventories
-│   │   │   └── dev
-│   │   └── roles
-│   │       └── hypervisor-setup
-│   ├── 02-base-vms                          # Ansible - VM provisioning + hardening
-│   │   ├── ansible.cfg
-│   │   ├── site.yml
-│   │   ├── requirements.yml
-│   │   ├── inventories
-│   │   │   └── dev
-│   │   └── roles
-│   │       ├── base-vms
-│   │       ├── admin-user
-│   │       ├── ssh-hardening
-│   │       └── os-hardening
-│   └── 03-openclaw                          # Ansible - OpenClaw application
-│       ├── ansible.cfg
-│       ├── site.yml
-│       ├── requirements.yml
-│       ├── inventories
-│       │   └── dev
-│       └── roles
-│           ├── 01-prerequisites
-│           └── 02-openclaw-app
-├── 02-azure
-│   ├── 01-platform-management
-│   ├── environments
-│   │   └── dev
-│   └── modules
-│       ├── 01-management-group
-│       └── 02-policy-deny-delete
-├── 02-platform-identity
-│   ├── environments
-│   │   └── dev
-│   └── modules
-│       ├── 01-service-principal-federated
-│       ├── 02a-rbac-pl-connectivity
-│       ├── 02b-rbac-plz
-│       ├── 03-entra-group
-│       └── 04-monitoring-alerts
-├── 03-platform-connectivity
-│   ├── environments
-│   │   ├── dev-glb
-│   │   ├── dev-gwc
-│   │   └── dev-weu
-│   └── modules
-│       ├── 01-hub-vnet
-│       └── 02-hub-peering
-└── 04-platform-landing-zones
-    ├── environments
-    │   └── drives-dev
-    │       └── .terraform
-    │           └── modules
-    └── modules
-        ├── 01-base-package
-        └── 02-aks-package
+│   ├── 01-hypervisor-setup/
+│   ├── 02-base-vms/
+│   └── 03-base-vms-hardening/
+├── 02-azure/
+│   ├── 01-platform-management/
+│   │   ├── stacks/baseline/
+│   │   ├── environments/dev/
+│   │   │   ├── modules-env/
+│   │   │   ├── main.tf
+│   │   └── modules/
+│   ├── 02-platform-identity/
+│   │   ├── stacks/baseline/
+│   │   ├── environments/dev/
+│   │   │   ├── modules-env/
+│   │   │   ├── main.tf
+│   │   └── modules/
+│   ├── 03-platform-connectivity/
+│   │   ├── stacks/baseline/
+│   │   ├── environments/
+│   │   │   ├── dev-weu/
+│   │   │   ├── dev-gwc/
+│   │   │   └── dev-glb/
+│   │   └── modules/
+│   ├── 04-platform-landing-zones/
+│   │   ├── stacks/baseline/
+│   │   ├── environments/drives-dev/
+│   │   │   ├── modules-env/
+│   │   │   ├── main.tf
+│   │   └── modules/
+│   └── README.md
+└── 03-ovhcloud/
+    ├── 01-platform-management/
+    │   ├── stacks/baseline/
+    │   ├── environments/dev/
+    │   │   ├── modules-env/
+    │   │   ├── main.tf
+    │   └── modules/
+    ├── 02-platform-identity/
+    │   ├── stacks/baseline/
+    │   ├── environments/dev/
+    │   │   ├── modules-env/
+    │   │   ├── main.tf
+    │   └── modules/
+    └── README.md
 ```
 
 ## Deployment History
@@ -188,7 +173,7 @@ one-time remote state bootstrap and local/CI authentication configuration.
 4. Create an OVH API application (key / secret / consumer key).
 
 All credentials are provided to CI through GitHub Secrets on the `dev`
-environment (never commit them):
+environment:
 
 | Purpose                 | GitHub Secret                |
 | ----------------------- | ---------------------------- |
@@ -196,6 +181,3 @@ environment (never commit them):
 | OVH API consumer key    | `OVH_CONSUMER_KEY`           |
 | Object Storage S3 key   | `OVH_S3_ACCESS_KEY_ID`       |
 | Object Storage S3 secret| `OVH_S3_SECRET_ACCESS_KEY`   |
-
-The OVH application key (`OVH_APPLICATION_KEY`) and endpoint (`OVH_ENDPOINT`)
-are non-secret workflow inputs on the OVH deployment template.
