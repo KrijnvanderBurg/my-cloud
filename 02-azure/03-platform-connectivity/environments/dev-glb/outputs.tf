@@ -1,5 +1,19 @@
 # =============================================================================
-# Hub Peering Outputs
+# Environment outputs
+# =============================================================================
+# Forward baseline outputs and add environment-specific outputs.
+
+# =============================================================================
+# Hub Network Outputs (from baseline)
+# =============================================================================
+
+output "hub" {
+  description = "Hub VNet details"
+  value       = module.baseline.hub
+}
+
+# =============================================================================
+# Hub Peering Outputs (dev-glb specific)
 # =============================================================================
 
 output "hub_peerings" {
@@ -17,7 +31,7 @@ output "hub_peerings" {
 }
 
 output "hub_summary" {
-  description = "Summary of all location_shortal hubs"
+  description = "Summary of all location hubs"
   value = {
     weu = {
       id   = local.hubs.weu.id

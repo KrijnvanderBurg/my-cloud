@@ -22,36 +22,6 @@ module "baseline" {
 }
 
 # =============================================================================
-# State migration
-# =============================================================================
-# Preserve existing resources when the baseline wiring moved into the stack.
-
-moved {
-  from = module.levendaal
-  to   = module.baseline.module.levendaal
-}
-
-moved {
-  from = module.sandbox
-  to   = module.baseline.module.sandbox
-}
-
-moved {
-  from = module.platform
-  to   = module.baseline.module.platform
-}
-
-moved {
-  from = module.landingzone
-  to   = module.baseline.module.landingzone
-}
-
-moved {
-  from = module.policy_deny_delete
-  to   = module.baseline.module.policy_deny_delete
-}
-
-# =============================================================================
 # Environment-only extras (dev)
 # =============================================================================
 # Add resources that should exist ONLY in this environment here as explicit

@@ -1,8 +1,10 @@
 # =============================================================================
-# Hub Network Outputs
+# Landing Zone Outputs
 # =============================================================================
 
-output "hub" {
-  description = "Hub VNet details"
-  value       = module.baseline.hub
+output "landing_zone" {
+  description = "Landing zone details"
+  value = {
+    id = module.landing_zone.id
+  }
 }

@@ -21,46 +21,6 @@ module "baseline" {
 }
 
 # =============================================================================
-# State migration
-# =============================================================================
-# Preserve existing resources when the baseline wiring moved into the stack.
-
-moved {
-  from = module.sp_platform_connectivity
-  to   = module.baseline.module.sp_platform_connectivity
-}
-
-moved {
-  from = module.sp_alz_drives
-  to   = module.baseline.module.sp_alz_drives
-}
-
-moved {
-  from = module.sp_plz_drives
-  to   = module.baseline.module.sp_plz_drives
-}
-
-moved {
-  from = module.rbac_platform_connectivity
-  to   = module.baseline.module.rbac_platform_connectivity
-}
-
-moved {
-  from = module.rbac_plz_drives
-  to   = module.baseline.module.rbac_plz_drives
-}
-
-moved {
-  from = module.sg_rbac_platform_contributors
-  to   = module.baseline.module.sg_rbac_platform_contributors
-}
-
-moved {
-  from = module.monitoring_alerts
-  to   = module.baseline.module.monitoring_alerts
-}
-
-# =============================================================================
 # Environment-only extras (dev)
 # =============================================================================
 # Add resources that should exist ONLY in this environment here as explicit
