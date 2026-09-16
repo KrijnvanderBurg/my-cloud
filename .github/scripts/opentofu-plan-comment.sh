@@ -15,6 +15,7 @@ plan_output=$(cat "$plan_file")
 # Build and output comment body
 cat <<EOF >> "$GITHUB_OUTPUT"
 comment_body<<ENDOFCOMMENT
+<!-- opentofu-comment:${target_path} -->
 ## OpenTofu Plan
 
 **Environment:** \`${environment}\`
