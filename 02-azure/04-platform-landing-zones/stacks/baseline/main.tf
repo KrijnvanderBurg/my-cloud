@@ -43,3 +43,13 @@ module "landing_zone" {
 
   tags = var.tags
 }
+
+# =============================================================================
+# Moved Resources
+# =============================================================================
+# Handle resources that were moved from stack level to module level
+
+moved {
+  from = azurerm_resource_group.this
+  to   = module.landing_zone.azurerm_resource_group.this
+}
