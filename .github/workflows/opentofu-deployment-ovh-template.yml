@@ -54,7 +54,7 @@ jobs:
         uses: ./.github/actions/opentofu-install
 
       - name: OpenTofu init
-        uses: ./.github/actions/opentofu-init-ovh
+        uses: ./.github/actions/opentofu-init
         with:
           working_directory: ${{ inputs.working_directory }}
 
