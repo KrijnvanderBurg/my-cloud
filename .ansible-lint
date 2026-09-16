@@ -5,10 +5,11 @@
 profile: production
 
 exclude_paths:
-  - 02-azure/
-  - .github/
-  - docs/
   - .devcontainer/
+  - .github/
+  - 02-azure/
+  - 03-ovhcloud/
+  - docs/
 
 skip_list:
   - name[template] # Allow Jinja2 in task names if needed
