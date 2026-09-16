@@ -21,6 +21,45 @@ outputs:
 runs:
   using: composite
   steps:
+    - name: Import missing resources (refactoring fix)
+      id: import
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        # Import resources that were moved during refactoring
+        # Only applicable for platform-landing-zones in drives-dev
+        if [[ "${{ inputs.working_directory }}" == *"04-platform-landing-zones"* ]] && [[ -d "environments/drives-dev" ]]; then
+          echo "Importing resources that were moved from environment to stack/module level..."
+
+          cd environments/drives-dev
+
+          # Import resource group
+          terraform import -allow-missing-config \
+            module.baseline.module.landing_zone.azurerm_resource_group.this \
+            "/subscriptions/9af01e5c-f933-4b86-a389-a8ac837965a5/resourceGroups/rg-connectivity-drives-dev-weu-01" \
+            || echo "Resource group already in state"
+
+          # Import log analytics data export rule
+          terraform import -allow-missing-config \
+            module.baseline.module.landing_zone.azurerm_log_analytics_data_export_rule.to_storage \
+            "rg-connectivity-drives-dev-weu-01/law-drives-dev-weu-01/export-to-storage" \
+            || echo "Log analytics data export already in state"
+
+          # Import vnet diagnostic setting
+          terraform import -allow-missing-config \
+            module.baseline.module.landing_zone.azurerm_monitor_diagnostic_setting.vnet \
+            "/subscriptions/9af01e5c-f933-4b86-a389-a8ac837965a5/resourceGroups/rg-connectivity-drives-dev-weu-01/providers/Microsoft.Network/virtualNetworks/vnet-spoke-drives-dev-weu-01|diag-vnet-spoke-drives-dev-weu-01" \
+            || echo "Vnet diagnostic setting already in state"
+
+          # Import key vault diagnostic setting
+          terraform import -allow-missing-config \
+            module.baseline.module.landing_zone.azurerm_monitor_diagnostic_setting.key_vault \
+            "/subscriptions/9af01e5c-f933-4b86-a389-a8ac837965a5/resourceGroups/rg-connectivity-drives-dev-weu-01/providers/Microsoft.KeyVault/vaults/kv-drives-dev-weu-01|diag-kv-drives-dev-weu-01" \
+            || echo "Key vault diagnostic setting already in state"
+
+          cd ../..
+        fi
+
     - name: Apply OpenTofu changes
       id: apply
       shell: bash

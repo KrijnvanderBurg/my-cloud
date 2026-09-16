@@ -122,12 +122,6 @@ resource "azurerm_monitor_diagnostic_setting" "vnet" {
   enabled_metric {
     category = "AllMetrics"
   }
-
-  # Temporary: ignore changes to allow state sync during refactoring
-  # Remove after state file is properly synced
-  lifecycle {
-    ignore_changes = all
-  }
 }
 
 resource "azurerm_monitor_diagnostic_setting" "nsg" {
