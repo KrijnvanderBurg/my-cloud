@@ -1,96 +1,23 @@
 # =============================================================================
-# Account
+# Baseline stack
 # =============================================================================
-# The root/break-glass account. It is referenced only to scope IAM policies to
-# the account URN. It is never managed or used for automation by this stack.
-data "ovh_me" "account" {}
+# All resources that must exist in every environment. Identity configuration
+# is fully data-driven via locals.tf (users, groups, service accounts, IAM
+# policies).
 
-# =============================================================================
-# User Groups
-# =============================================================================
-module "group" {
-  source   = "../../modules/01-identity-group"
-  for_each = local.groups
+module "baseline" {
+  source = "../../stacks/baseline"
 
-  name        = each.key
-  description = each.value.description
-  role        = each.value.role
+  environment    = local.environment
+  users          = local.users
+  service_accounts = local.service_accounts
+  groups         = local.groups
+  policy_actions = local.policy_actions
+  common_tags    = local.common_tags
 }
 
 # =============================================================================
-# Human Users (data-driven)
+# Environment-only extras (dev)
 # =============================================================================
-module "user" {
-  source   = "../../modules/02-identity-user"
-  for_each = local.users
-
-  login       = each.key
-  email       = each.value.email
-  description = each.value.description
-  group       = each.value.group
-
-  # Ensure the target group exists before the user references it.
-  depends_on = [module.group]
-}
-
-# =============================================================================
-# Service Accounts (data-driven)
-# =============================================================================
-module "service_account" {
-  source   = "../../modules/03-service-account"
-  for_each = local.service_accounts
-
-  name        = each.key
-  description = each.value.description
-}
-
-# =============================================================================
-# IAM Policies (group- and service-account-based)
-# =============================================================================
-module "policy_human_platform_admin" {
-  source = "../../modules/04-iam-policy"
-
-  name        = "iam-human-platform-admin"
-  description = "Full account and resource management for platform administrators"
-  identities  = [module.group["platform-admins"].urn]
-  resources   = [data.ovh_me.account.urn]
-  allow       = local.policy_actions.platform_admin.allow
-  except      = local.policy_actions.platform_admin.except
-  deny        = local.policy_actions.platform_admin.deny
-}
-
-module "policy_human_developer" {
-  source = "../../modules/04-iam-policy"
-
-  name        = "iam-human-developer"
-  description = "Resource management for developers, excluding account/billing/identity"
-  identities  = [module.group["developers"].urn]
-  resources   = [data.ovh_me.account.urn]
-  allow       = local.policy_actions.developer.allow
-  except      = local.policy_actions.developer.except
-  deny        = local.policy_actions.developer.deny
-}
-
-module "policy_human_read_only" {
-  source = "../../modules/04-iam-policy"
-
-  name        = "iam-human-read-only"
-  description = "View-only access for read-only users"
-  identities  = [module.group["read-only"].urn]
-  resources   = [data.ovh_me.account.urn]
-  allow       = local.policy_actions.read_only.allow
-  except      = local.policy_actions.read_only.except
-  deny        = local.policy_actions.read_only.deny
-}
-
-module "policy_terraform" {
-  source = "../../modules/04-iam-policy"
-
-  name        = "iam-terraform"
-  description = "Least-privilege automation policy for the Terraform service account"
-  identities  = [module.service_account["terraform"].identity]
-  resources   = [data.ovh_me.account.urn]
-  allow       = local.policy_actions.terraform.allow
-  except      = local.policy_actions.terraform.except
-  deny        = local.policy_actions.terraform.deny
-}
+# Add resources that should exist ONLY in this environment here as explicit
+# module blocks. Nothing environment-specific is hidden behind conditionals.
