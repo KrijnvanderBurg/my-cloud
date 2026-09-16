@@ -96,8 +96,8 @@ jobs:
         if: always() && github.event_name == 'pull_request' && steps.plan.outputs.has_changes == 'true'
         uses: ./.github/actions/opentofu-apply-comment
         with:
+          apply_output_file: ${{ steps.apply.outputs.apply_output_file }}
           environment: ${{ inputs.environment }}
-          apply_output_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.APPLY_OUTPUT_FILENAME }}
           working_directory: ${{ inputs.working_directory }}
           apply_status: ${{ steps.apply.outcome }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
