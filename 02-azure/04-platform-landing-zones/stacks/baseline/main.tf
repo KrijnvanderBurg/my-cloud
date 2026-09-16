@@ -43,28 +43,3 @@ module "landing_zone" {
 
   tags = var.tags
 }
-
-# =============================================================================
-# Moved Resources
-# =============================================================================
-# Handle resources that were moved from stack level to module level
-
-moved {
-  from = azurerm_resource_group.this
-  to   = module.landing_zone.azurerm_resource_group.this
-}
-
-moved {
-  from = azurerm_monitor_diagnostic_setting.key_vault
-  to   = module.landing_zone.azurerm_monitor_diagnostic_setting.key_vault
-}
-
-moved {
-  from = azurerm_log_analytics_data_export_rule.to_storage
-  to   = module.landing_zone.azurerm_log_analytics_data_export_rule.to_storage
-}
-
-moved {
-  from = azurerm_monitor_diagnostic_setting.vnet
-  to   = module.landing_zone.azurerm_monitor_diagnostic_setting.vnet
-}

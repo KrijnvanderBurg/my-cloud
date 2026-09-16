@@ -27,6 +27,31 @@ module "baseline" {
 }
 
 # =============================================================================
+# Moved Resources
+# =============================================================================
+# Handle resources moved from environment level to stack/module level
+
+moved {
+  from = azurerm_resource_group.this
+  to   = module.baseline.module.landing_zone.azurerm_resource_group.this
+}
+
+moved {
+  from = azurerm_log_analytics_data_export_rule.to_storage
+  to   = module.baseline.module.landing_zone.azurerm_log_analytics_data_export_rule.to_storage
+}
+
+moved {
+  from = azurerm_monitor_diagnostic_setting.vnet
+  to   = module.baseline.module.landing_zone.azurerm_monitor_diagnostic_setting.vnet
+}
+
+moved {
+  from = azurerm_monitor_diagnostic_setting.key_vault
+  to   = module.baseline.module.landing_zone.azurerm_monitor_diagnostic_setting.key_vault
+}
+
+# =============================================================================
 # Environment-only extras (drives-dev)
 # =============================================================================
 # Add resources that should exist ONLY in this environment here.
