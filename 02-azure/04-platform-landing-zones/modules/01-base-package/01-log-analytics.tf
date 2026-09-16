@@ -84,6 +84,12 @@ resource "azurerm_log_analytics_data_export_rule" "to_storage" {
   enabled = true
 
   depends_on = [azurerm_storage_container.logs]
+
+  # Temporary: ignore changes to allow state sync during refactoring
+  # Remove after state file is properly synced
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 # =============================================================================
