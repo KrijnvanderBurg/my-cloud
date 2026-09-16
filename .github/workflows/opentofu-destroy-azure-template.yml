@@ -35,6 +35,8 @@ env:
   ARM_TENANT_ID: ${{ inputs.tenant_id }}
   ARM_USE_OIDC: true
   ARM_STORAGE_USE_AZUREAD: true
+  PLAN_BINARY_FILENAME: tfplan
+  PLAN_TEXT_FILENAME: tfplan.txt
   DESTROY_OUTPUT_FILENAME: destroy-output.txt
 
 jobs:
@@ -61,14 +63,32 @@ jobs:
         with:
           working_directory: ${{ inputs.working_directory }}
 
+      - name: OpenTofu destroy plan
+        id: plan
+        uses: ./.github/actions/opentofu-destroy-plan
+        with:
+          working_directory: ${{ inputs.working_directory }}
+          plan_binary_file: ${{ runner.temp }}/destroy-${{ inputs.artifact_name }}-${{ env.PLAN_BINARY_FILENAME }}
+          plan_text_file: ${{ runner.temp }}/destroy-${{ inputs.artifact_name }}-${{ env.PLAN_TEXT_FILENAME }}
+
+      - name: Post Destroy Plan to PR
+        if: github.event_name == 'pull_request' && steps.plan.outputs.has_changes == 'true'
+        uses: ./.github/actions/opentofu-plan-comment
+        with:
+          plan_text_file: ${{ steps.plan.outputs.plan_text_file }}
+          environment: ${{ inputs.environment }}
+          working_directory: ${{ inputs.working_directory }}
+
       - name: OpenTofu destroy
         id: destroy
         uses: ./.github/actions/opentofu-destroy
         with:
           working_directory: ${{ inputs.working_directory }}
+          destroy_output_file: ${{ runner.temp }}/destroy-${{ inputs.artifact_name }}-${{ env.DESTROY_OUTPUT_FILENAME }}
+          plan_binary_file: ${{ steps.plan.outputs.plan_binary_file }}
 
       - name: Post Destroy Result to PR
-        if: always()
+        if: always() && github.event_name == 'pull_request' && steps.plan.outputs.has_changes == 'true'
         uses: ./.github/actions/opentofu-apply-comment
         with:
           apply_output_file: ${{ steps.destroy.outputs.destroy_output_file }}

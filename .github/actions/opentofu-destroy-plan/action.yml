@@ -1,0 +1,36 @@
+name: OpenTofu Destroy Plan
+description: Generate and show OpenTofu destroy execution plan
+
+inputs:
+  working_directory:
+    description: Path to the OpenTofu configuration directory
+    required: true
+  plan_binary_file:
+    description: Absolute path for the output binary plan file (used by destroy)
+    required: true
+  plan_text_file:
+    description: Absolute path for the output human-readable plan file
+    required: true
+
+outputs:
+  plan_text_file:
+    description: Absolute path to the generated human-readable plan file
+    value: ${{ steps.plan.outputs.plan_text_file }}
+  plan_binary_file:
+    description: Absolute path to the generated binary plan file for destroy
+    value: ${{ steps.plan.outputs.plan_binary_file }}
+  has_changes:
+    description: Whether the plan contains actual changes (true/false)
+    value: ${{ steps.plan.outputs.has_changes }}
+
+runs:
+  using: composite
+  steps:
+    - name: Plan OpenTofu destroy
+      id: plan
+      shell: bash
+      working-directory: ${{ inputs.working_directory }}
+      run: |
+        bash ${{ github.workspace }}/.github/scripts/opentofu-destroy-plan.sh \
+          "${{ inputs.plan_binary_file }}" \
+          "${{ inputs.plan_text_file }}"
