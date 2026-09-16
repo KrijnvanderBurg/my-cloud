@@ -17,11 +17,11 @@ output "tenant_root_management_group_id" {
 # =============================================================================
 
 output "levendaal_management_group" {
-  description = "Levendaal root management group details"
+  description = "KrijnvanderBurg root management group details"
   value = {
-    id           = module.levendaal.id
-    name         = module.levendaal.name
-    display_name = module.levendaal.display_name
+    id           = module.krijnvanderburg.id
+    name         = module.krijnvanderburg.name
+    display_name = module.krijnvanderburg.display_name
   }
 }
 

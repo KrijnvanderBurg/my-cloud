@@ -47,12 +47,12 @@ data "azurerm_subscription" "alz_drive" {
 # Management Groups
 # =============================================================================
 
-# Levendaal Group - organisational root management group
-module "levendaal" {
+# KrijnvanderBurg Group - organisational root management group
+module "krijnvanderburg" {
   source = "../../modules/01-management-group"
 
-  name                       = "mg-levendaal-${var.environment}-na-01"
-  display_name               = "mg-levendaal-${var.environment}-na-01"
+  name                       = "mg-krijnvanderburg-${var.environment}-na-01"
+  display_name               = "mg-krijnvanderburg-${var.environment}-na-01"
   parent_management_group_id = data.azurerm_management_group.tenant_root.id
 }
 
@@ -63,7 +63,7 @@ module "sandbox" {
 
   name                       = "mg-sandbox-${var.environment}-na-01"
   display_name               = "mg-sandbox-${var.environment}-na-01"
-  parent_management_group_id = module.levendaal.id
+  parent_management_group_id = module.krijnvanderburg.id
 }
 
 # Platform Management Group - platform management group
@@ -72,7 +72,7 @@ module "platform" {
 
   name                       = "mg-platform-${var.environment}-na-01"
   display_name               = "mg-platform-${var.environment}-na-01"
-  parent_management_group_id = module.levendaal.id
+  parent_management_group_id = module.krijnvanderburg.id
 }
 
 # Landing Zone Management Group - for application workloads
@@ -81,7 +81,7 @@ module "landingzone" {
 
   name                       = "mg-landingzone-${var.environment}-na-01"
   display_name               = "mg-landingzone-${var.environment}-na-01"
-  parent_management_group_id = module.levendaal.id
+  parent_management_group_id = module.krijnvanderburg.id
 }
 
 # =============================================================================
@@ -93,5 +93,5 @@ module "policy_deny_delete" {
 
   name                = "deny-delete-operations"
   display_name        = "Deny Delete Operations"
-  management_group_id = module.levendaal.id
+  management_group_id = module.krijnvanderburg.id
 }

@@ -29,7 +29,7 @@ locals {
   common_tags = {
     environment    = local.environment
     managed_by     = "opentofu"
-    project        = "levendaal"
+    project        = "krijnvanderburg"
     layer          = "platform-landing-zone"
     landing_zone   = local.landing_zone
     location_short = local.location_short

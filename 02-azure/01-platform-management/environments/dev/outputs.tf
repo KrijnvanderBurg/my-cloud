@@ -23,7 +23,7 @@ output "tenant_root_management_group_id" {
 # =============================================================================
 
 output "levendaal_management_group" {
-  description = "Levendaal root management group details"
+  description = "KrijnvanderBurg root management group details"
   value       = module.baseline.levendaal_management_group
 }
 

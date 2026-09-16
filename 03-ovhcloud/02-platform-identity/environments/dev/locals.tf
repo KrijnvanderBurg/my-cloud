@@ -7,7 +7,7 @@ locals {
   common_tags = {
     environment = local.environment
     managed_by  = "opentofu"
-    project     = "levendaal"
+    project     = "krijnvanderburg"
     layer       = "platform-identity"
     owner       = "kvdb"
     cost_center = "platform"

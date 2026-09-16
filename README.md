@@ -1,6 +1,6 @@
-# Levendaal - Multi-Cloud Infrastructure
+# KrijnvanderBurg - Multi-Cloud Infrastructure
 
-Terraform/OpenTofu and Ansible configuration for Levendaal's multi-cloud infrastructure.
+Terraform/OpenTofu and Ansible configuration for KrijnvanderBurg's multi-cloud infrastructure.
 
 - See [docs/naming-convention.md](docs/naming-convention.md) for full naming standards.
 
@@ -66,7 +66,7 @@ Terraform/OpenTofu and Ansible configuration for Levendaal's multi-cloud infrast
 ## Deployment History
 All steps performed to setup initial infrastructure and to current state.
 
-1. **Created Azure Tenant** (`Levendaal`) via Azure Portal.
+1. **Created Azure Tenant** (`KrijnvanderBurg`) via Azure Portal.
 2. **Created Subscription** (`pl-management-co-dev-na-01`/`e388ddce-c79d-4db0-8a6f-cd69b1708954`) via Azure Portal
 3. **Created Storage Account for remote tfstate:**
    ```bash
@@ -160,7 +160,7 @@ All steps performed to setup initial infrastructure and to current state.
     Azure AD → App registrations → sp-platform-identity-co-dev-na-01 → API permissions → Grant admin consent
 
 
-# OVHcloud - Levendaal
+# OVHcloud - KrijnvanderBurg
 
 The OVHcloud Terraform setup is in `03-ovhcloud`. See its README for the
 one-time remote state bootstrap and local/CI authentication configuration.
