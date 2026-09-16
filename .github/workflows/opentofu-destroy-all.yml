@@ -5,6 +5,7 @@ on:
     - cron: '0 2 * * *' # Runs every day at 2:00 UTC
   pull_request:
     types: [closed]
+  workflow_dispatch:
 
 permissions:
   contents: read
