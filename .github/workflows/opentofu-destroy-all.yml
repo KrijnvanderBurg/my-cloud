@@ -39,10 +39,6 @@ jobs:
       artifact_name: plz-drives-dev
       client_id: "ba53c1d5-2dc0-4182-b207-9ed6a477d139" # sp-plz-drives-on-dev-na-01
       environment: dev
-      state_storage_account: sttfstatecodevgwc01
-      state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate-pl-management
-      state_key: plz-drives-dev.tfstate
 
   # ===== Platform Connectivity (dev-glb) =====
   pl-connectivity-dev-glb:
@@ -54,10 +50,6 @@ jobs:
       artifact_name: pl-connectivity-dev-glb
       client_id: "400a4e87-119e-4099-87c5-676886a5d2fa" # sp-pl-connectivity-on-dev-na-01
       environment: dev
-      state_storage_account: sttfstatecodevgwc01
-      state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate-pl-management
-      state_key: pl-connectivity-dev-glb.tfstate
 
   # ===== Platform Connectivity (dev-gwc) =====
   pl-connectivity-dev-gwc:
@@ -69,10 +61,6 @@ jobs:
       artifact_name: pl-connectivity-dev-gwc
       client_id: "400a4e87-119e-4099-87c5-676886a5d2fa" # sp-pl-connectivity-on-dev-na-01
       environment: dev
-      state_storage_account: sttfstatecodevgwc01
-      state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate-pl-connectivity
-      state_key: pl-connectivity-dev-gwc.tfstate
 
   # ===== Platform Connectivity (dev-weu) =====
   pl-connectivity-dev-weu:
@@ -84,10 +72,6 @@ jobs:
       artifact_name: pl-connectivity-dev-weu
       client_id: "400a4e87-119e-4099-87c5-676886a5d2fa" # sp-pl-connectivity-on-dev-na-01
       environment: dev
-      state_storage_account: sttfstatecodevgwc01
-      state_resource_group: rg-tfstate-co-dev-gwc-01
-      state_container: tfstate-pl-connectivity
-      state_key: pl-connectivity-dev-weu.tfstate
 
   # # ===== Platform Identity (dev) =====
   # pl-identity-dev:
