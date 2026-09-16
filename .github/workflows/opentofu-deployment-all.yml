@@ -76,7 +76,7 @@ jobs:
   # ===== Platform Landing Zone - Drives =====
   plz-drives-dev:
     name: plz-drives-dev
-    # needs: [pl-connectivity-glb-dev]
+    needs: [pl-connectivity-glb-dev]
     uses: ./.github/workflows/opentofu-deployment-azure-template.yml
     with:
       working_directory: ./02-azure/04-platform-landing-zones/environments/drives-dev
