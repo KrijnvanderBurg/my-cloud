@@ -21,20 +21,20 @@ resource "azurerm_key_vault" "this" {
   # }
 }
 
-resource "azurerm_monitor_diagnostic_setting" "key_vault" {
-  name                       = "diag-${local.key_vault_name}"
-  target_resource_id         = azurerm_key_vault.this.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.this.id
+# resource "azurerm_monitor_diagnostic_setting" "key_vault" {
+#   name                       = "diag-${local.key_vault_name}"
+#   target_resource_id         = azurerm_key_vault.this.id
+#   log_analytics_workspace_id = azurerm_log_analytics_workspace.this.id
 
-  enabled_log {
-    category = "AuditEvent"
-  }
+#   enabled_log {
+#     category = "AuditEvent"
+#   }
 
-  enabled_log {
-    category = "AzurePolicyEvaluationDetails"
-  }
+#   enabled_log {
+#     category = "AzurePolicyEvaluationDetails"
+#   }
 
-  enabled_metric {
-    category = "AllMetrics"
-  }
-}
+#   enabled_metric {
+#     category = "AllMetrics"
+#   }
+# }
