@@ -3,7 +3,7 @@
 # Environment metadata
 # ==============================================================================
 env: dev
-project: levendaal
+project: krijnvanderburg
 layer: base-vms-hardening
 
 # ==============================================================================

@@ -35,7 +35,7 @@ locals {
   common_tags = {
     environment    = local.environment
     managed_by     = "opentofu"
-    project        = "levendaal"
+    project        = "krijnvanderburg"
     layer          = "platform-connectivity"
     location_short = "global"
   }

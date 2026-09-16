@@ -11,10 +11,6 @@ on:
         description: Name for artifacts and display
         required: true
         type: string
-      state_key:
-        description: State file key for backend configuration
-        required: true
-        type: string
       client_id:
         description: Azure AD application client ID for OIDC authentication
         required: true
@@ -29,20 +25,6 @@ on:
         type: string
         default: "90d27970-b92c-43dc-9935-1ed557d8e20e"
 
-      # State backend configuration
-      state_storage_account:
-        description: Azure Storage Account name for state backend
-        required: true
-        type: string
-      state_resource_group:
-        description: Azure Resource Group name for state backend
-        required: true
-        type: string
-      state_container:
-        description: Azure Storage Container name for state backend
-        required: true
-        type: string
-
 permissions:
   contents: read
   pull-requests: write
@@ -53,6 +35,8 @@ env:
   ARM_TENANT_ID: ${{ inputs.tenant_id }}
   ARM_USE_OIDC: true
   ARM_STORAGE_USE_AZUREAD: true
+  PLAN_BINARY_FILENAME: tfplan
+  PLAN_TEXT_FILENAME: tfplan.txt
   DESTROY_OUTPUT_FILENAME: destroy-output.txt
 
 jobs:
@@ -78,24 +62,37 @@ jobs:
         uses: ./.github/actions/opentofu-init
         with:
           working_directory: ${{ inputs.working_directory }}
-          storage_account_name: ${{ inputs.state_storage_account }}
-          resource_group_name: ${{ inputs.state_resource_group }}
-          container_name: ${{ inputs.state_container }}
-          state_key: ${{ inputs.state_key }}
+
+      - name: OpenTofu destroy plan
+        id: plan
+        uses: ./.github/actions/opentofu-destroy-plan
+        with:
+          working_directory: ${{ inputs.working_directory }}
+          plan_binary_file: ${{ runner.temp }}/destroy-${{ inputs.artifact_name }}-${{ env.PLAN_BINARY_FILENAME }}
+          plan_text_file: ${{ runner.temp }}/destroy-${{ inputs.artifact_name }}-${{ env.PLAN_TEXT_FILENAME }}
+
+      - name: Post Destroy Plan to PR
+        if: github.event_name == 'pull_request' && steps.plan.outputs.has_changes == 'true'
+        uses: ./.github/actions/opentofu-plan-comment
+        with:
+          plan_text_file: ${{ steps.plan.outputs.plan_text_file }}
+          environment: ${{ inputs.environment }}
+          working_directory: ${{ inputs.working_directory }}
 
       - name: OpenTofu destroy
         id: destroy
-        uses: ./.github/actions/opentofu-destroy
+        uses: ./.github/actions/opentofu-apply
         with:
           working_directory: ${{ inputs.working_directory }}
+          plan_binary_file: ${{ steps.plan.outputs.plan_binary_file }}
+          apply_output_file: ${{ runner.temp }}/destroy-${{ inputs.artifact_name }}-${{ env.DESTROY_OUTPUT_FILENAME }}
 
-      # Too many post-destroy comments can spam PRs; disable for now
-      # - name: Post Destroy Result to PR
-      #   if: always()
-      #   uses: ./.github/actions/opentofu-apply-comment
-      #   with:
-      #     apply_output_file: ${{ steps.destroy.outputs.destroy_output_file }}
-      #     environment: ${{ inputs.artifact_name }}
-      #     working_directory: ${{ inputs.working_directory }}
-      #     apply_status: ${{ steps.destroy.outcome }}
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Post Destroy Result to PR
+        if: always() && github.event_name == 'pull_request' && steps.plan.outputs.has_changes == 'true'
+        uses: ./.github/actions/opentofu-apply-comment
+        with:
+          apply_output_file: ${{ steps.destroy.outputs.apply_output_file }}
+          environment: ${{ inputs.artifact_name }}
+          working_directory: ${{ inputs.working_directory }}
+          apply_status: ${{ steps.destroy.outcome }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

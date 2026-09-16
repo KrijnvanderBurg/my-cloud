@@ -1,83 +1,27 @@
 # =============================================================================
-# Service Principals (Federated for GitHub Actions)
+# Baseline stack
 # =============================================================================
-# No SP for platform management to prevent dependency conflicts
-# No SP for platform identity, also to prevent dependency conflicts and Identity
-# has elevated permissions that we don't want to automate creation for.
+# All resources that must exist in every environment. Management-layer values
+# are resolved from remote state in locals.tf and passed in explicitly. Add
+# environment-only resources as explicit module blocks in the EXTRAS section.
 
-module "sp_platform_connectivity" {
-  source = "../../modules/01-service-principal-federated"
+module "baseline" {
+  source = "../../stacks/baseline"
 
-  name = "sp-pl-connectivity-on-${local.environment}-na-01"
-  subjects = [
-    "repo:KrijnvanderBurg/my-cloud:environment:dev"
-  ]
-}
+  environment    = local.environment
+  location       = local.location
+  location_short = local.location_short
+  alert_email    = local.alert_email
+  tags           = local.common_tags
 
-module "sp_alz_drives" {
-  source = "../../modules/01-service-principal-federated"
-
-  name = "sp-alz-drives-on-${local.environment}-na-01"
-  subjects = [
-    "repo:KrijnvanderBurg/my-cloud:environment:dev"
-  ]
-}
-
-module "sp_plz_drives" {
-  source = "../../modules/01-service-principal-federated"
-
-  name = "sp-plz-drives-on-${local.environment}-na-01"
-  subjects = [
-    "repo:KrijnvanderBurg/my-cloud:environment:dev"
-  ]
-}
-
-# =============================================================================
-# RBAC Role Assignments
-# =============================================================================
-module "rbac_platform_connectivity" {
-  source = "../../modules/02a-rbac-pl-connectivity"
-
-  principal_id                       = module.sp_platform_connectivity.object_id
   pl_connectivity_subscription_scope = local.pl_connectivity_subscription_scope
   plz_drives_subscription_scope      = local.plz_drives_subscription_scope
+  pl_identity_subscription_id        = local.pl_identity_subscription_id
   tfstate_storage_account_id         = local.tfstate_storage_account_id
-
-  depends_on = [module.sp_platform_connectivity]
-}
-
-module "rbac_plz_drives" {
-  source = "../../modules/02b-rbac-plz"
-
-  principal_id                    = module.sp_plz_drives.object_id
-  plz_drives_subscription_scope   = local.plz_drives_subscription_scope
-  connectivity_subscription_scope = local.pl_connectivity_subscription_scope
-  tfstate_storage_account_id      = local.tfstate_storage_account_id
-
-  depends_on = [module.sp_plz_drives]
 }
 
 # =============================================================================
-# Security Groups
+# Environment-only extras (dev)
 # =============================================================================
-module "sg_rbac_platform_contributors" {
-  source = "../../modules/03-entra-group"
-
-  display_name       = "sg-rbac-pl-contributors-${local.environment}-na-01"
-  description        = "Members have Contributor access to platform subscriptions via Azure RBAC"
-  assignable_to_role = false
-}
-
-# =============================================================================
-# Monitoring Alerts
-# =============================================================================
-module "monitoring_alerts" {
-  source = "../../modules/04-monitoring-alerts"
-
-  environment     = local.environment
-  location        = local.location
-  location_short  = local.location_short
-  subscription_id = local.pl_identity_subscription_id
-  alert_email     = local.alert_email
-  tags            = local.common_tags
-}
+# Add resources that should exist ONLY in this environment here as explicit
+# module blocks. Nothing environment-specific is hidden behind conditionals.

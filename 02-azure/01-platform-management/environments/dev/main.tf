@@ -1,81 +1,31 @@
-# Reference the existing Azure Tenant Root Group
-data "azurerm_management_group" "tenant_root" {
-  name = local.tenant_id
+# =============================================================================
+# Baseline stack
+# =============================================================================
+# All resources that must exist in every environment. Add environment-only
+# resources as explicit module blocks below this call (see EXTRAS section).
+
+module "baseline" {
+  source = "../../stacks/baseline"
+
+  environment = local.environment
+  tenant_id   = local.tenant_id
+
+  platform_management_subscription_id   = local.platform_management_subscription_id
+  platform_identity_subscription_id     = local.platform_identity_subscription_id
+  platform_connectivity_subscription_id = local.platform_connectivity_subscription_id
+  plz_drives_subscription_id            = local.plz_drives_subscription_id
+  alz_drive_subscription_id             = local.alz_drive_subscription_id
+
+  tfstate_storage_account_name                = local.tfstate_storage_account_name
+  tfstate_storage_account_resource_group_name = local.tfstate_storage_account_resource_group_name
+  tfstate_subscription_id                     = local.tfstate_subscription_id
 }
 
 # =============================================================================
-# Subscriptions
+# Environment-only extras (dev)
 # =============================================================================
-# Manually assigned subscriptions to management groups
-
-data "azurerm_subscription" "platform_management" {
-  subscription_id = "e388ddce-c79d-4db0-8a6f-cd69b1708954"
-}
-
-data "azurerm_subscription" "platform_identity" {
-  subscription_id = "9312c5c5-b089-4b62-bb90-0d92d421d66c"
-}
-
-data "azurerm_subscription" "platform_connectivity" {
-  subscription_id = "6018b0fb-7b8c-491f-8abf-375d2c07ef97"
-}
-
-data "azurerm_subscription" "plz_drives" {
-  subscription_id = "9af01e5c-f933-4b86-a389-a8ac837965a5"
-}
-
-data "azurerm_subscription" "alz_drive" {
-  subscription_id = "4111975b-f6ca-4e08-b7b6-87d7b6c35840"
-}
-
-# Levendaal Group - organisational root management group
-module "levendaal" {
-  source = "../../modules/01-management-group"
-
-  name                       = "mg-levendaal-${local.environment}-na-01"
-  display_name               = "mg-levendaal-${local.environment}-na-01"
-  parent_management_group_id = data.azurerm_management_group.tenant_root.id
-}
-
-# Sandbox Management Group - for development and testing
-# Note: Sandbox is intentionally NOT protected to allow experimentation
-module "sandbox" {
-  source = "../../modules/01-management-group"
-
-  name                       = "mg-sandbox-${local.environment}-na-01"
-  display_name               = "mg-sandbox-${local.environment}-na-01"
-  parent_management_group_id = module.levendaal.id
-}
-
-# Platform Management Group - platform management group
-module "platform" {
-  source = "../../modules/01-management-group"
-
-  name                       = "mg-platform-${local.environment}-na-01"
-  display_name               = "mg-platform-${local.environment}-na-01"
-  parent_management_group_id = module.levendaal.id
-}
-
-# Landing Zone Management Group - for application workloads
-module "landingzone" {
-  source = "../../modules/01-management-group"
-
-  name                       = "mg-landingzone-${local.environment}-na-01"
-  display_name               = "mg-landingzone-${local.environment}-na-01"
-  parent_management_group_id = module.levendaal.id
-}
-
-# =============================================================================
-# Policy Definitions
-# =============================================================================
-
-module "policy_deny_delete" {
-  source = "../../modules/02-policy-deny-delete"
-
-  name                = "deny-delete-operations"
-  display_name        = "Deny Delete Operations"
-  management_group_id = module.levendaal.id
-}
+# Add resources that should exist ONLY in this environment here as explicit
+# module blocks. Nothing environment-specific is hidden behind conditionals.
 
 # =============================================================================
 # Policy Assignments

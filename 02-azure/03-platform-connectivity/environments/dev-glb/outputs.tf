@@ -1,5 +1,5 @@
 # =============================================================================
-# Hub Peering Outputs
+# Hub Peering Outputs (dev-glb coordination)
 # =============================================================================
 
 output "hub_peerings" {
@@ -17,7 +17,7 @@ output "hub_peerings" {
 }
 
 output "hub_summary" {
-  description = "Summary of all location_shortal hubs"
+  description = "Summary of all location hubs"
   value = {
     weu = {
       id   = local.hubs.weu.id

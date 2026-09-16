@@ -7,7 +7,7 @@ locals {
   # Metadata
   # ---------------------------------------------------------------------------
   env        = "dev"
-  project    = "levendaal"
+  project    = "krijnvanderburg"
   managed_by = "opentofu"
   layer      = "base-vms"
 

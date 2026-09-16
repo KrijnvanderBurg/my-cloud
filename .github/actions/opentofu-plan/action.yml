@@ -19,6 +19,9 @@ outputs:
   plan_binary_file:
     description: Absolute path to the generated binary plan file for apply
     value: ${{ steps.plan.outputs.plan_binary_file }}
+  has_changes:
+    description: Whether the plan contains actual changes (true/false)
+    value: ${{ steps.plan.outputs.has_changes }}
 
 runs:
   using: composite

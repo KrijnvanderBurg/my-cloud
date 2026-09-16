@@ -1,3 +1,8 @@
+# Custom
+.devcontainer/**/devcontainer-lock.json
+**/.terraform.lock.hcl
+**/.terraform/
+
 # Terraform / OpenTofu
 **/.terraform/*
 *.tfstate
@@ -20,10 +25,12 @@ tfplan
 # Sensitive variable files
 *.auto.tfvars
 secret.tfvars
+backend.hcl
 
 # Keep terraform.tfvars (non-sensitive) and examples
 !terraform.tfvars
 !*.tfvars.example
+!backend.hcl.example
 
 # Environment files
 .env

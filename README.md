@@ -1,5 +1,6 @@
-# Azure - Levendaal
-Terraform/OpenTofu and Ansible configuration for Levendaal.
+# KrijnvanderBurg - Multi-Cloud Infrastructure
+
+Terraform/OpenTofu and Ansible configuration for KrijnvanderBurg's multi-cloud infrastructure.
 
 - See [docs/naming-convention.md](docs/naming-convention.md) for full naming standards.
 
@@ -16,72 +17,56 @@ Terraform/OpenTofu and Ansible configuration for Levendaal.
 │   └── workflows
 ├── docs
 ├── 01-onprem
-│   ├── 01-hypervisor-setup                  # Ansible - KVM/libvirt hypervisor setup
-│   │   ├── ansible.cfg
-│   │   ├── site.yml
-│   │   ├── requirements.yml
-│   │   ├── inventories
-│   │   │   └── dev
-│   │   └── roles
-│   │       └── hypervisor-setup
-│   ├── 02-base-vms                          # Ansible - VM provisioning + hardening
-│   │   ├── ansible.cfg
-│   │   ├── site.yml
-│   │   ├── requirements.yml
-│   │   ├── inventories
-│   │   │   └── dev
-│   │   └── roles
-│   │       ├── base-vms
-│   │       ├── admin-user
-│   │       ├── ssh-hardening
-│   │       └── os-hardening
-│   └── 03-openclaw                          # Ansible - OpenClaw application
-│       ├── ansible.cfg
-│       ├── site.yml
-│       ├── requirements.yml
-│       ├── inventories
-│       │   └── dev
-│       └── roles
-│           ├── 01-prerequisites
-│           └── 02-openclaw-app
-├── 02-azure
-│   ├── 01-platform-management
-│   ├── environments
-│   │   └── dev
-│   └── modules
-│       ├── 01-management-group
-│       └── 02-policy-deny-delete
-├── 02-platform-identity
-│   ├── environments
-│   │   └── dev
-│   └── modules
-│       ├── 01-service-principal-federated
-│       ├── 02a-rbac-pl-connectivity
-│       ├── 02b-rbac-plz
-│       ├── 03-entra-group
-│       └── 04-monitoring-alerts
-├── 03-platform-connectivity
-│   ├── environments
-│   │   ├── dev-glb
-│   │   ├── dev-gwc
-│   │   └── dev-weu
-│   └── modules
-│       ├── 01-hub-vnet
-│       └── 02-hub-peering
-└── 04-platform-landing-zones
-    ├── environments
-    │   └── drives-dev
-    │       └── .terraform
-    │           └── modules
-    └── modules
-        ├── 01-base-package
-        └── 02-aks-package
+│   ├── 01-hypervisor-setup/
+│   ├── 02-base-vms/
+│   └── 03-base-vms-hardening/
+├── 02-azure/
+│   ├── 01-platform-management/
+│   │   ├── stacks/baseline/
+│   │   ├── environments/dev/
+│   │   │   ├── modules-env/
+│   │   │   ├── main.tf
+│   │   └── modules/
+│   ├── 02-platform-identity/
+│   │   ├── stacks/baseline/
+│   │   ├── environments/dev/
+│   │   │   ├── modules-env/
+│   │   │   ├── main.tf
+│   │   └── modules/
+│   ├── 03-platform-connectivity/
+│   │   ├── stacks/baseline/
+│   │   ├── environments/
+│   │   │   ├── dev-weu/
+│   │   │   ├── dev-gwc/
+│   │   │   └── dev-glb/
+│   │   └── modules/
+│   ├── 04-platform-landing-zones/
+│   │   ├── stacks/baseline/
+│   │   ├── environments/drives-dev/
+│   │   │   ├── modules-env/
+│   │   │   ├── main.tf
+│   │   └── modules/
+│   └── README.md
+└── 03-ovhcloud/
+    ├── 01-platform-management/
+    │   ├── stacks/baseline/
+    │   ├── environments/dev/
+    │   │   ├── modules-env/
+    │   │   ├── main.tf
+    │   └── modules/
+    ├── 02-platform-identity/
+    │   ├── stacks/baseline/
+    │   ├── environments/dev/
+    │   │   ├── modules-env/
+    │   │   ├── main.tf
+    │   └── modules/
+    └── README.md
 ```
 
 ## Deployment History
 All steps performed to setup initial infrastructure and to current state.
 
-1. **Created Azure Tenant** (`Levendaal`) via Azure Portal.
+1. **Created Azure Tenant** (`KrijnvanderBurg`) via Azure Portal.
 2. **Created Subscription** (`pl-management-co-dev-na-01`/`e388ddce-c79d-4db0-8a6f-cd69b1708954`) via Azure Portal
 3. **Created Storage Account for remote tfstate:**
    ```bash
@@ -173,3 +158,26 @@ All steps performed to setup initial infrastructure and to current state.
     ```
     **Note:** Admin consent requires Global Administrator or Privileged Role Administrator role. If CLI fails, grant via Portal:
     Azure AD → App registrations → sp-platform-identity-co-dev-na-01 → API permissions → Grant admin consent
+
+
+# OVHcloud - KrijnvanderBurg
+
+The OVHcloud Terraform setup is in `03-ovhcloud`. See its README for the
+one-time remote state bootstrap and local/CI authentication configuration.
+
+1. Create OVHcloud account.
+2. Create the Public Cloud project used for remote state
+   (`ovh-pl-management-co-dev-na-01` / `f350cf3e972b41fca80eb0a0a1b69dbf`).
+3. Create an Object Storage user with S3 credentials on the
+   `rg-tfstate-co-dev-par-01` bucket.
+4. Create an OVH API application (key / secret / consumer key).
+
+All credentials are provided to CI through GitHub Secrets on the `dev`
+environment:
+
+| Purpose                 | GitHub Secret                |
+| ----------------------- | ---------------------------- |
+| OVH API secret          | `OVH_APPLICATION_SECRET`     |
+| OVH API consumer key    | `OVH_CONSUMER_KEY`           |
+| Object Storage S3 key   | `OVH_S3_ACCESS_KEY_ID`       |
+| Object Storage S3 secret| `OVH_S3_SECRET_ACCESS_KEY`   |

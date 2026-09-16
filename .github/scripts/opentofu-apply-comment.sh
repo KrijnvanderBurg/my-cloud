@@ -25,6 +25,8 @@ fi
 # Build and output comment body
 cat <<EOF >> "$GITHUB_OUTPUT"
 comment_body<<ENDOFCOMMENT
+
+---
 ## ${status_emoji} OpenTofu Apply - ${environment}
 
 **Status:** ${status_text}

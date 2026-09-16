@@ -1,0 +1,98 @@
+name: OpenTofu Deployment Stage (OVH)
+
+on:
+  workflow_call:
+    inputs:
+      working_directory:
+        description: Path to the OpenTofu configuration directory
+        required: true
+        type: string
+      artifact_name:
+        description: Name for artifacts and display
+        required: true
+        type: string
+      environment:
+        description: GitHub environment for deployments (dev, prod)
+        required: true
+        type: string
+      ovh_endpoint:
+        description: OVH API endpoint
+        required: false
+        type: string
+        default: "ovh-eu"
+      ovh_application_key:
+        description: OVH API application key
+        required: false
+        type: string
+        default: "54b46d19bfcee5ed"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  OVH_ENDPOINT: ${{ inputs.ovh_endpoint }}
+  OVH_APPLICATION_KEY: ${{ inputs.ovh_application_key }}
+  OVH_APPLICATION_SECRET: ${{ secrets.OVH_APPLICATION_SECRET }}
+  OVH_CONSUMER_KEY: ${{ secrets.OVH_CONSUMER_KEY }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.OVH_S3_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.OVH_S3_SECRET_ACCESS_KEY }}
+  PLAN_BINARY_FILENAME: tfplan
+  PLAN_TEXT_FILENAME: tfplan.txt
+  APPLY_OUTPUT_FILENAME: apply-output.txt
+
+jobs:
+  deploy:
+    name: Lint, Plan & Apply
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install OpenTofu
+        uses: ./.github/actions/opentofu-install
+
+      - name: OpenTofu init
+        uses: ./.github/actions/opentofu-init
+        with:
+          working_directory: ${{ inputs.working_directory }}
+
+      - name: OpenTofu lint
+        uses: ./.github/actions/opentofu-lint
+        with:
+          working_directory: ${{ inputs.working_directory }}
+
+      - name: OpenTofu plan
+        id: plan
+        uses: ./.github/actions/opentofu-plan
+        with:
+          working_directory: ${{ inputs.working_directory }}
+          plan_binary_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.PLAN_BINARY_FILENAME }}
+          plan_text_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.PLAN_TEXT_FILENAME }}
+
+      - name: Post Plan to PR
+        if: github.event_name == 'pull_request' && steps.plan.outputs.has_changes == 'true'
+        uses: ./.github/actions/opentofu-plan-comment
+        with:
+          plan_text_file: ${{ steps.plan.outputs.plan_text_file }}
+          environment: ${{ inputs.environment }}
+          working_directory: ${{ inputs.working_directory }}
+
+      - name: OpenTofu apply
+        id: apply
+        uses: ./.github/actions/opentofu-apply
+        with:
+          working_directory: ${{ inputs.working_directory }}
+          plan_binary_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.PLAN_BINARY_FILENAME }}
+          apply_output_file: ${{ runner.temp }}/${{ inputs.artifact_name }}-${{ env.APPLY_OUTPUT_FILENAME }}
+
+      - name: Post Apply Result to PR
+        if: always() && github.event_name == 'pull_request' && steps.plan.outputs.has_changes == 'true'
+        uses: ./.github/actions/opentofu-apply-comment
+        with:
+          apply_output_file: ${{ steps.apply.outputs.apply_output_file }}
+          environment: ${{ inputs.environment }}
+          working_directory: ${{ inputs.working_directory }}
+          apply_status: ${{ steps.apply.outcome }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

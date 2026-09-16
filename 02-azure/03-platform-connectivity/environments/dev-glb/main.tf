@@ -1,12 +1,11 @@
 # =============================================================================
-# Global (glb) - Main Configuration
+# Hub Peering (Global Coordination)
 # =============================================================================
+# This deployment manages cross-location resources:
+# - Hub-to-Hub VNet peering (global peering between location hubs)
 #
-# This deployment manages cross-location_short resources:
-# - Hub-to-Hub VNet peering (global peering between location_shortal hubs)
-# - Hub-to-Hub Network Verifier intents
-#
-# NOTE: Cross-location_short Private DNS links are managed in the WEU deployment
+# NOTE: Individual hub networks are deployed in dev-weu and dev-gwc.
+# Cross-location Private DNS links are managed in the WEU deployment.
 # =============================================================================
 
 # West Europe Hub -> Germany West Central Hub

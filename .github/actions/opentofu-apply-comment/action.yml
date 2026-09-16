@@ -40,13 +40,13 @@ runs:
           "${{ inputs.working_directory }}" \
           "${{ inputs.apply_status }}"
 
-    - name: Find existing apply comment
+    - name: Find existing plan comment
       id: find-comment
       uses: peter-evans/find-comment@v3
       with:
         issue-number: ${{ github.event.pull_request.number }}
         comment-author: github-actions[bot]
-        body-includes: "OpenTofu Apply - ${{ inputs.environment }}"
+        body-includes: "<!-- opentofu-comment:${{ inputs.working_directory }} -->"
 
     - name: Create or update comment
       id: create-comment
@@ -55,4 +55,4 @@ runs:
         comment-id: ${{ steps.find-comment.outputs.comment-id }}
         issue-number: ${{ github.event.pull_request.number }}
         body: ${{ steps.comment.outputs.comment_body }}
-        edit-mode: replace
+        edit-mode: append

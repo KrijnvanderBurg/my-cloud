@@ -21,7 +21,3 @@ resource "azurerm_resource_group" "this" {
 
   tags = var.tags
 }
-
-# 01-log-analytics
-# 02a-spoke-vnet
-# 02b-keyvault

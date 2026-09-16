@@ -1,5 +1,5 @@
 # =============================================================================
-# West Europe (weu) - Local Variables
+# Germany West Central (gwc) - Local Variables
 # =============================================================================
 
 locals {
@@ -18,7 +18,7 @@ locals {
   common_tags = {
     environment = local.environment
     managed_by  = "opentofu"
-    project     = "levendaal"
+    project     = "krijnvanderburg"
     layer       = "platform-connectivity"
     location    = local.location
   }
