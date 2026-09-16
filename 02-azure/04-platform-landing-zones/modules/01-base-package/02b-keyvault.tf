@@ -3,23 +3,23 @@
 # Key Vault Resources
 # =============================================================================
 
-resource "azurerm_key_vault" "this" {
-  name                          = local.key_vault_name
-  resource_group_name           = azurerm_resource_group.this.name
-  location                      = azurerm_resource_group.this.location
-  tenant_id                     = var.tenant_id
-  sku_name                      = "standard"
-  soft_delete_retention_days    = 30
-  purge_protection_enabled      = true
-  rbac_authorization_enabled    = true
-  public_network_access_enabled = false
+# resource "azurerm_key_vault" "this" {
+#   name                          = local.key_vault_name
+#   resource_group_name           = azurerm_resource_group.this.name
+#   location                      = azurerm_resource_group.this.location
+#   tenant_id                     = var.tenant_id
+#   sku_name                      = "standard"
+#   soft_delete_retention_days    = 30
+#   purge_protection_enabled      = true
+#   rbac_authorization_enabled    = true
+#   public_network_access_enabled = false
 
-  tags = var.tags
+#   tags = var.tags
 
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
-}
+#   # lifecycle {
+#   #   prevent_destroy = true
+#   # }
+# }
 
 # resource "azurerm_monitor_diagnostic_setting" "key_vault" {
 #   name                       = "diag-${local.key_vault_name}"
