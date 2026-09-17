@@ -8,12 +8,12 @@
 module "baseline" {
   source = "../../stacks/baseline"
 
-  environment    = local.environment
-  users          = local.users
+  environment      = local.environment
+  users            = local.users
   service_accounts = local.service_accounts
-  groups         = local.groups
-  policy_actions = local.policy_actions
-  common_tags    = local.common_tags
+  groups           = local.groups
+  policy_actions   = local.policy_actions
+  common_tags      = local.common_tags
 }
 
 # =============================================================================
