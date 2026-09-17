@@ -159,7 +159,6 @@ All steps performed to setup initial infrastructure and to current state.
     **Note:** Admin consent requires Global Administrator or Privileged Role Administrator role. If CLI fails, grant via Portal:
     Azure AD → App registrations → sp-platform-identity-co-dev-na-01 → API permissions → Grant admin consent
 
-
 ## OVHcloud
 
 The OVHcloud Terraform setup is in `03-ovhcloud`. See its README for the
