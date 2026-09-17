@@ -17,7 +17,7 @@ resource "ovh_me_identity_user" "this" {
   password    = random_password.this.result
 
   lifecycle {
-    ignore_changes  = [password]
-    prevent_destroy = true
+    ignore_changes = [password]
+    # prevent_destroy = true
   }
 }
