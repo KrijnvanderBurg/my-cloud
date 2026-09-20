@@ -80,14 +80,6 @@ output "pl_connectivity_subscription" {
   }
 }
 
-output "alz_drive_subscription" {
-  description = "ALZ Drive subscription"
-  value = {
-    id              = data.azurerm_subscription.alz_drive.id
-    subscription_id = data.azurerm_subscription.alz_drive.subscription_id
-  }
-}
-
 output "plz_drives_subscription" {
   description = "Platform Landing Zone Drives subscription"
   value = {

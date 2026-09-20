@@ -12,7 +12,7 @@ Based on [Azure Cloud Adoption Framework](https://learn.microsoft.com/en-us/azur
 
 | Component | Description | Examples |
 |-----------|-------------|----------|
-| Type | Subscription layer: <br> OR Azure resource abbreviation: | `pl`, `plz`, `alz`, <br> `mg`, `rg`, `st`, `vnet`, `vm` |
+| Type | Subscription layer: <br> OR Azure resource abbreviation: | `pl`, `plz`, <br> `mg`, `rg`, `st`, `vnet`, `vm` |
 | Workload | Function or application name | `management`, `identity`, `connectivity`, `dataplatform`, `webapp`, `erp` |
 | Archetype | Network/security posture | `co`, `on` |
 | Env | Deployment stage | `dev`, `test`, `accp`, `prod` |

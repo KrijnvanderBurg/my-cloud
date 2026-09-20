@@ -22,27 +22,22 @@
 module "sp_platform_connectivity" {
   source = "../../modules/01-service-principal-federated"
 
-  name = "sp-pl-connectivity-on-${var.environment}-na-01"
+  name      = "sp-pl-connectivity-on-${var.environment}-na-01"
+  scope     = var.pl_connectivity_subscription_scope
+  role_name = "Contributor"
   subjects = [
-    "repo:${var.github_repository}:environment:${var.environment}"
-  ]
-}
-
-module "sp_alz_drives" {
-  source = "../../modules/01-service-principal-federated"
-
-  name = "sp-alz-drives-on-${var.environment}-na-01"
-  subjects = [
-    "repo:${var.github_repository}:environment:${var.environment}"
+    "repo:KrijnvanderBurg/my-cloud:environment:${var.environment}"
   ]
 }
 
 module "sp_plz_drives" {
   source = "../../modules/01-service-principal-federated"
 
-  name = "sp-plz-drives-on-${var.environment}-na-01"
+  name      = "sp-plz-drives-on-${var.environment}-na-01"
+  scope     = var.plz_drives_subscription_scope
+  role_name = "Contributor"
   subjects = [
-    "repo:${var.github_repository}:environment:${var.environment}"
+    "repo:KrijnvanderBurg/my-cloud:environment:${var.environment}"
   ]
 }
 

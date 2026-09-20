@@ -48,6 +48,7 @@
                 //
                 // Add the extension IDs you want to suppress
                 //
+                "gitlens.hovers.enabled": false,
                 "extensions.unwantedRecommendations": [],
                 //
                 // Git - search gitignore in parent monorepo folder

@@ -14,7 +14,6 @@ module "baseline" {
   platform_identity_subscription_id     = local.platform_identity_subscription_id
   platform_connectivity_subscription_id = local.platform_connectivity_subscription_id
   plz_drives_subscription_id            = local.plz_drives_subscription_id
-  alz_drive_subscription_id             = local.alz_drive_subscription_id
 
   tfstate_storage_account_name                = local.tfstate_storage_account_name
   tfstate_storage_account_resource_group_name = local.tfstate_storage_account_resource_group_name

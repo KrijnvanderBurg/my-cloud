@@ -14,6 +14,12 @@ resource "azuread_service_principal" "this" {
   }
 }
 
+resource "azurerm_role_assignment" "scope" {
+  scope                = var.scope
+  role_definition_name = var.role_name
+  principal_id         = azuread_service_principal.this.object_id
+}
+
 resource "azuread_application_federated_identity_credential" "this" {
   for_each = { for idx, subject in var.subjects : idx => subject }
 

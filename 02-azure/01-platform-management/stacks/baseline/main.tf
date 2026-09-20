@@ -39,10 +39,6 @@ data "azurerm_subscription" "plz_drives" {
   subscription_id = var.plz_drives_subscription_id
 }
 
-data "azurerm_subscription" "alz_drive" {
-  subscription_id = var.alz_drive_subscription_id
-}
-
 # =============================================================================
 # Management Groups
 # =============================================================================
