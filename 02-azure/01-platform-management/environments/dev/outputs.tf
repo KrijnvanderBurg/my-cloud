@@ -61,11 +61,6 @@ output "pl_connectivity_subscription" {
   value       = module.baseline.pl_connectivity_subscription
 }
 
-output "alz_drive_subscription" {
-  description = "ALZ Drive subscription"
-  value       = module.baseline.alz_drive_subscription
-}
-
 output "plz_drives_subscription" {
   description = "Platform Landing Zone Drives subscription"
   value       = module.baseline.plz_drives_subscription

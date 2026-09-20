@@ -31,12 +31,6 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "github_repository" {
-  description = "GitHub repository (org/repo) used to build the OIDC federation subject"
-  type        = string
-  default     = "KrijnvanderBurg/my-cloud"
-}
-
 # --- Values sourced from the platform-management layer ---
 
 variable "pl_connectivity_subscription_scope" {

@@ -24,16 +24,7 @@ module "sp_platform_connectivity" {
 
   name = "sp-pl-connectivity-on-${var.environment}-na-01"
   subjects = [
-    "repo:${var.github_repository}:environment:${var.environment}"
-  ]
-}
-
-module "sp_alz_drives" {
-  source = "../../modules/01-service-principal-federated"
-
-  name = "sp-alz-drives-on-${var.environment}-na-01"
-  subjects = [
-    "repo:${var.github_repository}:environment:${var.environment}"
+    "repo:KrijnvanderBurg/my-cloud:environment:${var.environment}"
   ]
 }
 
@@ -42,7 +33,7 @@ module "sp_plz_drives" {
 
   name = "sp-plz-drives-on-${var.environment}-na-01"
   subjects = [
-    "repo:${var.github_repository}:environment:${var.environment}"
+    "repo:KrijnvanderBurg/my-cloud:environment:${var.environment}"
   ]
 }
 
@@ -85,6 +76,7 @@ module "sg_rbac_platform_contributors" {
 # =============================================================================
 # Monitoring Alerts
 # =============================================================================
+
 module "monitoring_alerts" {
   source = "../../modules/04-monitoring-alerts"
 

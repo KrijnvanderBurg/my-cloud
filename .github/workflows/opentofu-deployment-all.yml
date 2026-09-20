@@ -2,9 +2,9 @@ name: OpenTofu Deployment All
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, closed]
-  push:
-    branches: [main]
+    types: [opened, synchronize, reopened]
+  # push:
+  #   branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -17,7 +17,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Azure
+  # =============================================================================
+  # 02-azure
+  # =============================================================================
 
   # ===== Platform Management =====
   pl-management-dev:
@@ -84,25 +86,27 @@ jobs:
       client_id: 75f6a811-1aac-41f2-a225-3ba6cd43b489 # sp-plz-drives-on-dev-na-01
       environment: dev
 
-  # OVH Cloud
+  # =============================================================================
+  # 03-ovhcloud
+  # =============================================================================
 
-  # # ===== OVHcloud Platform Management =====
-  # ovh-pl-management-dev:
-  #   name: ovh-pl-management-dev
-  #   uses: ./.github/workflows/opentofu-deployment-ovh-template.yml
-  #   secrets: inherit
-  #   with:
-  #     working_directory: ./03-ovhcloud/01-platform-management/environments/dev
-  #     artifact_name: ovh-pl-management-dev
-  #     environment: dev
+  # ===== OVHcloud Platform Management =====
+  ovh-pl-management-dev:
+    name: ovh-pl-management-dev
+    uses: ./.github/workflows/opentofu-deployment-ovh-template.yml
+    secrets: inherit
+    with:
+      working_directory: ./03-ovhcloud/01-platform-management/environments/dev
+      artifact_name: ovh-pl-management-dev
+      environment: dev
 
-  # # ===== OVHcloud Platform Identity =====
-  # ovh-pl-identity-dev:
-  #   name: ovh-pl-identity-dev
-  #   needs: [ovh-pl-management-dev]
-  #   uses: ./.github/workflows/opentofu-deployment-ovh-template.yml
-  #   secrets: inherit
-  #   with:
-  #     working_directory: ./03-ovhcloud/02-platform-identity/environments/dev
-  #     artifact_name: ovh-pl-identity-dev
-  #     environment: dev
+  # ===== OVHcloud Platform Identity =====
+  ovh-pl-identity-dev:
+    name: ovh-pl-identity-dev
+    needs: [ovh-pl-management-dev]
+    uses: ./.github/workflows/opentofu-deployment-ovh-template.yml
+    secrets: inherit
+    with:
+      working_directory: ./03-ovhcloud/02-platform-identity/environments/dev
+      artifact_name: ovh-pl-identity-dev
+      environment: dev

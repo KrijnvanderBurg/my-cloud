@@ -11,7 +11,7 @@ Applies to `02-azure/01-platform-management` and `02-azure/02-platform-identity`
 | Environment-specific resources | `<layer>/environments/<env>/modules-env/` | Environment-only customizations (policies, roles, alerts, etc.). Keeps env-specific code visually separate. |
 | Environment root | `<layer>/environments/<env>/` | Thin layer: provider + backend + `locals.tf` (env values) + one `module "baseline"` call (from `stacks/`) + references to `./modules-env/*` + `moved {}` blocks for state migration. |
 
-**Key principle**: 
+**Key principle**:
 - Every environment calls the same baseline stack → baseline resources are inherited automatically (can't forget them).
 - Stack's `variables.tf` uses **required inputs (no defaults)** → environment that forgets to supply a value fails at plan time.
 - Environment-only tweaks live in `modules-env/` → visible, explicit, never hidden in conditionals.

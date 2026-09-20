@@ -34,11 +34,6 @@ variable "plz_drives_subscription_id" {
   type        = string
 }
 
-variable "alz_drive_subscription_id" {
-  description = "Subscription ID for the ALZ Drive subscription"
-  type        = string
-}
-
 variable "tfstate_storage_account_name" {
   description = "Name of the Terraform state storage account for this environment"
   type        = string

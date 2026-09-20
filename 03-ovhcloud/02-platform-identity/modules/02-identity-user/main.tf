@@ -18,5 +18,6 @@ resource "ovh_me_identity_user" "this" {
 
   lifecycle {
     ignore_changes = [password]
+    # prevent_destroy = true
   }
 }

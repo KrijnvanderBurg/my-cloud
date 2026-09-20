@@ -1,6 +1,6 @@
-# KrijnvanderBurg - Multi-Cloud Infrastructure
+# My-Cloud
 
-Terraform/OpenTofu and Ansible configuration for KrijnvanderBurg's multi-cloud infrastructure.
+Terraform/OpenTofu and Ansible configuration for my multi-cloud infrastructure.
 
 - See [docs/naming-convention.md](docs/naming-convention.md) for full naming standards.
 
@@ -63,7 +63,7 @@ Terraform/OpenTofu and Ansible configuration for KrijnvanderBurg's multi-cloud i
     └── README.md
 ```
 
-## Deployment History
+## Azure
 All steps performed to setup initial infrastructure and to current state.
 
 1. **Created Azure Tenant** (`KrijnvanderBurg`) via Azure Portal.
@@ -159,8 +159,7 @@ All steps performed to setup initial infrastructure and to current state.
     **Note:** Admin consent requires Global Administrator or Privileged Role Administrator role. If CLI fails, grant via Portal:
     Azure AD → App registrations → sp-platform-identity-co-dev-na-01 → API permissions → Grant admin consent
 
-
-# OVHcloud - KrijnvanderBurg
+## OVHcloud
 
 The OVHcloud Terraform setup is in `03-ovhcloud`. See its README for the
 one-time remote state bootstrap and local/CI authentication configuration.
