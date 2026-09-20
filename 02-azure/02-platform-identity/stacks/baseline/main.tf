@@ -22,9 +22,7 @@
 module "sp_platform_connectivity" {
   source = "../../modules/01-service-principal-federated"
 
-  name      = "sp-pl-connectivity-on-${var.environment}-na-01"
-  scope     = var.pl_connectivity_subscription_scope
-  role_name = "Contributor"
+  name = "sp-pl-connectivity-on-${var.environment}-na-01"
   subjects = [
     "repo:KrijnvanderBurg/my-cloud:environment:${var.environment}"
   ]
@@ -33,9 +31,7 @@ module "sp_platform_connectivity" {
 module "sp_plz_drives" {
   source = "../../modules/01-service-principal-federated"
 
-  name      = "sp-plz-drives-on-${var.environment}-na-01"
-  scope     = var.plz_drives_subscription_scope
-  role_name = "Contributor"
+  name = "sp-plz-drives-on-${var.environment}-na-01"
   subjects = [
     "repo:KrijnvanderBurg/my-cloud:environment:${var.environment}"
   ]
@@ -80,6 +76,7 @@ module "sg_rbac_platform_contributors" {
 # =============================================================================
 # Monitoring Alerts
 # =============================================================================
+
 module "monitoring_alerts" {
   source = "../../modules/04-monitoring-alerts"
 
