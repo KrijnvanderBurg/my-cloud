@@ -90,25 +90,25 @@ jobs:
 
   # OVH Cloud
 
-  # # ===== OVHcloud ... (dev) =====
+  # ===== OVHcloud ... (dev) =====
 
-  # # ===== OVHcloud Platform Identity (dev) =====
-  # ovh-pl-identity-dev:
-  #   name: ovh-pl-identity-dev destroy
-  #   uses: ./.github/workflows/opentofu-destroy-ovh-template.yml
-  #   secrets: inherit
-  #   with:
-  #     working_directory: ./03-ovhcloud/02-platform-identity/environments/dev
-  #     artifact_name: ovh-pl-identity-dev
-  #     environment: dev
+  # ===== OVHcloud Platform Identity (dev) =====
+  ovh-pl-identity-dev:
+    name: ovh-pl-identity-dev destroy
+    uses: ./.github/workflows/opentofu-destroy-ovh-template.yml
+    secrets: inherit
+    with:
+      working_directory: ./03-ovhcloud/02-platform-identity/environments/dev
+      artifact_name: ovh-pl-identity-dev
+      environment: dev
 
-  # # ===== OVHcloud Platform Management (dev) =====
-  # ovh-pl-management-dev:
-  #   name: ovh-pl-management-dev destroy
-  #   needs: [ovh-pl-identity-dev]
-  #   uses: ./.github/workflows/opentofu-destroy-ovh-template.yml
-  #   secrets: inherit
-  #   with:
-  #     working_directory: ./03-ovhcloud/01-platform-management/environments/dev
-  #     artifact_name: ovh-pl-management-dev
-  #     environment: dev
+  # ===== OVHcloud Platform Management (dev) =====
+  ovh-pl-management-dev:
+    name: ovh-pl-management-dev destroy
+    needs: [ovh-pl-identity-dev]
+    uses: ./.github/workflows/opentofu-destroy-ovh-template.yml
+    secrets: inherit
+    with:
+      working_directory: ./03-ovhcloud/01-platform-management/environments/dev
+      artifact_name: ovh-pl-management-dev
+      environment: dev
